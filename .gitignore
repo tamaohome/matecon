@@ -1,0 +1,21 @@
+# Python
+.venv/
+__pycache__/
+.pytest_cache/
+
+# pyinstaller
+build/
+dist/
+
+# sample_data
+~$*.xl*
+*.maz
+*.log
+
+# IDE files
+.vscode/
+*.code-workspace
+
+# OS
+Thumbs.db
+.DS_Store

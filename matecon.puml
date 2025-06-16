@@ -1,0 +1,127 @@
+@startuml matecon
+
+skinparam defaultFontName "Consolas"
+
+class Material {
+    - table: Table
+    - root: MaterialNode
+    + __init__(*filenames)
+    + print_tree(): void
+    - _build_tree(table: Table): MaterialNode
+    + nodes: tuple
+    + format_lines: list
+    + filenames: list
+}
+
+Material --> Table
+
+class MaterialNode {
+    - parent: MaterialNode
+    - level: int
+    - _row: list
+    + __init__(parent, level, row)
+    + remove(): void
+    + create(parent, level, row): MaterialNode
+    + descendants: tuple
+    + children: tuple
+    + format_lines: list
+    + format_line: str
+    + values: list
+    + names: list
+    + name: str
+    + level_names: list
+}
+
+class LevelNode {
+    + __init__(parent, level, row)
+    + names: list
+}
+
+class BlockNode {
+    + __init__(parent, row)
+    + names: list
+    + format_line: str
+    + format_lines: list
+}
+
+class DetailNode {
+    + __init__(parent, row)
+}
+
+class PaintNode {
+    + __init__(parent, row)
+}
+
+Material "1" o-- "1" MaterialNode : root
+MaterialNode <|-- LevelNode
+MaterialNode <|-- BlockNode
+MaterialNode <|-- DetailNode
+MaterialNode <|-- PaintNode
+MaterialNode "parent" --> "children" MaterialNode
+
+
+class Table {
+    - _header: tuple<str, ...>
+    - _books: list<BookNode>
+    + __init__(header: tuple<str, ...>)
+    + add_book(*filenames: str | Path): void
+    + add_books(filenames: list|tuple): void
+    + header: tuple<str, ...>
+    + books: list<BookNode>
+    + sheets: list<SheetNode>
+    + rows: tuple
+    + filenames: list<str>
+}
+
+Table "1" *-- "*" BookNode
+Table ..> SheetNode
+
+class BookNode {
+    - filepath: Path
+    - _table_header: tuple
+    - _table: tuple
+    - _reader: SpreadsheetReader
+    + __init__(filepath, table_header)
+    + close()
+    + name: str
+    + filename: str
+    + sheets: tuple
+    + table: tuple
+    + table_header: tuple
+    + iter_table: Iterator
+}
+
+class SheetNode {
+    - _worksheet: Worksheet
+    - _table: tuple
+    + __init__(parent, worksheet)
+    + cell(row_n, col_n)
+    + iter_table()
+    + table: tuple
+    + name: str
+    + booknode: BookNode
+    + table_header: tuple
+    + header_position: Position
+    + table_origin: Position
+}
+
+class SpreadsheetReader {
+    - wb: Workbook
+    - filepath: Path
+    + __init__(filepath: str | Path)
+    - _get_valid_filepath(filepath: str | Path): Path
+    + get_worksheets(ignore_hidden_sheet=True): list<Worksheet>
+    + close(): None
+}
+
+BookNode "1" *-- "many" SheetNode : children
+
+class SpreadsheetReader
+class Worksheet
+class Position
+
+BookNode --> SpreadsheetReader
+SheetNode --> Worksheet
+SheetNode --> Position
+
+@enduml
