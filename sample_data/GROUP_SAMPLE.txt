@@ -1,0 +1,30 @@
+!RANGE    0
+@VERSION  2
+#1   GROUP_SAMPLE                 1
+#2   LEVEL2                       1
+#3   LEVEL3                       1
+#4   LEVEL4                       1
+#5   LEVEL5                       1
+#G   BLK1                         3
+     BLK1    BLK1-1               1
+PL    100   6           800   1         SS400            DUMMY
+END
+     BLK1    BOK1-2               2
+PL    100   6           800   1         SS400            DUMMY
+END
+     BLK2                         1
+PL    100   6           800   1         SS400            DUMMY
+END
+     BLK3                         8
+PL    100   6           800   1         SS400            DUMMY
+END
+#G   BLK4                        10
+     BLK4    BLK4-1               2
+PL    100   6           800   1         SS400            DUMMY
+END
+     BLK4    BLK4-2  BLK4-2-1     1
+PL    100   6           800   1         SS400            DUMMY
+END
+     BLK4    BLK4-2  BLK4-2-2     4
+PL    100   6           800   1         SS400            DUMMY
+END
