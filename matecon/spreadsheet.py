@@ -83,7 +83,7 @@ class BookNode(AnyNode):
             self._table = tuple(row for sheet in self.sheets for row in sheet.table)
 
         if self._table == ():
-            raise ValueError(f"{self.filename}: テーブルが空です")
+            raise ValueError(f"{self.filename}: 有効なシートが存在しません。")
 
         return self._table
 
