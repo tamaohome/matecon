@@ -26,7 +26,29 @@ allow-direct-references = true
 packages = ["matecon"]
 
 [tool.ruff]
+target-version = "py312"
 line-length = 110
+
+[tool.ruff.lint]
+select = [
+    "E",   # Pycodestyle Errors (主にPEP 8の構文エラー)
+    "W",   # Pycodestyle Warnings (主にPEP 8の警告、例えばインデントや空白に関するもの)
+    "F",   # Pyflakes (未使用のインポートや変数のチェックなど)
+    "I",   # Isort (インポート文のソートと整理)
+    "N",   # Naming conventions (命名規則のチェック)
+    "UP",  # pyupgrade (モダンなPythonの構文への書き換え推奨、例: f-stringsの使用)
+    "B",   # bugbear (潜在的なバグや設計上の問題の指摘)
+    "A",   # flake8-builtins (組み込み関数や組み込み型の上書きチェック)
+    "TID", # flake8-tidy-imports (特定のインポートを禁止するなど、インポートの整理)
+    "C4",  # flake8-comprehensions (冗長なリスト/セット/辞書内包表記の簡略化推奨)
+    "SIM", # flake8-simplify (コードの簡略化と最適化の推奨)
+]
+ignore = [
+    "N802", # Qtの命名規則（camelCase）を許容する
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["matecon"]
 
 [tool.pytest.ini_options]
 addopts = "-s"
