@@ -1,9 +1,5 @@
-# -*- coding: utf-8 -*-
-
-from unicodedata import east_asian_width
-from pathlib import Path
-
 import sys
+from pathlib import Path
 
 
 # TODO: 複数パスの入力に対応する
@@ -27,17 +23,16 @@ def get_path_list(ext: str) -> list[Path]:
             return paths
         else:
             raise ValueError()
-    except:
+    except Exception:
         while True:
             p = input("ファイルパスを入力(またはこの画面にファイルをドラッグ): ")
             if p:
                 return [Path(p.replace('"', ""))]
 
 
-def write_txt(org_path: Path | str, lines: list[str]) -> None:
+def write_txt(org_path: Path | str, lines: list[str]) -> Path:
     txt_path = Path(org_path).resolve().with_suffix(".txt")
     with txt_path.open(mode="w", encoding="cp932") as f:
         for line in lines:
             f.write(line + "\n")
-
-    print("書き込みが完了しました。", txt_path)
+    return txt_path

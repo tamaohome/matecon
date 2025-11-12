@@ -1,11 +1,8 @@
-# -*- coding: utf-8 -*-
-
-import pytest
 from pprint import pprint
 
-from matecon.material import Material
-
 from helpers import load_txt_sample
+
+from matecon.material import Material
 
 MATERIAL_XLSX = "sample_data/MATERIAL_SAMPLE.xlsx"
 MATERIAL_TXT = "sample_data/MATERIAL_SAMPLE.txt"

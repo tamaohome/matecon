@@ -1,10 +1,4 @@
-# -*- coding: utf-8 -*-
-
-import pytest
-
-from matecon.material import Material
-from matecon.material import MaterialNode
-from matecon.templates import MaterialNodeType
+from matecon.material import Material, MaterialNode
 
 MATERIAL_FILE = "sample_data/MATERIAL_SAMPLE.xlsx"
 

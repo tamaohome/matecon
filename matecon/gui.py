@@ -1,15 +1,12 @@
-# -*- coding: utf-8 -*-
-
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QApplication,
-    QWidget,
-    QPushButton,
     QFileDialog,
-    QVBoxLayout,
     QLabel,
     QMessageBox,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
 )
-from PySide6.QtCore import Qt
 
 from .material import Material
 from .utils import write_txt
@@ -57,7 +54,7 @@ class MainWindow(QWidget):
     def handle_file(self, file_path):
         try:
             mate = Material(file_path)
-            write_txt(file_path, mate.format_lines)
-            QMessageBox.information(self, "完了", "処理が完了しました。")
+            txt_path = write_txt(file_path, mate.format_lines)
+            QMessageBox.information(self, "完了", f"{txt_path}\nテキストデータを出力しました。")
         except Exception as e:
             QMessageBox.critical(self, "エラー", str(e))

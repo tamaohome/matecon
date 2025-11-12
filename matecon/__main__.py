@@ -1,17 +1,14 @@
-# -*- coding: utf-8 -*-
-
 import sys
 import warnings
 
-# openpyxl の警告を無視
-warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
-
 from PySide6.QtWidgets import QApplication
 
-from .material import Material
-from .utils import get_path_list
-from .utils import write_txt
 from .gui import MainWindow
+from .material import Material
+from .utils import get_path_list, write_txt
+
+# openpyxl の警告を無視
+warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
 
 
 def gui_app():

@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
-
 from pathlib import Path
 
-from matecon.spreadsheet import BookNode
-from matecon.spreadsheet import SheetNode
+from matecon.spreadsheet import BookNode, SheetNode
 
 
 class Table:

@@ -1,8 +1,4 @@
-# -*- coding: utf-8 -*-
-
 from matecon.table import Table
-from matecon.spreadsheet import BookNode
-from matecon.spreadsheet import SheetNode
 from matecon.templates import TABLE_HEADER
 
 MATERIAL_FILE = "sample_data/MATERIAL_SAMPLE.xlsx"
