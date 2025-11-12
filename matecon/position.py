@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 class Position:
     """セルの位置を保持するクラス"""
 

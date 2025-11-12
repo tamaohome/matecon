@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
-
 from pathlib import Path
+
 from openpyxl import load_workbook
 from openpyxl.workbook.workbook import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
@@ -30,10 +29,10 @@ class SpreadsheetReader:
 
         # ファイルオープンのチェック
         try:
-            with open(filepath, "r"):
+            with open(filepath):
                 pass
-        except IOError:
-            raise IOError("ファイルをオープンできません", filepath)
+        except OSError as e:
+            raise OSError(f"ファイルをオープンできません: {e}") from e
 
         return filepath
 

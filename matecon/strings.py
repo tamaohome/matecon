@@ -1,26 +1,17 @@
-# -*- coding: utf-8 -*-
-
-from unicodedata import east_asian_width
-from unicodedata import normalize
 from typing import Any
+from unicodedata import east_asian_width, normalize
 
 
 def adjust_str(item, width: int | slice, align: Any = "L") -> str:
     """文字列を左右に位置揃え"""
     # item を正規化して _item を定義
     try:
-        if item is None:
-            _item = ""
-        else:
-            _item = str(item)
-    except TypeError:
-        raise TypeError("引数 item の型が不正です:", item)
+        _item = str(item) if item is not None else ""
+    except TypeError as e:
+        raise TypeError(f"引数 item の型が不正です: {e}") from e
 
     # width を正規化して _width を定義
-    if isinstance(width, slice):
-        _width = width.stop - width.start
-    else:
-        _width = width
+    _width = width.stop - width.start if isinstance(width, slice) else width
     if _width < 0:
         raise ValueError("引数 width の値が不正です:", width)
 
@@ -90,9 +81,6 @@ def is_valid_chars(*values: Any) -> bool:
         if 0x0391 <= c <= 0x03C9:
             return True
         # ひらがな・カタカナ・漢字
-        if 0x3000 <= c:
-            return True
-
-        return False
+        return c >= 12288
 
     return all(is_valid_char(ord(c)) for value in values for c in str(value))

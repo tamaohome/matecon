@@ -1,22 +1,16 @@
-# -*- coding: utf-8 -*-
-
-from typing import Final
-from typing import Iterator
-from typing import Optional
-from anytree import AnyNode
+from collections.abc import Iterator
 from pathlib import Path
-from decimal import Decimal
 from pprint import pformat
+from typing import Final
 
-from openpyxl.worksheet.worksheet import Worksheet
+from anytree import AnyNode
 from openpyxl.cell.cell import Cell, MergedCell
-from openpyxl.cell.read_only import ReadOnlyCell
-from openpyxl.cell.read_only import EmptyCell
+from openpyxl.cell.read_only import EmptyCell, ReadOnlyCell
+from openpyxl.worksheet.worksheet import Worksheet
 
-from .spreadsheet_reader import SpreadsheetReader
 from .position import Position
-from .strings import zen2han
-from .strings import is_valid_chars
+from .spreadsheet_reader import SpreadsheetReader
+from .strings import is_valid_chars, zen2han
 
 CellValueType = str | int | float
 CellType = Cell | ReadOnlyCell | MergedCell | EmptyCell
@@ -126,7 +120,7 @@ class SheetNode(AnyNode):
     def __iter__(self):
         return iter(self.table)
 
-    def cell(self, row_n: int, col_n: int) -> Optional[CellValueType]:
+    def cell(self, row_n: int, col_n: int) -> CellValueType | None:
         """セルの値を返す"""
         cell = self._worksheet.cell(row=row_n, column=col_n)
         if isinstance(cell, MergedCell):
@@ -150,12 +144,12 @@ class SheetNode(AnyNode):
             return tuple(row for row in rows if any(row))
 
         except ValueError:
-            return tuple()
+            return ()
 
     def _get_row(self, row: tuple) -> tuple:
         return tuple(cell.value for cell in row if isinstance(cell, CellType) and is_valid_chars(cell.value))
 
-    def _formatted_cell_value(self, cell: CellType) -> Optional[CellValueType]:
+    def _formatted_cell_value(self, cell: CellType) -> CellValueType | None:
         """書式設定を考慮したセルの値を返す"""
 
         # セル値の型がその他の場合

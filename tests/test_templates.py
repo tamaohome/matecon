@@ -1,16 +1,15 @@
-# -*- coding: utf-8 -*-
-
-from matecon.templates import MaterialNodeType
-from matecon.templates import TABLE_HEADER
-from matecon.templates import format_line
 from matecon.spreadsheet import BookNode
+from matecon.templates import TABLE_HEADER, format_line
 
 MATERIAL_FILE = "sample_data/MATERIAL_SAMPLE.xlsx"
 
 
 def test_templates():
     sample_row = [
-        None, None, "", "MARK", "S1", "S2", "S3", "S4", "L", "EACH", "UNITW", "NET", "QUALITY", "REMARK", "COMMENT", "PR1", "PR2", "JV", "ALIAS", "P", "T", "C1", "A1", "C2", "A2", "WT", "WB", "WL", "WR", "YW", "YL", "HT", "FACE1", "FACE2", "BOLT", "PW", "BEND", "LC", "BODY", "WRT", "WRB", "WRL", "WRR"
+        None, None, "", "MARK", "S1", "S2", "S3", "S4", "L", "EACH", "UNITW", "NET", "QUALITY",
+        "REMARK", "COMMENT", "PR1", "PR2", "JV", "ALIAS", "P", "T", "C1", "A1", "C2", "A2", "WT",
+        "WB", "WL", "WR", "YW", "YL", "HT", "FACE1", "FACE2", "BOLT", "PW", "BEND", "LC", "BODY",
+        "WRT", "WRB", "WRL", "WRR"
         ]  # fmt: skip
 
     assert set(TABLE_HEADER).issubset(set(sample_row))
@@ -19,7 +18,7 @@ def test_templates():
 
 def test_template_from_spreadsheet():
     book = BookNode(MATERIAL_FILE, TABLE_HEADER)
-    isinstance(book, BookNode)
+    assert isinstance(book, BookNode)
 
 
 def test_template_format_line():
@@ -30,7 +29,8 @@ def test_template_format_line():
         ("#4", "横桁", None, None, None, None, 1),
         ("#5", "中間横桁", None, None, None, None, 1),
         (None, "中間横桁", "本体", None, None, None, 6, 1),
-        ("PL", 220, 16, None, None, 2200, 2, None, None, "SM490YA", "FLG", None, "L", None, None, None, None, "%", "A", 100),
+        ("PL", 220, 16, None, None, 2200, 2, None, None, "SM490YA", "FLG", None, "L", None, None,
+         None, None, "%", "A", 100)
     ]  # fmt: skip
 
     format_lines = [

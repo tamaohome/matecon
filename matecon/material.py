@@ -1,12 +1,8 @@
-# # -*- coding: utf-8 -*-
-
 from math import prod
-from typing import Final
-from typing import Optional
 from pathlib import Path
+from typing import Final, Optional
 
-from anytree import NodeMixin
-from anytree import RenderTree
+from anytree import NodeMixin, RenderTree
 
 from . import templates
 from .table import Table
@@ -51,10 +47,9 @@ class Material:
             node = MaterialNode.create(parent, level, row)
 
             # 階層が重複するLEVELノードの場合は除外する
-            if isinstance(node, LevelNode):
-                if node.level_names in [n.level_names for n in node.siblings]:
-                    node.remove()
-                    continue
+            if isinstance(node, LevelNode) and node.level_names in [n.level_names for n in node.siblings]:
+                node.remove()
+                continue
 
             # 最新ノードを格納する辞書の更新
             if level in level_nodes:
@@ -151,10 +146,9 @@ class MaterialNode(NodeMixin):
     def format_lines(self) -> list[str]:
         """自ノードおよび子ノードを固定長文字列のリストとして返す"""
         # 自ノード
-        if self.is_root:
-            lines = []
-        else:
-            lines = [self.format_line]
+        lines = []
+        if not self.is_root:
+            lines.append(self.format_line)
 
         # 子ノード
         for child in self.children:

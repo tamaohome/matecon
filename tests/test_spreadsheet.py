@@ -1,8 +1,5 @@
-# -*- coding: utf-8 -*-
-
 from matecon.position import Position
-from matecon.spreadsheet import BookNode
-from matecon.spreadsheet import SheetNode
+from matecon.spreadsheet import BookNode, SheetNode
 from matecon.templates import TABLE_HEADER
 
 SAMPLE_FILE = "sample_data/BOOK_SAMPLE.xlsx"
@@ -66,10 +63,10 @@ def test_table_cell_types():
     """セル要素の型"""
     sheet = BookNode(SAMPLE_FILE, TABLE_HEADER2)["CELL_TYPE"]
 
-    def assert_value_and_type(object, value, type=None):
-        assert object == value
-        if type:
-            assert isinstance(object, type)
+    def assert_value_and_type(obj, value, value_type=None):
+        assert obj == value
+        if value_type is not None:
+            assert isinstance(obj, value_type)
 
     assert_value_and_type(sheet[0][0], "INT", str)
     assert_value_and_type(sheet[0][1], 0, int)

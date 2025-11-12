@@ -1,9 +1,4 @@
-# -*- coding: utf-8 -*-
-
-from matecon.strings import adjust_str
-from matecon.strings import mbstring_len
-from matecon.strings import zen2han
-from matecon.strings import is_valid_chars
+from matecon.strings import adjust_str, is_valid_chars, mbstring_len, zen2han
 from matecon.templates import Align
 
 
