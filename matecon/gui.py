@@ -8,8 +8,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from .material import Material
-from .utils import write_txt
+from matecon.material import Material
+from matecon.utils import write_txt
 
 
 class MainWindow(QWidget):
