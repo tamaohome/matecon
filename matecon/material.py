@@ -4,8 +4,8 @@ from typing import Final, Optional
 
 from anytree import NodeMixin, RenderTree
 
-from . import templates
-from .table import Table
+from matecon import templates
+from matecon.table import Table
 
 
 class Material:

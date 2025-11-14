@@ -3,9 +3,9 @@ import warnings
 
 from PySide6.QtWidgets import QApplication
 
-from .gui import MainWindow
-from .material import Material
-from .utils import get_path_list, write_txt
+from matecon.gui import MainWindow
+from matecon.material import Material
+from matecon.utils import get_path_list, write_txt
 
 # openpyxl の警告を無視
 warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")

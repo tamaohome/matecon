@@ -8,9 +8,9 @@ from openpyxl.cell.cell import Cell, MergedCell
 from openpyxl.cell.read_only import EmptyCell, ReadOnlyCell
 from openpyxl.worksheet.worksheet import Worksheet
 
-from .position import Position
-from .spreadsheet_reader import SpreadsheetReader
-from .strings import is_valid_chars, zen2han
+from matecon.position import Position
+from matecon.spreadsheet_reader import SpreadsheetReader
+from matecon.strings import is_valid_chars, zen2han
 
 CellValueType = str | int | float
 CellType = Cell | ReadOnlyCell | MergedCell | EmptyCell
