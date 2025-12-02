@@ -95,5 +95,4 @@ def test_iter_table():
     sheet = BookNode(SAMPLE_FILE, TABLE_HEADER2)["CELL_TYPE"]
 
     for row in sheet:
-        print(row)
         assert isinstance(row, tuple)
