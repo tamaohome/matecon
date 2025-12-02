@@ -2,8 +2,8 @@ from helpers import load_txt_sample
 
 from matecon.material import Material
 
-MATERIAL_XLSX = "sample_data/MATERIAL_SAMPLE.xlsx"
-MATERIAL_TXT = "sample_data/MATERIAL_SAMPLE.txt"
+MATERIAL_XLSX = "sample_data/MATERIAL_SAMPLE_1.xlsx"
+MATERIAL_TXT = "sample_data/MATERIAL_SAMPLE_1.txt"
 TXT_SAMPLE = load_txt_sample(MATERIAL_TXT)
 
 

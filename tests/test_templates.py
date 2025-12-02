@@ -1,7 +1,7 @@
 from matecon.spreadsheet import BookNode
 from matecon.templates import TABLE_HEADER, format_line
 
-MATERIAL_FILE = "sample_data/MATERIAL_SAMPLE.xlsx"
+MATERIAL_XLSX = "sample_data/MATERIAL_SAMPLE_1.xlsx"
 
 
 def test_templates():
@@ -17,7 +17,7 @@ def test_templates():
 
 
 def test_template_from_spreadsheet():
-    book = BookNode(MATERIAL_FILE, TABLE_HEADER)
+    book = BookNode(MATERIAL_XLSX, TABLE_HEADER)
     assert isinstance(book, BookNode)
 
 
