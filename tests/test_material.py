@@ -6,7 +6,6 @@ MATERIAL_FILE = "sample_data/MATERIAL_SAMPLE.xlsx"
 def test_material():
     mate = Material(MATERIAL_FILE)
     assert isinstance(mate.root, MaterialNode)
-    mate.print_tree()
     assert len(mate.nodes) == 27
 
 
@@ -26,7 +25,6 @@ def test_material_node_detail():
 def test_material_node_values():
     mate = Material(MATERIAL_FILE)
     node = mate.nodes[20]  # DETAIL
-    print(node)
     assert node.values[0] == "PL"
     assert node.values[1] == 220
     assert node.values[2] == 4.5
@@ -40,7 +38,6 @@ def test_material_node_values():
 def test_material_node_slice():
     mate = Material(MATERIAL_FILE)
     node = mate.nodes[20]  # DETAIL
-    print(node)
     assert node.values[:6] == ["PL", 220, 4.5, None, None, 800]
     assert node.values[29:31] == ["M", "M"]
 
