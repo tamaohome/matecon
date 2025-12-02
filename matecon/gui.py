@@ -1,6 +1,7 @@
+import configparser
 from pathlib import Path
 
-from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtCore import QRect, Qt, QThread, Signal
 from PySide6.QtWidgets import (
     QFileDialog,
     QLabel,
@@ -16,6 +17,65 @@ from matecon.utils import write_txt
 
 # デフォルトラベル
 DEFAULT_LABEL_TEXT = "Excelファイルを選択してください\n(またはこのウィンドウにファイルをドロップ)"
+
+# 設定ファイル
+INI_FILE = Path.cwd() / "matecon.ini"
+INI_FILE_ENCODING = "shift-jis"
+
+# デフォルトウィンドウ (x, y, width, height)
+DEFAULT_WINDOW_GEOMETRY = QRect(100, 100, 240, 120)
+
+
+class ConfigManager:
+    """GUI 設定を管理するクラス"""
+
+    def __init__(self, ini_file: Path = INI_FILE):
+        self.ini_file = ini_file
+        self.config = configparser.ConfigParser()
+        self._load()
+
+    def _load(self):
+        """設定ファイルを読み込む"""
+        if self.ini_file.exists():
+            self.config.read(self.ini_file, encoding=INI_FILE_ENCODING)
+
+    def save(self):
+        """設定ファイルに保存"""
+        self.ini_file.parent.mkdir(parents=True, exist_ok=True)
+        with self.ini_file.open("w", encoding=INI_FILE_ENCODING) as f:
+            self.config.write(f)
+
+    def get_window_geometry(self) -> QRect:
+        """ウィンドウのジオメトリ (x, y, width, height) を取得"""
+        if not self.config.has_section("window"):
+            return DEFAULT_WINDOW_GEOMETRY
+        return QRect(
+            self.config.getint("window", "x", fallback=DEFAULT_WINDOW_GEOMETRY.x()),
+            self.config.getint("window", "y", fallback=DEFAULT_WINDOW_GEOMETRY.y()),
+            self.config.getint("window", "width", fallback=DEFAULT_WINDOW_GEOMETRY.width()),
+            self.config.getint("window", "height", fallback=DEFAULT_WINDOW_GEOMETRY.height()),
+        )
+
+    def set_window_geometry(self, geometry: QRect):
+        """ウィンドウのジオメトリ (x, y, width, height) を保存"""
+        if not self.config.has_section("window"):
+            self.config.add_section("window")
+        self.config.set("window", "x", str(geometry.x()))
+        self.config.set("window", "y", str(geometry.y()))
+        self.config.set("window", "width", str(geometry.width()))
+        self.config.set("window", "height", str(geometry.height()))
+
+    def get_last_directory(self) -> str:
+        """最後に開いたディレクトリを取得"""
+        if not self.config.has_section("paths"):
+            return str(Path.home())
+        return self.config.get("paths", "last_directory", fallback=str(Path.home()))
+
+    def set_last_directory(self, directory: str):
+        """最後に開いたディレクトリを保存"""
+        if not self.config.has_section("paths"):
+            self.config.add_section("paths")
+        self.config.set("paths", "last_directory", directory)
 
 
 class MaterialWorker(QThread):
@@ -46,8 +106,14 @@ class MaterialWorker(QThread):
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
+        self.config_manager = ConfigManager()
+
         self.setWindowTitle("まてコン")
-        self.resize(240, 120)
+
+        # 保存されたウィンドウ設定を復元
+        geometry = self.config_manager.get_window_geometry()
+        self.setGeometry(geometry)
+
         self.v_layout = QVBoxLayout()
 
         self.label = QLabel(DEFAULT_LABEL_TEXT)
@@ -82,8 +148,13 @@ class MainWindow(QWidget):
 
     def select_file(self):
         filter_str = "Excel Files (*.xlsx *.xlsm)"
-        file_path, _ = QFileDialog.getOpenFileName(self, "Excelファイルを選択", "", filter_str)
+        last_dir = self.config_manager.get_last_directory()
+        file_path, _ = QFileDialog.getOpenFileName(self, "Excelファイルを選択", last_dir, filter_str)
         if file_path:
+            # ディレクトリを保存
+            parent_dir = str(Path(file_path).parent)
+            self.config_manager.set_last_directory(parent_dir)
+            self.config_manager.save()
             self.handle_file(file_path)
 
     def handle_file(self, file_path: str):
@@ -104,3 +175,10 @@ class MainWindow(QWidget):
         self.button.setEnabled(True)
         self.label.setText(DEFAULT_LABEL_TEXT)
         QMessageBox.critical(self, "エラー", error_msg)
+
+    def closeEvent(self, event):
+        """ウィンドウを閉じる前に設定を保存"""
+        geometry = QRect(self.x(), self.y(), self.width(), self.height())
+        self.config_manager.set_window_geometry(geometry)
+        self.config_manager.save()
+        event.accept()
