@@ -33,9 +33,9 @@ class MainWindow(QWidget):
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
-            # xlsxファイルのみ受け付ける場合
             for url in event.mimeData().urls():
-                if url.toLocalFile().lower().endswith(".xlsx"):
+                file_ext = Path(url.toLocalFile()).suffix.lower()
+                if file_ext in READABLE_EXTS:
                     event.acceptProposedAction()
                     return
         event.ignore()
@@ -43,11 +43,14 @@ class MainWindow(QWidget):
     def dropEvent(self, event):
         for url in event.mimeData().urls():
             file_path = url.toLocalFile()
-            if file_path.lower().endswith(".xlsx"):
+            file_ext = Path(file_path).suffix.lower()
+            if file_ext in READABLE_EXTS:
                 self.handle_file(file_path)
+                return
 
     def select_file(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "xlsxファイルを選択", "", "Excel Files (*.xlsx)")
+        filter_str = "Excel Files (*.xlsx *.xlsm)"
+        file_path, _ = QFileDialog.getOpenFileName(self, "xlsxファイルを選択", "", filter_str)
         if file_path:
             self.handle_file(file_path)
 
