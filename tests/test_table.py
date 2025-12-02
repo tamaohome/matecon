@@ -1,8 +1,8 @@
 from matecon.table import Table
 from matecon.templates import TABLE_HEADER
 
-MATERIAL_FILE = "sample_data/MATERIAL_SAMPLE.xlsx"
-MATERIAL_FILE_2 = "sample_data/MATERIAL_SAMPLE_2.xlsx"
+MATERIAL_XLSX_1 = "sample_data/MATERIAL_SAMPLE_1.xlsx"
+MATERIAL_XLSX_2 = "sample_data/MATERIAL_SAMPLE_2.xlsx"
 
 
 def test_table():
@@ -16,8 +16,8 @@ def test_table():
     assert len(table.rows) == 0  # 総行数
 
     # Excelファイル追加後
-    table.add_book(MATERIAL_FILE, MATERIAL_FILE_2)
+    table.add_book(MATERIAL_XLSX_1, MATERIAL_XLSX_2)
     assert len(table.books) == 2  # 読み込んだExcelファイル数
     assert len(table.sheets) == 3  # 総シート数
     assert len(table.rows) == 50  # 総行数
-    assert table.filenames == ["MATERIAL_SAMPLE.xlsx", "MATERIAL_SAMPLE_2.xlsx"]
+    assert table.filenames == ["MATERIAL_SAMPLE_1.xlsx", "MATERIAL_SAMPLE_2.xlsx"]

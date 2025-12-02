@@ -1,16 +1,16 @@
 from matecon.material import Material, MaterialNode
 
-MATERIAL_FILE = "sample_data/MATERIAL_SAMPLE.xlsx"
+MATERIAL_XLSX = "sample_data/MATERIAL_SAMPLE_1.xlsx"
 
 
 def test_material():
-    mate = Material(MATERIAL_FILE)
+    mate = Material(MATERIAL_XLSX)
     assert isinstance(mate.root, MaterialNode)
     assert len(mate.nodes) == 27
 
 
 def test_material_node_detail():
-    mate = Material(MATERIAL_FILE)
+    mate = Material(MATERIAL_XLSX)
     node = mate.nodes[13]
 
     assert node.name == "PL"
@@ -23,7 +23,7 @@ def test_material_node_detail():
 
 
 def test_material_node_values():
-    mate = Material(MATERIAL_FILE)
+    mate = Material(MATERIAL_XLSX)
     node = mate.nodes[20]  # DETAIL
     assert node.values[0] == "PL"
     assert node.values[1] == 220
@@ -36,7 +36,7 @@ def test_material_node_values():
 
 
 def test_material_node_slice():
-    mate = Material(MATERIAL_FILE)
+    mate = Material(MATERIAL_XLSX)
     node = mate.nodes[20]  # DETAIL
     assert node.values[:6] == ["PL", 220, 4.5, None, None, 800]
     assert node.values[29:31] == ["M", "M"]
@@ -44,7 +44,7 @@ def test_material_node_slice():
 
 def test_material_tree():
     """材片情報のツリー構造"""
-    mate = Material(MATERIAL_FILE)
+    mate = Material(MATERIAL_XLSX)
 
     # #1 サンプル橋
     node_level_1 = mate.nodes[0]
@@ -102,7 +102,7 @@ def test_material_tree():
 
 
 def test_material_node_level_names():
-    mate = Material(MATERIAL_FILE)
+    mate = Material(MATERIAL_XLSX)
 
     node = mate.nodes[2]
     assert node.name == "主構造"

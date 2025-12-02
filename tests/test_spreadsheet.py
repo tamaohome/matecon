@@ -2,17 +2,17 @@ from matecon.position import Position
 from matecon.spreadsheet import BookNode, SheetNode
 from matecon.templates import TABLE_HEADER
 
-SAMPLE_FILE = "sample_data/BOOK_SAMPLE.xlsx"
-TABLE_HEADER1 = ("HEADER_1", "HEADER_2", "HEADER_3")
-TABLE_HEADER2 = ("種類", "ゼロ値", "正数", "負数", "小数丸め", "関数", "表示形式1", "表示形式2")
+SAMPLE_XLSX = "sample_data/BOOK_SAMPLE.xlsx"
+TABLE_HEADER_1 = ("HEADER_1", "HEADER_2", "HEADER_3")
+TABLE_HEADER_2 = ("種類", "ゼロ値", "正数", "負数", "小数丸め", "関数", "表示形式1", "表示形式2")
 
-MATERIAL_FILE = "sample_data/MATERIAL_SAMPLE.xlsx"
-MATERIAL_FILE2 = "sample_data/MATERIAL_SAMPLE2.xlsx"
+MATERIAL_XLSX_1 = "sample_data/MATERIAL_SAMPLE_1.xlsx"
+MATERIAL_XLSX_2 = "sample_data/MATERIAL_SAMPLE_2.xlsx"
 
 
 def test_booknode():
     """BookNode の読み込み"""
-    book = BookNode(SAMPLE_FILE, TABLE_HEADER1)
+    book = BookNode(SAMPLE_XLSX, TABLE_HEADER_1)
     assert book.filename == "BOOK_SAMPLE.xlsx"
     assert book.name == "BOOK_SAMPLE"
     sheets = [sheet for sheet in book if isinstance(sheet, SheetNode)]
@@ -21,15 +21,15 @@ def test_booknode():
 
 def test_sheetnode():
     """SheetNode の読み込み"""
-    sheet1 = BookNode(SAMPLE_FILE, TABLE_HEADER1)[0]
+    sheet1 = BookNode(SAMPLE_XLSX, TABLE_HEADER_1)[0]
     assert sheet1.name == "TABLE_SAMPLE"
 
-    sheet2 = BookNode(SAMPLE_FILE, TABLE_HEADER2)[0]
+    sheet2 = BookNode(SAMPLE_XLSX, TABLE_HEADER_2)[0]
     assert sheet2.name == "CELL_TYPE"
 
 
 def test_sheetnode_material():
-    book = BookNode(MATERIAL_FILE, TABLE_HEADER)
+    book = BookNode(MATERIAL_XLSX_1, TABLE_HEADER)
 
     assert book[0].name == "横桁"
     assert book[1].name == "排水装置"
@@ -38,7 +38,7 @@ def test_sheetnode_material():
 
 def test_header_template():
     """ヘッダーテンプレート"""
-    book = BookNode(SAMPLE_FILE, TABLE_HEADER1)
+    book = BookNode(SAMPLE_XLSX, TABLE_HEADER_1)
     sheet = book["TABLE_SAMPLE"]
 
     assert sheet.header_position == Position(5, 2)  # テーブルの開始位置
@@ -48,7 +48,7 @@ def test_header_template():
 
 def test_table_values():
     """テーブルおよびセル値の取得"""
-    sheet = BookNode(SAMPLE_FILE, TABLE_HEADER1)["TABLE_SAMPLE"]
+    sheet = BookNode(SAMPLE_XLSX, TABLE_HEADER_1)["TABLE_SAMPLE"]
 
     assert sheet[0][0] == "CELL_01"
     assert sheet[2][0] == "CELL_21"
@@ -61,7 +61,7 @@ def test_table_values():
 
 def test_table_cell_types():
     """セル要素の型"""
-    sheet = BookNode(SAMPLE_FILE, TABLE_HEADER2)["CELL_TYPE"]
+    sheet = BookNode(SAMPLE_XLSX, TABLE_HEADER_2)["CELL_TYPE"]
 
     def assert_value_and_type(obj, value, value_type=None):
         assert obj == value
@@ -92,7 +92,7 @@ def test_table_cell_types():
 
 
 def test_iter_table():
-    sheet = BookNode(SAMPLE_FILE, TABLE_HEADER2)["CELL_TYPE"]
+    sheet = BookNode(SAMPLE_XLSX, TABLE_HEADER_2)["CELL_TYPE"]
 
     for row in sheet:
         assert isinstance(row, tuple)
