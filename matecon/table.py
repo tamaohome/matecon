@@ -10,14 +10,14 @@ class Table:
         self._header = header
         self._books = []
 
-    def add_book(self, *filenames: str | Path) -> None:
+    def add_book(self, *filepaths: str | Path) -> None:
         """Excelファイルを追加する"""
-        for filename in filenames:
-            self._books.append(BookNode(filename, self.header))
+        for filepath in filepaths:
+            self._books.append(BookNode(filepath, self.header))
 
-    def add_books(self, filenames: list[str | Path] | tuple[str | Path, ...]) -> None:
+    def add_books(self, filepaths: list[Path] | tuple[Path, ...]) -> None:
         """Excelファイルを全て追加する"""
-        self.add_book(*filenames)
+        self.add_book(*filepaths)
 
     @property
     def header(self) -> tuple[str, ...]:
@@ -39,5 +39,9 @@ class Table:
         return tuple(row for book in self.books for row in book.table)
 
     @property
+    def filepaths(self) -> list[Path]:
+        return [book.filepath for book in self.books]
+
+    @property
     def filenames(self) -> list[str]:
-        return [book.filename for book in self.books]
+        return [str(p.name) for p in self.filepaths]
