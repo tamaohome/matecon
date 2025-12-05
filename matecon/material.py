@@ -13,14 +13,14 @@ class Material:
     材片情報ノードの管理クラス
     """
 
-    def __init__(self, *filenames: str | Path):
+    def __init__(self, *filepaths: Path | str):
         self.table = Table(templates.TABLE_HEADER)
-        self.table.add_books(filenames)
+        self.table.add_books([Path(p) for p in filepaths])
         self.root = self._build_tree(self.table)
 
     def print_tree(self) -> None:
         """ツリーを表示"""
-        print(self.table.filenames)
+        print(self.table.filepaths)
         for pre, _, node in RenderTree(self.root):
             if node.parent is None:
                 continue
@@ -82,8 +82,8 @@ class Material:
         return header + lines
 
     @property
-    def filenames(self) -> list[str]:
-        return self.table.filenames
+    def filepaths(self) -> list[Path]:
+        return self.table.filepaths
 
 
 def check_not_root(func):
