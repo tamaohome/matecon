@@ -123,8 +123,6 @@ TEMPLATES = {
         #        name      type    pos        align    is_req dd
         Template("TIER",   String, (  0,  5), Align.L, False, "レベル番号"),
         Template("NAME",   String, (  5, 30), Align.L, False, "レベル名称"),
-        # TODO: セル位置によらず name による文字列フォーマット方式に変更する
-        # TODO: この変更により、読み込むExcelの列を自由に変更可能
         Template.empty(),
         Template.empty(),
         Template.empty(),
