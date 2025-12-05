@@ -23,7 +23,7 @@ INI_FILE = Path.cwd() / "matecon.ini"
 INI_FILE_ENCODING = "shift-jis"
 
 # デフォルトウィンドウ (x, y, width, height)
-DEFAULT_WINDOW_GEOMETRY = QRect(100, 100, 240, 120)
+DEFAULT_WINDOW_GEOMETRY = QRect(100, 100, 360, 180)
 
 
 class ConfigManager:
@@ -119,15 +119,20 @@ class MainWindow(QWidget):
         self.label = QLabel(DEFAULT_LABEL_TEXT)
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label.setWordWrap(True)
-        self.button = QPushButton("ファイル選択")
-        self.button.clicked.connect(self.select_file)
+        self.button_select = QPushButton("ファイル選択")
+        self.button_select.clicked.connect(self.select_file)
+        self.button_convert = QPushButton("変換")
+        self.button_convert.clicked.connect(self.convert_file)
+        self.button_convert.setEnabled(False)
 
         self.v_layout.addWidget(self.label)
-        self.v_layout.addWidget(self.button)
+        self.v_layout.addWidget(self.button_select)
+        self.v_layout.addWidget(self.button_convert)
         self.setLayout(self.v_layout)
 
         self.setAcceptDrops(True)  # ドロップ受付を有効化
-        self.worker = None
+        self.worker: MaterialWorker | None = None
+        self.selected_file_path = None
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
@@ -142,23 +147,35 @@ class MainWindow(QWidget):
         for url in event.mimeData().urls():
             file_path = url.toLocalFile()
             file_ext = Path(file_path).suffix.lower()
-            if file_ext in READABLE_EXTS:
-                self.handle_file(file_path)
-                return
+            if file_ext not in READABLE_EXTS:
+                continue
+            self.selected_file_path = file_path
+            self.label.setText(f"ファイル: {Path(file_path).name}\n「変換」ボタンを押してください")
+            self.button_convert.setEnabled(True)
+            return
 
     def select_file(self):
         filter_str = "Excel Files (*.xlsx *.xlsm)"
         last_dir = self.config_manager.get_last_directory()
         file_path, _ = QFileDialog.getOpenFileName(self, "Excelファイルを選択", last_dir, filter_str)
-        if file_path:
-            # ディレクトリを保存
-            parent_dir = str(Path(file_path).parent)
-            self.config_manager.set_last_directory(parent_dir)
-            self.config_manager.save()
-            self.handle_file(file_path)
+        if not file_path:
+            return
+        # ディレクトリを保存
+        parent_dir = str(Path(file_path).parent)
+        self.config_manager.set_last_directory(parent_dir)
+        self.config_manager.save()
+        self.selected_file_path = file_path
+        self.label.setText(f"ファイル: {Path(file_path).name}\n「変換」ボタンを押してください")
+        self.button_convert.setEnabled(True)
+
+    def convert_file(self):
+        if not self.selected_file_path:
+            return
+        self.handle_file(self.selected_file_path)
 
     def handle_file(self, file_path: str):
-        self.button.setEnabled(False)
+        self.button_select.setEnabled(False)
+        self.button_convert.setEnabled(False)
         self.label.setText("処理中...")
 
         self.worker = MaterialWorker(file_path)
@@ -167,13 +184,20 @@ class MainWindow(QWidget):
         self.worker.start()
 
     def _on_success(self, txt_path: str):
-        self.button.setEnabled(True)
+        self.button_select.setEnabled(True)
+        self.button_convert.setEnabled(True)
         self.label.setText(DEFAULT_LABEL_TEXT)
+        self.selected_file_path = None
         QMessageBox.information(self, "完了", f"{txt_path}\nテキストデータを出力しました。")
 
     def _on_error(self, error_msg: str):
-        self.button.setEnabled(True)
-        self.label.setText(DEFAULT_LABEL_TEXT)
+        self.button_select.setEnabled(True)
+        self.button_convert.setEnabled(True)
+        if self.selected_file_path:
+            file_name = Path(self.selected_file_path).name
+            self.label.setText(f"ファイル: {file_name}\n「変換」ボタンを押してください")
+        else:
+            self.label.setText(DEFAULT_LABEL_TEXT)
         QMessageBox.critical(self, "エラー", error_msg)
 
     def closeEvent(self, event):
