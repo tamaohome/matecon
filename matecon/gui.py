@@ -91,16 +91,15 @@ class MaterialWorker(QThread):
     def run(self):
         try:
             mate = Material(self.file_path)
-            txt_path = write_txt(self.file_path, mate.format_lines)
-            for book in mate.table.books:
-                book.close()
-            self.finished.emit(str(txt_path))
-        except FileNotFoundError as e:
-            self.error.emit(f"ファイルが見つかりません: {e}")
-        except ValueError as e:
-            self.error.emit(f"ファイル形式エラー: {e}")
+            try:
+                txt_path = write_txt(self.file_path, mate.format_lines)
+                self.finished.emit(str(txt_path))
+            finally:
+                # リソースを解放
+                for book in mate.table.books:
+                    book.close()
         except Exception as e:
-            self.error.emit(f"予期しないエラー: {type(e).__name__}: {e}")
+            self.error.emit(f"予期しないエラー:\n{type(e).__name__}: {e}")
 
 
 class MainWindow(QWidget):
