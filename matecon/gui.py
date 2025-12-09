@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import configparser
+from dataclasses import dataclass
 from pathlib import Path
 
 from PySide6.QtCore import QRect, Qt, QThread, Signal
@@ -22,8 +25,35 @@ DEFAULT_LABEL_TEXT = "Excelファイルを選択してください\n(または�
 INI_FILE = Path.cwd() / "matecon.ini"
 INI_FILE_ENCODING = "shift-jis"
 
-# デフォルトウィンドウ (x, y, width, height)
-DEFAULT_WINDOW_GEOMETRY = QRect(100, 100, 360, 180)
+
+@dataclass
+class WindowGeometry:
+    """ウィンドウ位置およびサイズを保持するクラス"""
+
+    x: int
+    y: int
+    width: int
+    height: int
+
+    def __post_init__(self):
+        """x, y の範囲を制限"""
+        self.x = max(0, self.x)
+        self.y = max(0, self.y)
+
+    @staticmethod
+    def default() -> WindowGeometry:
+        """デフォルト値を返す"""
+        return WindowGeometry(100, 100, 360, 180)
+
+    @staticmethod
+    def from_qwidget(qwidget: QWidget) -> WindowGeometry:
+        """`QWidget` インスタンスより `WindowGeometry` を取得する"""
+        g = qwidget.geometry()
+        return WindowGeometry(g.x(), g.y(), g.width(), g.height())
+
+    def to_qrect(self) -> QRect:
+        """`QRect` 型に変換する"""
+        return QRect(self.x, self.y, self.width, self.height)
 
 
 class ConfigManager:
@@ -45,25 +75,24 @@ class ConfigManager:
         with self.ini_file.open("w", encoding=INI_FILE_ENCODING) as f:
             self.config.write(f)
 
-    def get_window_geometry(self) -> QRect:
+    def get_window_geometry(self) -> WindowGeometry:
         """ウィンドウのジオメトリ (x, y, width, height) を取得"""
         if not self.config.has_section("window"):
-            return DEFAULT_WINDOW_GEOMETRY
-        return QRect(
-            self.config.getint("window", "x", fallback=DEFAULT_WINDOW_GEOMETRY.x()),
-            self.config.getint("window", "y", fallback=DEFAULT_WINDOW_GEOMETRY.y()),
-            self.config.getint("window", "width", fallback=DEFAULT_WINDOW_GEOMETRY.width()),
-            self.config.getint("window", "height", fallback=DEFAULT_WINDOW_GEOMETRY.height()),
-        )
+            return WindowGeometry.default()
+        x = self.config.getint("window", "x", fallback=WindowGeometry.default().x)
+        y = self.config.getint("window", "y", fallback=WindowGeometry.default().y)
+        width = self.config.getint("window", "width", fallback=WindowGeometry.default().width)
+        height = self.config.getint("window", "height", fallback=WindowGeometry.default().height)
+        return WindowGeometry(x, y, width, height)
 
-    def set_window_geometry(self, geometry: QRect):
+    def set_window_geometry(self, geometry: WindowGeometry):
         """ウィンドウのジオメトリ (x, y, width, height) を保存"""
         if not self.config.has_section("window"):
             self.config.add_section("window")
-        self.config.set("window", "x", str(geometry.x()))
-        self.config.set("window", "y", str(geometry.y()))
-        self.config.set("window", "width", str(geometry.width()))
-        self.config.set("window", "height", str(geometry.height()))
+        self.config.set("window", "x", str(geometry.x))
+        self.config.set("window", "y", str(geometry.y))
+        self.config.set("window", "width", str(geometry.width))
+        self.config.set("window", "height", str(geometry.height))
 
     def get_last_directory(self) -> str:
         """最後に開いたディレクトリを取得"""
@@ -120,7 +149,7 @@ class MainWindow(QWidget):
 
         # 保存されたウィンドウ設定を復元
         geometry = self.config_manager.get_window_geometry()
-        self.setGeometry(geometry)
+        self.setGeometry(geometry.to_qrect())
 
         self.v_layout = QVBoxLayout()
 
@@ -220,7 +249,7 @@ class MainWindow(QWidget):
 
     def closeEvent(self, event):
         """ウィンドウを閉じる前に設定を保存"""
-        geometry = QRect(self.x(), self.y(), self.width(), self.height())
+        geometry = WindowGeometry.from_qwidget(self)
         self.config_manager.set_window_geometry(geometry)
         self.config_manager.save()
         event.accept()
