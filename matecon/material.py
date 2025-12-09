@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from math import prod
 from pathlib import Path
-from typing import Final, Optional
+from typing import Final
 
 from anytree import NodeMixin, RenderTree
 
@@ -26,7 +28,7 @@ class Material:
                 continue
             print(f"{pre}{node.level} {node.name}")
 
-    def _build_tree(self, table: Table) -> "MaterialNode":
+    def _build_tree(self, table: Table) -> MaterialNode:
         # ルートノード
         root = MaterialNode(parent=None, level=0, row=[])
 
@@ -60,7 +62,7 @@ class Material:
         return root
 
     @property
-    def nodes(self) -> tuple["MaterialNode", ...]:
+    def nodes(self) -> tuple[MaterialNode, ...]:
         """材片情報ノードを全て配列として返す"""
         return self.root.descendants
 
@@ -98,7 +100,7 @@ def check_not_root(func):
 class MaterialNode(NodeMixin):
     """材片情報ノードクラス"""
 
-    def __init__(self, parent: Optional["MaterialNode"], level: int, row: list | tuple):
+    def __init__(self, parent: MaterialNode | None, level: int, row: list | tuple):
         super().__init__()
         self.parent = parent
         self.level: Final[int] = level
@@ -114,7 +116,7 @@ class MaterialNode(NodeMixin):
         self.parent = None
 
     @staticmethod
-    def create(parent: Optional["MaterialNode"], level: int, row: list | tuple) -> "MaterialNode":
+    def create(parent: MaterialNode | None, level: int, row: list | tuple) -> MaterialNode:
         """`level` に基づいて `MaterialNode` またはサブクラスを作成"""
         if parent is None:
             return MaterialNode(parent, level, row)
@@ -135,11 +137,11 @@ class MaterialNode(NodeMixin):
         raise ValueError(f"MaterialNodeの生成に失敗しました (level={level})")
 
     @property
-    def descendants(self) -> tuple["MaterialNode", ...]:
+    def descendants(self) -> tuple[MaterialNode, ...]:
         return super().descendants
 
     @property
-    def children(self) -> tuple["MaterialNode", ...]:
+    def children(self) -> tuple[MaterialNode, ...]:
         return super().children
 
     @property
