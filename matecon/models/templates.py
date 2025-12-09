@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from typing import TypeAliasType
 
-from matecon.strings import adjust_str
+from matecon.utils.strings import adjust_str
 
 
 class MaterialNodeType(Enum):

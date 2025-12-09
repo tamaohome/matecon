@@ -1,6 +1,6 @@
 from helpers import read_txt_file
 
-from matecon.material import Material
+from matecon.models.material import Material
 
 MATERIAL_XLSX_1 = "sample_data/MATERIAL_SAMPLE_1.xlsx"
 MATERIAL_XLSX_2 = "sample_data/MATERIAL_SAMPLE_2.xlsx"

@@ -6,8 +6,8 @@ from typing import Final
 
 from anytree import NodeMixin, RenderTree
 
-from matecon import templates
-from matecon.table import Table
+from matecon.models import templates
+from matecon.models.table import Table
 
 
 class Material:
@@ -86,6 +86,11 @@ class Material:
     @property
     def filepaths(self) -> list[Path]:
         return self.table.filepaths
+
+    def cleanup(self):
+        """`Table` をクリーンアップ"""
+        for book in self.table.books:
+            book.close()
 
 
 def check_not_root(func):

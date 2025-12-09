@@ -3,9 +3,9 @@ import warnings
 
 from PySide6.QtWidgets import QApplication
 
-from matecon.gui import MainWindow
-from matecon.material import Material
-from matecon.utils import get_path_list, write_txt
+from matecon.gui.controller import Controller
+from matecon.gui.view import MainWindow
+from matecon.utils.io import get_path_list
 
 # openpyxl の警告を無視
 warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
@@ -20,8 +20,11 @@ def gui_app():
 
 def cui_app():
     xlsx_files = get_path_list(".xlsx")
-    mate = Material(xlsx_files[0])
-    write_txt(xlsx_files[0], mate.format_lines)
+    controller = Controller()
+    try:
+        controller.convert_file(str(xlsx_files[0]))
+    finally:
+        controller.cleanup()
 
 
 if __name__ == "__main__":

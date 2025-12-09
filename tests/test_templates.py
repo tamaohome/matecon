@@ -1,5 +1,5 @@
-from matecon.spreadsheet import BookNode
-from matecon.templates import TABLE_HEADER, format_line
+from matecon.models.spreadsheet import BookNode
+from matecon.models.templates import TABLE_HEADER, format_line
 
 MATERIAL_XLSX = "sample_data/MATERIAL_SAMPLE_1.xlsx"
 

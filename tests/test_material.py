@@ -1,4 +1,4 @@
-from matecon.material import Material, MaterialNode
+from matecon.models.material import Material, MaterialNode
 
 MATERIAL_XLSX_1 = "sample_data/MATERIAL_SAMPLE_1.xlsx"
 MATERIAL_XLSX_2 = "sample_data/MATERIAL_SAMPLE_2.xlsx"

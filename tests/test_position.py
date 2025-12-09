@@ -1,4 +1,4 @@
-from matecon.position import Position
+from matecon.models.position import Position
 
 
 def test_position():
