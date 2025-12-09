@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections.abc import Iterator
 from pathlib import Path
 from pprint import pformat
@@ -29,7 +31,7 @@ class BookNode(AnyNode):
         for sheet in self._reader.get_worksheets():
             SheetNode(self, sheet)
 
-    def __getitem__(self, key: int | str) -> "SheetNode":
+    def __getitem__(self, key: int | str) -> SheetNode:
         if isinstance(index := key, int):
             if index < 0:
                 index += len(self.sheets)
@@ -49,7 +51,7 @@ class BookNode(AnyNode):
     def __len__(self):
         return len(self.sheets)
 
-    def __iter__(self) -> Iterator["SheetNode"]:
+    def __iter__(self) -> Iterator[SheetNode]:
         return iter(self.sheets)
 
     def close(self) -> None:
@@ -66,7 +68,7 @@ class BookNode(AnyNode):
         return self.filepath.name
 
     @property
-    def sheets(self) -> tuple["SheetNode"]:
+    def sheets(self) -> tuple[SheetNode]:
         """Excelシートのリストを返す"""
         return self.children
 
