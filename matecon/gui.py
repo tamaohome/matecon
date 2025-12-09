@@ -225,11 +225,30 @@ class MainWindow(QWidget):
         self.handle_file(self.selected_file_path)
 
     def handle_file(self, file_path: str):
+        """
+        入力ファイルに対する `Material` 処理をバックグラウンドで実行する
+
+        - 既存の `MaterialWorker` が実行中の場合は終了を待つ
+        - 処理完了後は自動的に `MaterialWorker` インスタンスをメモリから解放する
+        """
+        # 既存の MaterialWorker があれば終了を待つ
+        if self.worker is not None:
+            # MaterialWorker の実行状態を確認
+            try:
+                if self.worker.isRunning():
+                    self.worker.quit()
+                    self.worker.wait()
+            except RuntimeError:
+                # MaterialWorker が削除済みの場合はスキップ
+                pass
+
         self._set_processing_state(True)
 
         self.worker = MaterialWorker(file_path)
         self.worker.finished.connect(self._on_success)
         self.worker.error.connect(self._on_error)
+        self.worker.finished.connect(self.worker.deleteLater)  # メモリ解放
+        self.worker.error.connect(self.worker.deleteLater)
         self.worker.start()
 
     def _on_success(self, txt_path: str):
