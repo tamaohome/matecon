@@ -14,9 +14,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from matecon.material import Material
-from matecon.spreadsheet_reader import validate_excel_filepath
-from matecon.utils import write_txt
+from matecon.gui.controller import Controller
 
 # デフォルトラベル
 DEFAULT_LABEL_TEXT = "Excelファイルを選択してください\n(またはこのウィンドウにファイルをドロップ)"
@@ -107,8 +105,8 @@ class ConfigManager:
         self.config.set("paths", "last_directory", directory)
 
 
-class MaterialWorker(QThread):
-    """Material 処理をバックグラウンドで実行"""
+class ConversionWorker(QThread):
+    """ファイル変換処理をバックグラウンドで実行"""
 
     finished = Signal(str)  # 成功時
     error = Signal(str)  # エラー時
@@ -116,34 +114,22 @@ class MaterialWorker(QThread):
     def __init__(self, file_path: str):
         super().__init__()
         self.file_path = file_path
+        self.controller = Controller(on_success=self.finished.emit, on_error=self.error.emit)
 
     def run(self):
         try:
-            mate = Material(self.file_path)
-            try:
-                txt_path = write_txt(self.file_path, mate.format_lines)
-                self.finished.emit(str(txt_path))
-            finally:
-                # リソースを解放
-                for book in mate.table.books:
-                    book.close()
-        except Exception as e:
-            self.error.emit(f"予期しないエラー:\n{type(e).__name__}: {e}")
+            self.controller.convert_file(self.file_path)
+        finally:
+            self.controller.cleanup()
 
 
 class MainWindow(QWidget):
-    @staticmethod
-    def _is_valid_excel_file(file_path: str) -> bool:
-        """Excelファイルの妥当性を検証"""
-        try:
-            validate_excel_filepath(file_path)
-            return True
-        except (FileNotFoundError, ValueError, OSError):
-            return False
+    """メインウィンドウクラス"""
 
     def __init__(self):
         super().__init__()
         self.config_manager = ConfigManager()
+        self.controller = Controller()
 
         self.setWindowTitle("まてコン")
 
@@ -168,12 +154,12 @@ class MainWindow(QWidget):
         self.setLayout(self.v_layout)
 
         self.setAcceptDrops(True)  # ドロップ受付を有効化
-        self.worker: MaterialWorker | None = None
+        self.worker: ConversionWorker | None = None
         self.selected_file_path = None
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls() and any(
-            self._is_valid_excel_file(url.toLocalFile()) for url in event.mimeData().urls()
+            self.controller.validate_file(url.toLocalFile()) for url in event.mimeData().urls()
         ):
             event.acceptProposedAction()
         else:
@@ -182,7 +168,7 @@ class MainWindow(QWidget):
     def dropEvent(self, event):
         for url in event.mimeData().urls():
             file_path = url.toLocalFile()
-            if not self._is_valid_excel_file(file_path):
+            if not self.controller.validate_file(file_path):
                 continue
             self._set_selected_file(file_path)
             return
@@ -226,25 +212,25 @@ class MainWindow(QWidget):
 
     def handle_file(self, file_path: str):
         """
-        入力ファイルに対する `Material` 処理をバックグラウンドで実行する
+        入力ファイルに対するファイル変換をバックグラウンドで実行する
 
-        - 既存の `MaterialWorker` が実行中の場合は終了を待つ
-        - 処理完了後は自動的に `MaterialWorker` インスタンスをメモリから解放する
+        - 既存の `ConversionWorker` が実行中の場合は終了を待つ
+        - 処理完了後は自動的に `ConversionWorker` インスタンスをメモリから解放する
         """
-        # 既存の MaterialWorker があれば終了を待つ
+        # 既存の ConversionWorker があれば終了を待つ
         if self.worker is not None:
-            # MaterialWorker の実行状態を確認
+            # ConversionWorker の実行状態を確認
             try:
                 if self.worker.isRunning():
                     self.worker.quit()
                     self.worker.wait()
             except RuntimeError:
-                # MaterialWorker が削除済みの場合はスキップ
+                # ConversionWorker が削除済みの場合はスキップ
                 pass
 
         self._set_processing_state(True)
 
-        self.worker = MaterialWorker(file_path)
+        self.worker = ConversionWorker(file_path)
         self.worker.finished.connect(self._on_success)
         self.worker.error.connect(self._on_error)
         self.worker.finished.connect(self.worker.deleteLater)  # メモリ解放

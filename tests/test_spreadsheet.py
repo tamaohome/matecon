@@ -1,6 +1,6 @@
-from matecon.position import Position
-from matecon.spreadsheet import BookNode, SheetNode
-from matecon.templates import TABLE_HEADER
+from matecon.models.position import Position
+from matecon.models.spreadsheet import BookNode, SheetNode
+from matecon.models.templates import TABLE_HEADER
 
 SAMPLE_XLSX = "sample_data/BOOK_SAMPLE.xlsx"
 TABLE_HEADER_1 = ("HEADER_1", "HEADER_2", "HEADER_3")

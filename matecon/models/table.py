@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from matecon.spreadsheet import BookNode, SheetNode
+from matecon.models.spreadsheet import BookNode, SheetNode
 
 
 class Table:

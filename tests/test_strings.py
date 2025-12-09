@@ -1,5 +1,5 @@
-from matecon.strings import adjust_str, is_valid_chars, mbstring_len, zen2han
-from matecon.templates import Align
+from matecon.models.templates import Align
+from matecon.utils.strings import adjust_str, is_valid_chars, mbstring_len, zen2han
 
 
 def test_adjust_str():

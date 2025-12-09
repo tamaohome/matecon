@@ -1,5 +1,5 @@
-from matecon.table import Table
-from matecon.templates import TABLE_HEADER
+from matecon.models.table import Table
+from matecon.models.templates import TABLE_HEADER
 
 MATERIAL_XLSX_1 = "sample_data/MATERIAL_SAMPLE_1.xlsx"
 MATERIAL_XLSX_2 = "sample_data/MATERIAL_SAMPLE_2.xlsx"
