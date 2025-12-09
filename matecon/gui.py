@@ -156,10 +156,28 @@ class MainWindow(QWidget):
             file_path = url.toLocalFile()
             if not self._is_valid_excel_file(file_path):
                 continue
-            self.selected_file_path = file_path
-            self.label.setText(f"ファイル: {Path(file_path).name}\n「変換」ボタンを押してください")
-            self.button_convert.setEnabled(True)
+            self._set_selected_file(file_path)
             return
+
+    def _set_selected_file(self, file_path: str) -> None:
+        """ファイル選択時の共通UI更新処理"""
+        self.selected_file_path = file_path
+        file_name = Path(file_path).name
+        self.label.setText(f"ファイル: {file_name}\n「変換」ボタンを押してください")
+        self.button_convert.setEnabled(True)
+
+    def _reset_ui(self) -> None:
+        """UIを初期状態にリセット"""
+        self.label.setText(DEFAULT_LABEL_TEXT)
+        self.selected_file_path = None
+        self.button_convert.setEnabled(False)
+
+    def _set_processing_state(self, is_processing: bool) -> None:
+        """処理中/待機中の状態を設定"""
+        self.button_select.setEnabled(not is_processing)
+        self.button_convert.setEnabled(not is_processing and self.selected_file_path is not None)
+        if is_processing:
+            self.label.setText("処理中...")
 
     def select_file(self):
         filter_str = "Excel Files (*.xlsx *.xlsm)"
@@ -171,9 +189,7 @@ class MainWindow(QWidget):
         parent_dir = str(Path(file_path).parent)
         self.config_manager.set_last_directory(parent_dir)
         self.config_manager.save()
-        self.selected_file_path = file_path
-        self.label.setText(f"ファイル: {Path(file_path).name}\n「変換」ボタンを押してください")
-        self.button_convert.setEnabled(True)
+        self._set_selected_file(file_path)
 
     def convert_file(self):
         if not self.selected_file_path:
@@ -181,9 +197,7 @@ class MainWindow(QWidget):
         self.handle_file(self.selected_file_path)
 
     def handle_file(self, file_path: str):
-        self.button_select.setEnabled(False)
-        self.button_convert.setEnabled(False)
-        self.label.setText("処理中...")
+        self._set_processing_state(True)
 
         self.worker = MaterialWorker(file_path)
         self.worker.finished.connect(self._on_success)
@@ -191,20 +205,18 @@ class MainWindow(QWidget):
         self.worker.start()
 
     def _on_success(self, txt_path: str):
-        self.button_select.setEnabled(True)
-        self.button_convert.setEnabled(True)
-        self.label.setText(DEFAULT_LABEL_TEXT)
-        self.selected_file_path = None
+        self._set_processing_state(False)
+        self._reset_ui()
         QMessageBox.information(self, "完了", f"{txt_path}\nテキストデータを出力しました。")
 
     def _on_error(self, error_msg: str):
-        self.button_select.setEnabled(True)
-        self.button_convert.setEnabled(True)
+        self._set_processing_state(False)
         if self.selected_file_path:
             file_name = Path(self.selected_file_path).name
             self.label.setText(f"ファイル: {file_name}\n「変換」ボタンを押してください")
+            self.button_convert.setEnabled(True)
         else:
-            self.label.setText(DEFAULT_LABEL_TEXT)
+            self._reset_ui()
         QMessageBox.critical(self, "エラー", error_msg)
 
     def closeEvent(self, event):
