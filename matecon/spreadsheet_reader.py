@@ -7,34 +7,35 @@ from openpyxl.worksheet.worksheet import Worksheet
 READABLE_EXTS = [".xlsx", ".xlsm"]
 
 
+def validate_excel_filepath(filepath: str | Path) -> Path:
+    """バリデーション済みのExcelファイルパスを返す"""
+    filepath = Path(filepath)
+
+    # ファイルの存在チェック
+    if not filepath.exists():
+        raise FileNotFoundError("ファイルが見つかりません", filepath)
+
+    # ファイル拡張子のチェック
+    if filepath.is_file() and filepath.suffix.lower() not in READABLE_EXTS:
+        raise ValueError("Excelファイルではありません", filepath)
+
+    # ファイルオープンのチェック
+    try:
+        with open(filepath):
+            pass
+    except OSError as e:
+        raise OSError(f"ファイルをオープンできません: {e}") from e
+
+    return filepath
+
+
 class SpreadsheetReader:
     """Excelファイルを読み込むクラス"""
 
     wb: Workbook
 
     def __init__(self, filepath: str | Path):
-        self.filepath = self._get_valid_filepath(filepath)
-
-    def _get_valid_filepath(self, filepath: str | Path) -> Path:
-        """チェックしたファイルパスを返す"""
-        filepath = Path(filepath)
-
-        # ファイルの存在チェック
-        if not filepath.exists():
-            raise FileNotFoundError("ファイルが見つかりません", filepath)
-
-        # ファイル拡張子のチェック
-        if filepath.is_file() and filepath.suffix.lower() not in READABLE_EXTS:
-            raise ValueError("Excelファイルではありません", filepath)
-
-        # ファイルオープンのチェック
-        try:
-            with open(filepath):
-                pass
-        except OSError as e:
-            raise OSError(f"ファイルをオープンできません: {e}") from e
-
-        return filepath
+        self.filepath = validate_excel_filepath(filepath)
 
     def get_worksheets(self, ignore_hidden_sheet=True) -> list[Worksheet]:
         """
