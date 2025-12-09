@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (
 )
 
 from matecon.material import Material
-from matecon.spreadsheet_reader import READABLE_EXTS
+from matecon.spreadsheet_reader import validate_excel_filepath
 from matecon.utils import write_txt
 
 # デフォルトラベル
@@ -104,6 +104,15 @@ class MaterialWorker(QThread):
 
 
 class MainWindow(QWidget):
+    @staticmethod
+    def _is_valid_excel_file(file_path: str) -> bool:
+        """Excelファイルの妥当性を検証"""
+        try:
+            validate_excel_filepath(file_path)
+            return True
+        except (FileNotFoundError, ValueError, OSError):
+            return False
+
     def __init__(self):
         super().__init__()
         self.config_manager = ConfigManager()
@@ -135,19 +144,17 @@ class MainWindow(QWidget):
         self.selected_file_path = None
 
     def dragEnterEvent(self, event):
-        if event.mimeData().hasUrls():
-            for url in event.mimeData().urls():
-                file_ext = Path(url.toLocalFile()).suffix.lower()
-                if file_ext in READABLE_EXTS:
-                    event.acceptProposedAction()
-                    return
-        event.ignore()
+        if event.mimeData().hasUrls() and any(
+            self._is_valid_excel_file(url.toLocalFile()) for url in event.mimeData().urls()
+        ):
+            event.acceptProposedAction()
+        else:
+            event.ignore()
 
     def dropEvent(self, event):
         for url in event.mimeData().urls():
             file_path = url.toLocalFile()
-            file_ext = Path(file_path).suffix.lower()
-            if file_ext not in READABLE_EXTS:
+            if not self._is_valid_excel_file(file_path):
                 continue
             self.selected_file_path = file_path
             self.label.setText(f"ファイル: {Path(file_path).name}\n「変換」ボタンを押してください")
