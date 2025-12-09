@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum, auto
 from typing import TypeAliasType
@@ -22,7 +24,7 @@ class MaterialNodeType(Enum):
         return self.name.lower()
 
     @property
-    def templates(self) -> list["Template"]:
+    def templates(self) -> list[Template]:
         return TEMPLATES[self]
 
     @property
@@ -30,7 +32,7 @@ class MaterialNodeType(Enum):
         return tuple(item.name for item in self.templates)
 
 
-def type_detector(row: list | tuple) -> "MaterialNodeType | None":
+def type_detector(row: list | tuple) -> MaterialNodeType | None:
     """行からノードタイプを返す"""
     if len(row) == 0:
         return None
@@ -101,7 +103,7 @@ class Template:
         return slice(self._pos[0], self._pos[1])
 
     @staticmethod
-    def empty(pos=(0, 0)) -> "Template":
+    def empty(pos=(0, 0)) -> Template:
         """要素情報の空テンプレートを返す"""
         return Template("EMPTY", String, pos, Align.L, False, "EMPTY")
 
