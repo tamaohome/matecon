@@ -1,0 +1,26 @@
+QWidget {
+    spacing: 8px;
+}
+
+FileCard {
+    max-height: 60px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    padding: 12px;
+}
+
+FileCard:hover {
+    border: 1px solid #bbb;
+    background-color: #f5f5f5;
+}
+
+FileCard QLabel {
+    color: #333;
+}
+
+FileCard #nameLabel {
+    font-weight: bold;
+    font-size: 11pt;
+    color: #1a1a1a;
+}

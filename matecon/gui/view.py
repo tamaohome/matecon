@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtCore import QThread, Signal
 from PySide6.QtWidgets import (
     QFileDialog,
-    QLabel,
+    QHBoxLayout,
     QMessageBox,
     QPushButton,
     QVBoxLayout,
@@ -14,9 +14,7 @@ from PySide6.QtWidgets import (
 
 from matecon.gui.config import ConfigManager, WindowGeometry
 from matecon.gui.controller import Controller
-
-# デフォルトラベル
-DEFAULT_LABEL_TEXT = "Excelファイルを選択してください\n(またはこのウィンドウにファイルをドロップ)"
+from matecon.gui.file_card import FileCardContainer
 
 
 class ConversionWorker(QThread):
@@ -51,25 +49,31 @@ class MainWindow(QWidget):
         geometry = self.config_manager.get_window_geometry()
         self.setGeometry(geometry.to_qrect())
 
+        # メインレイアウト
         self.v_layout = QVBoxLayout()
+        self.v_layout.setSpacing(12)
+        self.v_layout.setContentsMargins(16, 16, 16, 16)
 
-        self.label = QLabel(DEFAULT_LABEL_TEXT)
-        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.label.setWordWrap(True)
+        # ボタンエリア
+        button_layout = QHBoxLayout()
         self.button_select = QPushButton("ファイル選択")
         self.button_select.clicked.connect(self.select_file)
         self.button_convert = QPushButton("変換")
         self.button_convert.clicked.connect(self.convert_file)
         self.button_convert.setEnabled(False)
+        button_layout.addWidget(self.button_select)
+        button_layout.addWidget(self.button_convert)
+        button_layout.addStretch()
+        self.v_layout.addLayout(button_layout)
 
-        self.v_layout.addWidget(self.label)
-        self.v_layout.addWidget(self.button_select)
-        self.v_layout.addWidget(self.button_convert)
+        # ファイルカードコンテナ
+        self.card_container = FileCardContainer()
+        self.v_layout.addWidget(self.card_container.get_scroll_area())
+
         self.setLayout(self.v_layout)
 
         self.setAcceptDrops(True)  # ドロップ受付を有効化
-        self.worker: ConversionWorker | None = None
-        self.selected_file_path = None
+        self.workers: dict[str, ConversionWorker] = {}
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls() and any(
@@ -84,45 +88,45 @@ class MainWindow(QWidget):
             file_path = url.toLocalFile()
             if not self.controller.validate_file(file_path):
                 continue
-            self._set_selected_file(file_path)
-            return
+            self._add_file(file_path)
 
-    def _set_selected_file(self, file_path: str) -> None:
-        """ファイル選択時の共通UI更新処理"""
-        self.selected_file_path = file_path
-        file_name = Path(file_path).name
-        self.label.setText(f"ファイル: {file_name}\n「変換」ボタンを押してください")
-        self.button_convert.setEnabled(True)
+    def _add_file(self, file_path: str) -> None:
+        """ファイルを追加し、カードを作成"""
+        card = self.card_container.add_card(file_path)
+        if card is not None:
+            # 変換ボタンを有効化
+            self.button_convert.setEnabled(True)
 
     def _reset_ui(self) -> None:
         """UIを初期状態にリセット"""
-        self.label.setText(DEFAULT_LABEL_TEXT)
-        self.selected_file_path = None
+        self.card_container.clear()
         self.button_convert.setEnabled(False)
 
     def _set_processing_state(self, is_processing: bool) -> None:
         """処理中/待機中の状態を設定"""
         self.button_select.setEnabled(not is_processing)
-        self.button_convert.setEnabled(not is_processing and self.selected_file_path is not None)
-        if is_processing:
-            self.label.setText("処理中...")
+        self.button_convert.setEnabled(not is_processing and self.card_container.count() > 0)
 
     def select_file(self):
         filter_str = "Excel Files (*.xlsx *.xlsm)"
         last_dir = self.config_manager.get_last_directory()
-        file_path, _ = QFileDialog.getOpenFileName(self, "Excelファイルを選択", last_dir, filter_str)
-        if not file_path:
+        file_paths, _ = QFileDialog.getOpenFileNames(self, "Excelファイルを選択", last_dir, filter_str)
+        if not file_paths:
             return
         # ディレクトリを保存
-        parent_dir = str(Path(file_path).parent)
+        parent_dir = str(Path(file_paths[0]).parent)
         self.config_manager.set_last_directory(parent_dir)
         self.config_manager.save()
-        self._set_selected_file(file_path)
+        # ファイルを追加
+        for file_path in file_paths:
+            self._add_file(file_path)
 
     def convert_file(self):
-        if not self.selected_file_path:
+        if self.card_container.is_empty():
             return
-        self.handle_file(self.selected_file_path)
+        # すべてのファイルを変換
+        for file_path in self.card_container.get_file_paths():
+            self.handle_file(file_path)
 
     def handle_file(self, file_path: str):
         """
@@ -132,38 +136,40 @@ class MainWindow(QWidget):
         - 処理完了後は自動的に `ConversionWorker` インスタンスをメモリから解放する
         """
         # 既存の ConversionWorker があれば終了を待つ
-        if self.worker is not None:
-            # ConversionWorker の実行状態を確認
+        if file_path in self.workers:
+            worker = self.workers[file_path]
             try:
-                if self.worker.isRunning():
-                    self.worker.quit()
-                    self.worker.wait()
+                if worker.isRunning():
+                    worker.quit()
+                    worker.wait()
             except RuntimeError:
-                # ConversionWorker が削除済みの場合はスキップ
                 pass
 
         self._set_processing_state(True)
 
-        self.worker = ConversionWorker(file_path)
-        self.worker.finished.connect(self._on_success)
-        self.worker.error.connect(self._on_error)
-        self.worker.finished.connect(self.worker.deleteLater)  # メモリ解放
-        self.worker.error.connect(self.worker.deleteLater)
-        self.worker.start()
+        worker = ConversionWorker(file_path)
+        self.workers[file_path] = worker
+        worker.finished.connect(lambda txt_path: self._on_success(file_path, txt_path))
+        worker.error.connect(lambda error_msg: self._on_error(file_path, error_msg))
+        worker.finished.connect(lambda: self._cleanup_worker(file_path))
+        worker.error.connect(lambda: self._cleanup_worker(file_path))
+        worker.start()
 
-    def _on_success(self, txt_path: str):
+    def _cleanup_worker(self, file_path: str):
+        """ワーカーをクリーンアップ"""
+        if file_path in self.workers:
+            worker = self.workers[file_path]
+            worker.deleteLater()
+            del self.workers[file_path]
+
+    def _on_success(self, file_path: str, txt_path: str):
+        """変換成功時の処理"""
         self._set_processing_state(False)
-        self._reset_ui()
         QMessageBox.information(self, "完了", f"{txt_path}\nテキストデータを出力しました。")
 
-    def _on_error(self, error_msg: str):
+    def _on_error(self, file_path: str, error_msg: str):
+        """変換エラー時の処理"""
         self._set_processing_state(False)
-        if self.selected_file_path:
-            file_name = Path(self.selected_file_path).name
-            self.label.setText(f"ファイル: {file_name}\n「変換」ボタンを押してください")
-            self.button_convert.setEnabled(True)
-        else:
-            self._reset_ui()
         QMessageBox.critical(self, "エラー", error_msg)
 
     def closeEvent(self, event):
