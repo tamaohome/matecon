@@ -2,7 +2,6 @@ import sys
 from pathlib import Path
 
 
-# TODO: 複数パスの入力に対応する
 def get_path_list(ext: str) -> list[Path]:
     """
     指定された拡張子のファイルパスを取得する

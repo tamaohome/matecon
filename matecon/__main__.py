@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QApplication
 
 from matecon.gui.controller import Controller
 from matecon.gui.view import MainWindow
-from matecon.utils.io import get_path_list
+from matecon.io.io import get_path_list
 
 # openpyxl の警告を無視
 warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
