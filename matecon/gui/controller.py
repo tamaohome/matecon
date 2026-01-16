@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from matecon.io.io import write_txt
 from matecon.io.spreadsheet_reader import validate_excel_filepath
 from matecon.models.material import Material
-from matecon.utils.io import write_txt
 
 
 class Controller:
