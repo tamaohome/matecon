@@ -68,7 +68,7 @@ class MainWindow(QWidget):
 
         # ファイルカードコンテナ
         self.card_container = FileCardContainer()
-        self.v_layout.addWidget(self.card_container.get_scroll_area())
+        self.v_layout.addWidget(self.card_container)
 
         self.setLayout(self.v_layout)
 
