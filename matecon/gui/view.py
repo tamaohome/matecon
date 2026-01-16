@@ -5,9 +5,7 @@ from pathlib import Path
 from PySide6.QtCore import QThread, Signal
 from PySide6.QtWidgets import (
     QFileDialog,
-    QHBoxLayout,
     QMessageBox,
-    QPushButton,
     QVBoxLayout,
     QWidget,
 )
@@ -15,6 +13,7 @@ from PySide6.QtWidgets import (
 from matecon.gui.config import ConfigManager, WindowGeometry
 from matecon.gui.controller import Controller
 from matecon.gui.file_card import FileCardContainer
+from matecon.gui.toolbar import MainToolBar
 
 
 class ConversionWorker(QThread):
@@ -54,17 +53,11 @@ class MainWindow(QWidget):
         self.v_layout.setSpacing(12)
         self.v_layout.setContentsMargins(16, 16, 16, 16)
 
-        # ボタンエリア
-        button_layout = QHBoxLayout()
-        self.button_select = QPushButton("ファイル選択")
-        self.button_select.clicked.connect(self.select_file)
-        self.button_convert = QPushButton("変換")
-        self.button_convert.clicked.connect(self.convert_file)
-        self.button_convert.setEnabled(False)
-        button_layout.addWidget(self.button_select)
-        button_layout.addWidget(self.button_convert)
-        button_layout.addStretch()
-        self.v_layout.addLayout(button_layout)
+        # ツールバーエリア
+        self.toolbar = MainToolBar(self)
+        self.toolbar.open_file_triggered.connect(self.add_file)
+        self.toolbar.convert_triggered.connect(self.convert_file)
+        self.v_layout.addWidget(self.toolbar)
 
         # ファイルカードコンテナ
         self.card_container = FileCardContainer()
@@ -95,33 +88,37 @@ class MainWindow(QWidget):
         card = self.card_container.add_card(file_path)
         if card is not None:
             # 変換ボタンを有効化
-            self.button_convert.setEnabled(True)
+            self.toolbar.action_convert.setEnabled(True)
 
     def _reset_ui(self) -> None:
         """UIを初期状態にリセット"""
         self.card_container.clear()
-        self.button_convert.setEnabled(False)
+        self.toolbar.action_convert.setEnabled(False)
 
     def _set_processing_state(self, is_processing: bool) -> None:
         """処理中/待機中の状態を設定"""
-        self.button_select.setEnabled(not is_processing)
-        self.button_convert.setEnabled(not is_processing and self.card_container.count() > 0)
+        self.toolbar.action_open.setEnabled(not is_processing)
+        self.toolbar.action_convert.setEnabled(not is_processing and self.card_container.count() > 0)
 
-    def select_file(self):
+    def add_file(self) -> None:
+        """ファイル追加ダイアログを表示"""
         filter_str = "Excel Files (*.xlsx *.xlsm)"
         last_dir = self.config_manager.get_last_directory()
         file_paths, _ = QFileDialog.getOpenFileNames(self, "Excelファイルを選択", last_dir, filter_str)
         if not file_paths:
             return
+
         # ディレクトリを保存
         parent_dir = str(Path(file_paths[0]).parent)
         self.config_manager.set_last_directory(parent_dir)
         self.config_manager.save()
+
         # ファイルを追加
         for file_path in file_paths:
             self._add_file(file_path)
 
     def convert_file(self):
+        """ファイル変換処理を実行"""
         if self.card_container.is_empty():
             return
         # すべてのファイルを変換
