@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import override
 
 from PySide6.QtCore import QThread, Signal
 from PySide6.QtWidgets import (
@@ -68,6 +69,7 @@ class MainWindow(QWidget):
         self.setAcceptDrops(True)  # ドロップ受付を有効化
         self.workers: dict[str, ConversionWorker] = {}
 
+    @override
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls() and any(
             self.controller.validate_file(url.toLocalFile()) for url in event.mimeData().urls()
@@ -76,6 +78,7 @@ class MainWindow(QWidget):
         else:
             event.ignore()
 
+    @override
     def dropEvent(self, event):
         for url in event.mimeData().urls():
             file_path = url.toLocalFile()
@@ -122,12 +125,13 @@ class MainWindow(QWidget):
         if self.card_container.is_empty():
             return
         # すべてのファイルを変換
-        for file_path in self.card_container.get_file_paths():
-            self.handle_file(file_path)
+        # TODO: ファイルをマージしてTXTファイルに変換する処理を追加
+        # for file_path in self.card_container.get_file_paths():
+        # self.export_material_to_txt(file_path)
 
-    def handle_file(self, file_path: str):
+    def export_material_to_txt(self, file_path: str):
         """
-        入力ファイルに対するファイル変換をバックグラウンドで実行する
+        `Material` データをテキストファイルに変換する
 
         - 既存の `ConversionWorker` が実行中の場合は終了を待つ
         - 処理完了後は自動的に `ConversionWorker` インスタンスをメモリから解放する
@@ -154,10 +158,11 @@ class MainWindow(QWidget):
 
     def _cleanup_worker(self, file_path: str):
         """ワーカーをクリーンアップ"""
-        if file_path in self.workers:
-            worker = self.workers[file_path]
-            worker.deleteLater()
-            del self.workers[file_path]
+        if file_path not in self.workers:
+            return
+        worker = self.workers[file_path]
+        worker.deleteLater()
+        del self.workers[file_path]
 
     def _on_success(self, file_path: str, txt_path: str):
         """変換成功時の処理"""
@@ -169,6 +174,7 @@ class MainWindow(QWidget):
         self._set_processing_state(False)
         QMessageBox.critical(self, "エラー", error_msg)
 
+    @override
     def closeEvent(self, event):
         """ウィンドウを閉じる前に設定を保存"""
         geometry = WindowGeometry.from_qwidget(self)
