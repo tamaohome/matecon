@@ -56,6 +56,7 @@ select = [
 ]
 ignore = [
     "N802", # Qtの命名規則（camelCase）を許容する
+    "N815", # クラススコープ変数のキャメルケースを許容する
 ]
 
 [tool.ruff.lint.isort]
