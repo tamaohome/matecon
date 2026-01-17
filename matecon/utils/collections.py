@@ -47,3 +47,7 @@ class PathSet(MutableSet[Path]):
     def __contains__(self, item: str | Path) -> bool:
         norm_path = Path(item).resolve(strict=False)
         return norm_path in self._inner
+
+    @property
+    def to_list(self) -> list[Path]:
+        return list(self._inner)
