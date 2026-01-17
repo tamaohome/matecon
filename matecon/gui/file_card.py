@@ -59,9 +59,9 @@ class ElidedLabel(QLabel):
 
 
 class FileCard(QFrame):
-    """ファイル選択状態を表示するカードコンポーネント"""
+    """ファイル情報を表示するカードコンポーネント"""
 
-    def __init__(self, file_path: str, parent=None):
+    def __init__(self, file_path: Path, parent=None):
         super().__init__(parent)
         self._file_path = file_path
         self._init_ui()
@@ -87,74 +87,54 @@ class FileCard(QFrame):
 
 
 class FileCardContainer(QScrollArea):
-    """
-    ファイルカードコンテナ
-
-    - カードのライフサイクルと UI を管理
-    """
+    """ファイルカードコンテナ"""
 
     def __init__(self, parent=None):
         """コンテナを初期化"""
         super().__init__(parent)
-        self._cards: dict[str, FileCard] = {}
+        self._cards: list[FileCard] = []
         self._init_ui()
-        self._apply_styles()
 
     def _init_ui(self) -> None:
         """レイアウトを作成"""
         self.setWidgetResizable(True)
 
-        self._container_widget = QWidget()  # QScrollAreaの子要素にはQWidgetが必要
+        self._base_widget = QWidget()  # QScrollAreaの子要素にはQWidgetが必要
         self._layout = QVBoxLayout()
         self._layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self._container_widget.setLayout(self._layout)
-        self.setWidget(self._container_widget)
+        self._base_widget.setLayout(self._layout)
+        self.setWidget(self._base_widget)
+        self._apply_styles()
 
-    def add_card(self, file_path: str) -> FileCard | None:
-        """ファイルカードを追加"""
-        if file_path in self._cards:
-            return None
+    def reload_cards(self, filepaths: list[Path]) -> None:
+        """ファイルカードを更新する"""
+        self.clear_cards()  # 表示済みのカードをクリア
+        for filepath in filepaths:
+            card = FileCard(filepath)
+            self._cards.append(card)
+            self._layout.addWidget(card)
 
-        card = FileCard(file_path)
-        self._cards[file_path] = card
-        self._layout.addWidget(card)
-        return card
-
-    def get_card(self, file_path: str) -> FileCard | None:
-        """ファイルパスに対応するカードを取得"""
-        return self._cards.get(file_path)
-
-    def remove_card(self, file_path: str) -> None:
-        """ファイルカードを削除"""
-        if file_path not in self._cards:
-            return
-
-        card = self._cards[file_path]
-        self._layout.removeWidget(card)
-        card.deleteLater()
-        del self._cards[file_path]
-
-    def clear(self) -> None:
-        """すべてのファイルカードを削除"""
+    def clear_cards(self):
+        """カードを消去"""
         while self._layout.count():
-            widget = self._layout.takeAt(0).widget()
-            if widget:
-                widget.deleteLater()
+            item = self._layout.takeAt(0)
+            if w := item.widget():
+                w.deleteLater()
         self._cards.clear()
 
     def is_empty(self) -> bool:
         """ファイルカードが存在しない場合は True を返す"""
-        return len(self._cards) == 0
-
-    def get_file_paths(self) -> list[str]:
-        """すべてのファイルパスを取得"""
-        return list(self._cards.keys())
+        return len(self.cards) == 0
 
     def count(self) -> int:
         """ファイルカード数を取得"""
-        return len(self._cards)
+        return len(self.cards)
 
     def _apply_styles(self):
         """スタイルシートを適用"""
         qss = load_stylesheet("file_card.qss")
         self.setStyleSheet(qss)
+
+    @property
+    def cards(self) -> list[FileCard]:
+        return list(self._cards)
