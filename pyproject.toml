@@ -5,7 +5,12 @@ description = "Excel to JIP-MATERIAL converter"
 authors = [
     { name = "tamaohome", email = "85826245+tamaohome@users.noreply.github.com" },
 ]
-dependencies = ["openpyxl>=3.1.2", "anytree>=2.12.1", "pyside6>=6.10.1"]
+dependencies = [
+    "openpyxl>=3.1.2",
+    "anytree>=2.12.1",
+    "pyside6>=6.10.1",
+    "boltons>=25.0.0",
+]
 readme = "README.md"
 requires-python = ">= 3.12"
 
