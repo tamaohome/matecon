@@ -6,17 +6,10 @@ MATERIAL_XLSX_2 = "sample_data/MATERIAL_SAMPLE_2.xlsx"
 
 
 def test_table():
-    # Table インスタンスの生成およびヘッダーの設定
-    table = Table(header=TABLE_HEADER)
+    filepaths = [MATERIAL_XLSX_1, MATERIAL_XLSX_2]
+    table = Table(TABLE_HEADER, filepaths)
     assert table.header == TABLE_HEADER
 
-    # Excelファイル追加前
-    assert len(table.books) == 0  # 読み込んだExcelファイル数
-    assert len(table.sheets) == 0  # 総シート数
-    assert len(table.rows) == 0  # 総行数
-
-    # Excelファイル追加後
-    table.add_book(MATERIAL_XLSX_1, MATERIAL_XLSX_2)
     assert len(table.books) == 2  # 読み込んだExcelファイル数
     assert len(table.sheets) == 3  # 総シート数
     assert len(table.rows) == 50  # 総行数
