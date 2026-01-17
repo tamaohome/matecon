@@ -1,23 +1,24 @@
+from collections.abc import Sequence
 from pathlib import Path
 
 from matecon.models.spreadsheet import BookNode, SheetNode
+
+type FileListType = Sequence[Path | str]
 
 
 class Table:
     """まてりある材片情報テーブルを管理するクラス"""
 
-    def __init__(self, header: tuple[str, ...]):
+    def __init__(self, header: tuple[str, ...], filepaths: FileListType):
         self._header = header
-        self._books = []
+        self._books: list[BookNode] = self._create_books(*filepaths)
 
-    def add_book(self, *filepaths: str | Path) -> None:
-        """Excelファイルを追加する"""
+    def _create_books(self, *filepaths: str | Path) -> list[BookNode]:
+        """Excelファイルから `BookNode` のリストを生成する"""
+        book_node: list[BookNode] = []
         for filepath in filepaths:
-            self._books.append(BookNode(filepath, self.header))
-
-    def add_books(self, filepaths: list[Path] | tuple[Path, ...]) -> None:
-        """Excelファイルを全て追加する"""
-        self.add_book(*filepaths)
+            book_node.append(BookNode(filepath, self.header))
+        return book_node
 
     @property
     def header(self) -> tuple[str, ...]:
@@ -25,14 +26,14 @@ class Table:
         return self._header
 
     @property
-    def books(self) -> list[BookNode]:
+    def books(self) -> tuple[BookNode, ...]:
         """Excelファイルにより読み込まれた BookNode を全て返す"""
-        return self._books
+        return tuple(self._books)
 
     @property
-    def sheets(self) -> list[SheetNode]:
+    def sheets(self) -> tuple[SheetNode, ...]:
         """Excelファイルにより読み込まれた SheetNode を全て返す"""
-        return [sheet for book in self.books for sheet in book]
+        return tuple(sheet for book in self.books for sheet in book)
 
     @property
     def rows(self) -> tuple[tuple, ...]:

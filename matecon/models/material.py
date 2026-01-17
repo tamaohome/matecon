@@ -11,14 +11,11 @@ from matecon.models.table import Table
 
 
 class Material:
-    """
-    材片情報ノードの管理クラス
-    """
+    """材片情報ノードの管理クラス"""
 
     def __init__(self, *filepaths: Path | str):
-        self.table = Table(templates.TABLE_HEADER)
-        self.table.add_books([Path(p) for p in filepaths])
-        self.root = self._build_tree(self.table)
+        self._table = Table(templates.TABLE_HEADER, [Path(p) for p in filepaths])
+        self._root = self._build_tree(self.table)
 
     def print_tree(self) -> None:
         """ツリーを表示"""
@@ -62,6 +59,14 @@ class Material:
         return root
 
     @property
+    def root(self) -> MaterialNode:
+        return self._root
+
+    @property
+    def table(self) -> Table:
+        return self._table
+
+    @property
     def nodes(self) -> tuple[MaterialNode, ...]:
         """材片情報ノードを全て配列として返す"""
         return self.root.descendants
@@ -86,11 +91,6 @@ class Material:
     @property
     def filepaths(self) -> list[Path]:
         return self.table.filepaths
-
-    def cleanup(self):
-        """`Table` をクリーンアップ"""
-        for book in self.table.books:
-            book.close()
 
 
 def check_not_root(func):
