@@ -74,6 +74,7 @@ class Controller(QObject):
     def _update_material(self) -> None:
         """現在のファイルパスリストを基に `Material` オブジェクトを更新する"""
         if not self._excel_files:
+            self._material = None
             return None
         self._material = Material(*list(self._excel_files))
 
@@ -104,6 +105,14 @@ class Controller(QObject):
         except Exception as e:
             self.on_error(OperationType.CONVERT_TO_TEXT, output_path, e)
             raise
+
+    def clear_files(self) -> None:
+        """追加されたExcelファイル一覧をクリア"""
+        if not self._excel_files:
+            return
+        self._excel_files.clear()
+        self._update_material()
+        self.excelFilesChanged.emit(self._excel_files.to_list)  # 変更通知
 
     @property
     def excel_files(self) -> list[Path]:
