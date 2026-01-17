@@ -39,6 +39,8 @@ class MainWindow(QMainWindow):
         self.toolbar = MainToolBar(self)
         self.toolbar.addFileTriggered.connect(self.dialog_open_file)
         self.toolbar.convertTriggered.connect(self.dialog_convert)
+        self.toolbar.clearTriggered.connect(self.dialog_clear)
+
         self.addToolBar(self.toolbar)
 
         # メインレイアウト
@@ -69,23 +71,17 @@ class MainWindow(QMainWindow):
 
     def _on_success(self, op_type: OperationType, path, message):
         """オペレーション成功時の処理"""
-        self._set_processing_state(False)
         QMessageBox.information(self, "成功", message)
 
     def _on_error(self, op_type: OperationType, path, exception):
         """オペレーション失敗時の処理"""
-        self._set_processing_state(False)
         QMessageBox.critical(self, "エラー", str(exception))
 
     def _on_excel_files_changed(self, filepaths: list):
         """Excelファイルリスト変更時のスロット"""
         self.card_container.reload_cards(filepaths)
-        self._set_processing_state(False)
-
-    def _set_processing_state(self, is_processing: bool) -> None:
-        """処理中/待機中の状態を設定"""
-        self.toolbar.action_open.setEnabled(not is_processing)
-        self.toolbar.action_convert.setEnabled(not is_processing and self.card_container.count() > 0)
+        self.toolbar.action_convert.setEnabled(len(filepaths) > 0)
+        self.toolbar.action_clear.setEnabled(len(filepaths) > 0)
 
     def dialog_open_file(self) -> None:
         """ファイル追加ダイアログを表示"""
@@ -105,8 +101,6 @@ class MainWindow(QMainWindow):
 
     def dialog_convert(self):
         """テキストファイル変換ダイアログを表示"""
-        print("convert(): 実行")
-        print("現在のファイルパス:", self.controller.excel_files)
 
         def overwrite_confirm(path: Path) -> bool:
             reply = QMessageBox.question(
@@ -120,9 +114,28 @@ class MainWindow(QMainWindow):
 
         self.controller.convert_to_text_file(overwrite_confirm=overwrite_confirm)
 
+    def dialog_clear(self):
+        """ファイル一覧クリアの確認ダイアログを表示"""
+        reply = QMessageBox.question(
+            self,
+            "ファイル一覧のクリア",
+            "Excelファイル一覧をクリアしますか？\n(ファイル自体は削除されません)",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel,
+        )
+        if reply == QMessageBox.StandardButton.Yes:
+            self.controller.clear_files()
+
     @override
     def closeEvent(self, event):
-        """ウィンドウを閉じる前に設定を保存"""
+        """ウィンドウを閉じる前に設定を保question(
+            self,
+            "ファイル一覧のクリア",
+            "Excelファイル一覧をクリアしますか？\n(ファイル自体は削除されません)",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel,
+        )
+        if not reply:
+            return
+        self.controller.clear_files()存"""
         geometry = WindowGeometry.from_qwidget(self)
         self.config_manager.set_window_geometry(geometry)
         self.config_manager.save()
