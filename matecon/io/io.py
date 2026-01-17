@@ -36,16 +36,15 @@ def get_path_list(ext: str) -> list[Path]:
                 return [Path(p.replace('"', ""))]
 
 
-def write_txt(org_path: Path | str, lines: list[str]) -> Path:
+def write_text_file(filepath: Path | str, lines: list[str]) -> Path:
     """
     指定されたファイルパスに文字列リストを書き出す
 
     - ファイルパスは `.txt` に変換される
     - エンコードは shift-jis (cp932) 固定
     """
-
-    txt_path = Path(org_path).resolve().with_suffix(".txt")
-    with txt_path.open(mode="w", encoding="cp932") as f:
+    text_filepath = Path(filepath).resolve().with_suffix(".txt")
+    with text_filepath.open(mode="w", encoding="cp932") as f:
         for line in lines:
             f.write(line + "\n")
-    return txt_path
+    return text_filepath
