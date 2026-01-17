@@ -5,6 +5,7 @@ from typing import override
 
 from PySide6.QtWidgets import (
     QFileDialog,
+    QMainWindow,
     QMessageBox,
     QVBoxLayout,
     QWidget,
@@ -16,7 +17,7 @@ from matecon.gui.file_card import FileCardContainer
 from matecon.gui.toolbar import MainToolBar
 
 
-class MainWindow(QWidget):
+class MainWindow(QMainWindow):
     """メインウィンドウクラス"""
 
     def __init__(self):
@@ -34,22 +35,23 @@ class MainWindow(QWidget):
         geometry = self.config_manager.get_window_geometry()
         self.setGeometry(geometry.to_qrect())
 
-        # メインレイアウト
-        self.v_layout = QVBoxLayout()
-        self.v_layout.setSpacing(12)
-        self.v_layout.setContentsMargins(16, 16, 16, 16)
-
-        # ツールバーエリア
+        # ツールバー
         self.toolbar = MainToolBar(self)
         self.toolbar.addFileTriggered.connect(self.dialog_open_file)
         self.toolbar.convertTriggered.connect(self.dialog_convert)
-        self.v_layout.addWidget(self.toolbar)
+        self.addToolBar(self.toolbar)
+
+        # メインレイアウト
+        central_widget = QWidget()
+        self.v_layout = QVBoxLayout()
+        self.v_layout.setSpacing(12)
+        self.v_layout.setContentsMargins(16, 16, 16, 16)
+        central_widget.setLayout(self.v_layout)
+        self.setCentralWidget(central_widget)
 
         # ファイルカードコンテナ
         self.card_container = FileCardContainer()
         self.v_layout.addWidget(self.card_container)
-
-        self.setLayout(self.v_layout)
 
         self.setAcceptDrops(True)  # ドロップ受付を有効化
 
