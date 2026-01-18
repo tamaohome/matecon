@@ -61,7 +61,6 @@ class FileCardContainer(QScrollArea):
     fileCardRemoveRequested = Signal(Path)  # filepathを渡すシグナル
 
     def __init__(self, parent=None):
-        """コンテナを初期化"""
         super().__init__(parent)
         self._cards: list[FileCard] = []
         self._init_ui()
