@@ -81,7 +81,9 @@ class MainWindow(QMainWindow):
 
     def _on_excel_files_changed(self, filepaths: Sequence[Path]):
         """Excelファイルリスト変更時のスロット"""
-        self.card_container.reload_cards(filepaths)
+        self.card_container.reload(filepaths)  # カードリストを更新
+
+        # ツールバーのボタン状態を更新
         self.toolbar.set_convert_enabled(len(filepaths) > 0)
         self.toolbar.set_clear_enabled(len(filepaths) > 0)
 

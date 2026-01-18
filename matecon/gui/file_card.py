@@ -74,7 +74,7 @@ class FileCardContainer(QScrollArea):
         self.setLayout(self._layout)
         self._apply_styles()
 
-    def reload_cards(self, filepaths: Sequence[Path]) -> None:
+    def reload(self, filepaths: Sequence[Path]) -> None:
         """ファイルカードを更新する"""
         self.clear_cards()  # 表示済みのカードをクリア
         for filepath in filepaths:
