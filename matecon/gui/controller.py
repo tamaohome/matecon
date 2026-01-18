@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from enum import Enum, auto
 from pathlib import Path
 
@@ -58,7 +58,7 @@ class Controller(QObject):
             self.on_error(OperationType.ADD_FILE, filepath, e)
             raise
 
-    def add_excel_files(self, filepaths: list[Path]) -> list[Path]:
+    def add_excel_files(self, filepaths: Sequence[Path]) -> list[Path]:
         """複数のExcelファイルを追加し、正常に追加したファイルパスのリストを返す"""
         added_files = []
         for filepath in filepaths:
@@ -71,12 +71,18 @@ class Controller(QObject):
             self.excelFilesChanged.emit(self._excel_files.to_list)  # 変更通知
         return added_files
 
-    def _update_material(self) -> None:
-        """現在のファイルパスリストを基に `Material` オブジェクトを更新する"""
-        if not self._excel_files:
-            self._material = None
-            return None
-        self._material = Material(*list(self._excel_files))
+    def remove_excel_file(self, filepath: Path) -> None:
+        """リストからExcelファイルを取り除く"""
+        try:
+            if filepath not in self._excel_files:
+                raise ValueError(f"ファイルがリストに存在しません:\n{filepath}")
+            self._excel_files.remove(filepath)
+            self._update_material()
+            self.excelFilesChanged.emit(self._excel_files.to_list)  # 変更通知
+            print("ファイルを除去:", filepath)
+        except Exception as e:
+            self.on_error(OperationType.REMOVE_FILE, filepath, e)
+            raise
 
     def convert_to_text_file(self, overwrite_confirm: Callable[[Path], bool] | None = None) -> Path | None:
         """
@@ -113,6 +119,13 @@ class Controller(QObject):
         self._excel_files.clear()
         self._update_material()
         self.excelFilesChanged.emit(self._excel_files.to_list)  # 変更通知
+
+    def _update_material(self) -> None:
+        """現在のファイルパスリストを基に `Material` オブジェクトを更新する"""
+        if not self._excel_files:
+            self._material = None
+            return None
+        self._material = Material(*list(self._excel_files))
 
     @property
     def excel_files(self) -> list[Path]:

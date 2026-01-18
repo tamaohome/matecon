@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from pathlib import Path
 from typing import override
 
@@ -53,6 +54,7 @@ class MainWindow(QMainWindow):
 
         # ファイルカードコンテナ
         self.card_container = FileCardContainer()
+        self.card_container.cardRemoveRequested.connect(self._on_card_remove_requested)
         self.v_layout.addWidget(self.card_container)
 
         self.setAcceptDrops(True)  # ドロップ受付を有効化
@@ -77,11 +79,19 @@ class MainWindow(QMainWindow):
         """オペレーション失敗時の処理"""
         QMessageBox.critical(self, "エラー", str(exception))
 
-    def _on_excel_files_changed(self, filepaths: list):
+    def _on_excel_files_changed(self, filepaths: Sequence[Path]):
         """Excelファイルリスト変更時のスロット"""
         self.card_container.reload_cards(filepaths)
         self.toolbar.action_convert.setEnabled(len(filepaths) > 0)
         self.toolbar.action_clear.setEnabled(len(filepaths) > 0)
+
+    def _on_card_remove_requested(self, filepath):
+        """
+        カードの削除要求があった際に呼び出されるメソッド
+
+        指定されたファイルパスのExcelファイルを `Controller` から削除する
+        """
+        self.controller.remove_excel_file(filepath)
 
     def dialog_open_file(self) -> None:
         """ファイル追加ダイアログを表示"""
