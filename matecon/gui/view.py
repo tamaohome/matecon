@@ -38,9 +38,9 @@ class MainWindow(QMainWindow):
 
         # ツールバー
         self.toolbar = MainToolBar(self)
-        self.toolbar.addFileTriggered.connect(self.dialog_open_file)
-        self.toolbar.convertTriggered.connect(self.dialog_convert)
-        self.toolbar.clearTriggered.connect(self.dialog_clear)
+        self.toolbar.fileAddRequested.connect(self.dialog_open_file)
+        self.toolbar.convertRequested.connect(self.dialog_convert)
+        self.toolbar.clearRequested.connect(self.dialog_clear)
 
         self.addToolBar(self.toolbar)
 
@@ -54,7 +54,7 @@ class MainWindow(QMainWindow):
 
         # ファイルカードコンテナ
         self.card_container = FileCardContainer()
-        self.card_container.cardRemoveRequested.connect(self._on_card_remove_requested)
+        self.card_container.fileCardRemoveRequested.connect(self._on_card_remove_requested)
         self.v_layout.addWidget(self.card_container)
 
         self.setAcceptDrops(True)  # ドロップ受付を有効化
