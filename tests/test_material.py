@@ -125,9 +125,10 @@ def test_material_node_hirrarchy_names():
 
 
 def test_material_node_each():
-    """まてりあるノードの員数"""
+    """材片情報ノードの員数"""
     mate = Material(MATERIAL_XLSX_1)
     assert mate.nodes[4].each == 1  # LEVEL5
     assert mate.nodes[5].each == 6  # BLOCK (6*1)
     assert mate.nodes[6].each == 2  # DETAIL
+    assert mate.nodes[8].each == 2  # PAINT
     assert mate.nodes[12].each == 12  # BLOCK (6*2)
