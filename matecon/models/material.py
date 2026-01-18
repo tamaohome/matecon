@@ -202,6 +202,20 @@ class MaterialNode(NodeMixin):
         return " ".join(self.names)
 
     @property
+    def level_label(self) -> str:
+        """レベル名を返す (#1~#5, BLOCK, DETAIL, PAINT)"""
+        level = self.level
+        if 1 <= level <= 5:
+            return f"#{level}"
+        if level == 6:
+            return "BLOCK"
+        if level == 7:
+            return "DETAIL"
+        if level == 8:
+            return "PAINT"
+        raise ValueError(f"不正なレベル値です: {level=}")
+
+    @property
     @check_not_root
     def hierarchy_names(self) -> list[str]:
         """自ノードまでの階層名称をリストとして返す"""

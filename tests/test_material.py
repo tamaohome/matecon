@@ -133,3 +133,17 @@ def test_material_node_each():
     assert mate.nodes[6].each == 2  # DETAIL
     assert mate.nodes[8].each == 2  # PAINT
     assert mate.nodes[12].each == 12  # BLOCK (6*2)
+
+
+def test_material_level_label():
+    """材片情報レベル表示"""
+    mate = Material(MATERIAL_XLSX_1)
+    assert mate.nodes[0].level_label == "#1"
+    assert mate.nodes[1].level_label == "#2"
+    assert mate.nodes[2].level_label == "#3"
+    assert mate.nodes[3].level_label == "#4"
+    assert mate.nodes[4].level_label == "#5"
+    assert mate.nodes[5].level_label == "BLOCK"
+    assert mate.nodes[6].level_label == "DETAIL"
+    assert mate.nodes[8].level_label == "PAINT"
+
