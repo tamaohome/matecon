@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QMainWindow,
     QMessageBox,
+    QSplitter,
     QWidget,
 )
 
@@ -52,18 +53,21 @@ class MainWindow(QMainWindow):
         self.h_layout.setContentsMargins(16, 16, 16, 16)
         central_widget.setLayout(self.h_layout)
         self.setCentralWidget(central_widget)
+        self.splitter = QSplitter()
+        self.h_layout.addWidget(self.splitter)
 
         # ファイルカードコンテナ
         self.card_container = FileCardContainer()
         self.card_container.fileCardRemoveRequested.connect(self._on_card_remove_requested)
-        self.h_layout.addWidget(self.card_container)
+        self.splitter.addWidget(self.card_container)
 
-        # ツリー表示
+        # ツリービュー
         self.material_tree = MaterialTreeView()
-        self.h_layout.addWidget(self.material_tree)
+        self.splitter.addWidget(self.material_tree)
 
         self.setAcceptDrops(True)  # ドロップ受付を有効化
 
+        # シグナルとスロットを接続
         self.controller.excelFilesChanged.connect(self._on_excel_files_changed)
         self.controller.materialChanged.connect(self._on_material_changed)
 
