@@ -96,12 +96,15 @@ class Controller(QObject):
             self.on_error(OperationType.CONVERT_TO_TEXT, Path(), ValueError(message))
             return
 
+        # 最初のExcelファイルを基にテキストファイルのパスを取得
         output_path = self._excel_files[0].with_suffix(".txt")
+
+        # 上書き時の処理
         if output_path.exists():
             if overwrite_confirm is None:
                 return None
             if not overwrite_confirm(output_path):
-                return None  # 上書き拒否時は何もせず終了
+                return None  # 上書きキャンセル時は処理を中止
 
         try:
             output_lines = self._material.format_lines
@@ -132,10 +135,12 @@ class Controller(QObject):
 
     @property
     def excel_files(self) -> list[Path]:
+        """Excelファイルリスト"""
         return list(self._excel_files)
 
     @property
     def material(self) -> Material | None:
+        """材片情報"""
         return self._material
 
     @property
@@ -145,6 +150,8 @@ class Controller(QObject):
 
 
 class OperationType(Enum):
+    """処理の種別"""
+
     ADD_FILE = auto()
     REMOVE_FILE = auto()
     CONVERT_TO_TEXT = auto()
