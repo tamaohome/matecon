@@ -33,17 +33,23 @@ class MainToolBar(QToolBar):
         self.action_open.setIcon(icon_open)
         self.addAction(self.action_open)
 
-        self.action_convert = QAction("テキストに変換", self)
-        self.action_convert.setShortcut("Ctrl+E")
-        self.action_convert.setEnabled(False)  # 初期状態は無効
-        self.action_convert.triggered.connect(self.convertRequested.emit)
+        self._action_convert = QAction("テキストに変換", self)
+        self._action_convert.setShortcut("Ctrl+E")
+        self._action_convert.setEnabled(False)  # 初期状態は無効
+        self._action_convert.triggered.connect(self.convertRequested.emit)
         icon_save = self.style().standardIcon(QStyle.StandardPixmap.SP_DialogSaveButton)
-        self.action_convert.setIcon(icon_save)
-        self.addAction(self.action_convert)
+        self._action_convert.setIcon(icon_save)
+        self.addAction(self._action_convert)
 
-        self.action_clear = QAction("ファイル一覧をクリア", self)
-        self.action_clear.setEnabled(False)  # 初期状態は無効
-        self.action_clear.triggered.connect(self.clearRequested.emit)
+        self._action_clear = QAction("ファイル一覧をクリア", self)
+        self._action_clear.setEnabled(False)  # 初期状態は無効
+        self._action_clear.triggered.connect(self.clearRequested.emit)
         icon_clear = self.style().standardIcon(QStyle.StandardPixmap.SP_LineEditClearButton)
-        self.action_clear.setIcon(icon_clear)
-        self.addAction(self.action_clear)
+        self._action_clear.setIcon(icon_clear)
+        self.addAction(self._action_clear)
+
+    def set_convert_enabled(self, enabled: bool):
+        self._action_convert.setEnabled(enabled)
+
+    def set_clear_enabled(self, enabled: bool):
+        self._action_clear.setEnabled(enabled)
