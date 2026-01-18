@@ -11,7 +11,7 @@ class MaterialTreeView(QTreeWidget):
         self._material = material
 
         # ヘッダーの設定
-        header_names = ["レベル・名称", "員数"]
+        header_names = ["名称", "員数"]
         self.setColumnCount(len(header_names))
         self.setHeaderLabels(header_names)
 
@@ -41,6 +41,6 @@ class MaterialTreeView(QTreeWidget):
 
     def _add_node_recursive(self, node: MaterialNode, parent_item):
         """`MaterialNode` ツリーを再帰的に `QTreeWidgetItem` へ変換"""
-        item = QTreeWidgetItem(parent_item, [str(node.level), node.name, str(node.each)])
+        item = QTreeWidgetItem(parent_item, [node.name, str(node.each)])
         for child in node.children:
             self._add_node_recursive(child, item)
