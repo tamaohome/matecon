@@ -27,8 +27,9 @@ def test_material_node_detail():
     ]
     print(node)
 
-    # TODO: 図面表記フォーマットを実装
-    # node.format_blueprint = "1 - CONN PL 160 x 9 x 640 (SM400A)"
+    # TODO: DETAIL文字列フォーマットを実装
+    # node.line_for_drawing = "1 - CONN PL 160 x 9 x 640 (SM400A)"
+    # node.line_for_tree = "PL 160 x 9 x 640 (SM400A)"
 
 
 def test_material_node_values():
