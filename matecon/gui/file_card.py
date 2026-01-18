@@ -14,7 +14,7 @@ from matecon.gui.widgets.elided_label import ElidedLabel
 class FileCard(QFrame):
     """ファイル情報を表示するカードコンポーネント"""
 
-    removeRequested = Signal(Path)  # filepathを渡すシグナル
+    fileRemoveRequested = Signal(Path)  # filepathを渡すシグナル
 
     def __init__(self, filepath: Path, parent: QWidget | None = None):
         super().__init__(parent)
@@ -52,13 +52,13 @@ class FileCard(QFrame):
         h_layout.addWidget(btn_remove)
 
     def _on_remove_clicked(self):
-        self.removeRequested.emit(self._filepath)
+        self.fileRemoveRequested.emit(self._filepath)
 
 
 class FileCardContainer(QScrollArea):
     """ファイルカードコンテナ"""
 
-    cardRemoveRequested = Signal(Path)  # filepathを渡すシグナル
+    fileCardRemoveRequested = Signal(Path)  # filepathを渡すシグナル
 
     def __init__(self, parent=None):
         """コンテナを初期化"""
@@ -79,12 +79,12 @@ class FileCardContainer(QScrollArea):
         self.clear_cards()  # 表示済みのカードをクリア
         for filepath in filepaths:
             card = FileCard(filepath, self)
-            card.removeRequested.connect(self.cardRemoveRequested.emit)
+            card.fileRemoveRequested.connect(self.fileCardRemoveRequested.emit)
             self._cards.append(card)
             self._layout.addWidget(card)
 
     def clear_cards(self):
-        """カードを消去"""
+        """ファイルカードリストを消去"""
         while self._layout.count():
             item = self._layout.takeAt(0)
             if w := item.widget():
