@@ -146,6 +146,10 @@ class MaterialNode(NodeMixin):
         return super().descendants
 
     @property
+    def siblings(self) -> tuple[MaterialNode, ...]:
+        return super().siblings
+
+    @property
     def children(self) -> tuple[MaterialNode, ...]:
         return super().children
 
