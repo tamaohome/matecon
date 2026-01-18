@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from math import prod
 from pathlib import Path
-from typing import Final
+from typing import Final, override
 
 from anytree import NodeMixin, RenderTree
 
@@ -142,14 +142,17 @@ class MaterialNode(NodeMixin):
         raise ValueError(f"MaterialNodeの生成に失敗しました (level={level})")
 
     @property
+    @override
     def descendants(self) -> tuple[MaterialNode, ...]:
         return super().descendants
 
     @property
+    @override
     def siblings(self) -> tuple[MaterialNode, ...]:
         return super().siblings
 
     @property
+    @override
     def children(self) -> tuple[MaterialNode, ...]:
         return super().children
 
@@ -220,6 +223,7 @@ class LevelNode(MaterialNode):
         super().__init__(parent, level, row)
 
     @property
+    @override
     def names(self) -> list[str]:
         return [str(self._row[1])]
 
@@ -236,11 +240,13 @@ class BlockNode(MaterialNode):
         self._each = prod(n for n in self._row[6:9] if n)  # 員数 1~3 を集計
 
     @property
+    @override
     def names(self) -> list[str]:
         """自ノードの名称を要素数 1〜3 のリストで返す"""
         return [str(cell) for cell in self._row[1:4] if cell]
 
     @property
+    @override
     def format_line(self) -> str:
         """
         自ノードを固定長文字列として返す
@@ -254,6 +260,7 @@ class BlockNode(MaterialNode):
         return templates.format_line(row)
 
     @property
+    @override
     def format_lines(self) -> list[str]:
         """
         自ノードおよび子ノードを固定長文字列のリストとして返す
@@ -264,6 +271,7 @@ class BlockNode(MaterialNode):
         return super().format_lines + ["END"]
 
     @property
+    @override
     def each(self) -> int:
         """
         自ノード (BLOCK) の員数 1~3 を集計した員数を返す
