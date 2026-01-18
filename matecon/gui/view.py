@@ -6,16 +6,18 @@ from typing import override
 
 from PySide6.QtWidgets import (
     QFileDialog,
+    QHBoxLayout,
     QMainWindow,
     QMessageBox,
-    QVBoxLayout,
     QWidget,
 )
 
 from matecon.gui.config import ConfigManager, WindowGeometry
 from matecon.gui.controller import Controller, OperationType
 from matecon.gui.file_card import FileCardContainer
+from matecon.gui.material_treeview import MaterialTreeView
 from matecon.gui.toolbar import MainToolBar
+from matecon.models.material import Material
 
 
 class MainWindow(QMainWindow):
@@ -41,25 +43,29 @@ class MainWindow(QMainWindow):
         self.toolbar.fileAddRequested.connect(self.dialog_open_file)
         self.toolbar.convertRequested.connect(self.dialog_convert)
         self.toolbar.clearRequested.connect(self.dialog_clear)
-
         self.addToolBar(self.toolbar)
 
         # メインレイアウト
         central_widget = QWidget()
-        self.v_layout = QVBoxLayout()
-        self.v_layout.setSpacing(12)
-        self.v_layout.setContentsMargins(16, 16, 16, 16)
-        central_widget.setLayout(self.v_layout)
+        self.h_layout = QHBoxLayout()
+        self.h_layout.setSpacing(12)
+        self.h_layout.setContentsMargins(16, 16, 16, 16)
+        central_widget.setLayout(self.h_layout)
         self.setCentralWidget(central_widget)
 
         # ファイルカードコンテナ
         self.card_container = FileCardContainer()
         self.card_container.fileCardRemoveRequested.connect(self._on_card_remove_requested)
-        self.v_layout.addWidget(self.card_container)
+        self.h_layout.addWidget(self.card_container)
+
+        # ツリー表示
+        self.material_tree = MaterialTreeView()
+        self.h_layout.addWidget(self.material_tree)
 
         self.setAcceptDrops(True)  # ドロップ受付を有効化
 
         self.controller.excelFilesChanged.connect(self._on_excel_files_changed)
+        self.controller.materialChanged.connect(self._on_material_changed)
 
     @override
     def dragEnterEvent(self, event):
@@ -87,6 +93,10 @@ class MainWindow(QMainWindow):
         self.toolbar.set_convert_enabled(len(filepaths) > 0)
         self.toolbar.set_clear_enabled(len(filepaths) > 0)
 
+    def _on_material_changed(self, material: Material):
+        """`Material` インスタンス変更時のスロット"""
+        self.material_tree.reload(material)  # ツリーを更新
+
     def _on_card_remove_requested(self, filepath):
         """
         カードの削除要求があった際に呼び出されるメソッド
@@ -94,6 +104,10 @@ class MainWindow(QMainWindow):
         指定されたファイルパスのExcelファイルを `Controller` から削除する
         """
         self.controller.remove_excel_file(filepath)
+
+    def _on_material_exists(self, exists: bool):
+        """`Material` の有無に応じてツリー内容を更新"""
+        self.material_tree.reload(self.controller.material if exists else None)
 
     def dialog_open_file(self) -> None:
         """ファイル追加ダイアログを表示"""

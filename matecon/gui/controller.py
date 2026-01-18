@@ -16,6 +16,7 @@ class Controller(QObject):
     """コントローラクラス"""
 
     excelFilesChanged = Signal(list)
+    materialChanged = Signal(Material)
 
     def __init__(
         self,
@@ -122,10 +123,14 @@ class Controller(QObject):
 
     def _update_material(self) -> None:
         """現在のファイルパスリストを基に `Material` オブジェクトを更新する"""
+        self._material = self._create_material()
+        self.materialChanged.emit(self._material)  # 変更通知
+
+    def _create_material(self) -> Material | None:
+        """`Material` オブジェクトを生成"""
         if not self._excel_files:
-            self._material = None
             return None
-        self._material = Material(*list(self._excel_files))
+        return Material(*list(self._excel_files))
 
     @property
     def excel_files(self) -> list[Path]:
