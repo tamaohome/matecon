@@ -17,6 +17,7 @@ class Controller(QObject):
 
     excelFilesChanged = Signal(list)
     materialChanged = Signal(Material)
+    treeExpandDepthChanged = Signal(int)
 
     def __init__(
         self,
@@ -31,8 +32,9 @@ class Controller(QObject):
         self.on_error = on_error or (lambda *_: None)
 
         # 状態管理変数
-        self._material: Material | None = None
-        self._excel_files = PathSet()
+        self._material: Material | None = None  # 材片情報
+        self._excel_files = PathSet()  # Excelファイルリスト
+        self._tree_expand_depth = 6  # ツリー展開深さ
 
     def is_valid_excel_file(self, excel_filepath: str | Path) -> bool:
         """有効なExcelファイルの場合 `True` を返す"""
@@ -135,6 +137,11 @@ class Controller(QObject):
     @property
     def material(self) -> Material | None:
         return self._material
+
+    @property
+    def tree_expand_depth(self) -> int:
+        """ツリー展開深さ"""
+        return self._tree_expand_depth
 
 
 class OperationType(Enum):
