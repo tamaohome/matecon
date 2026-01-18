@@ -68,8 +68,6 @@ class Controller(QObject):
                 added_files.append(added_file)
             except Exception:
                 continue
-        if added_files:
-            self.excelFilesChanged.emit(self._excel_files.to_list)  # 変更通知
         return added_files
 
     def remove_excel_file(self, filepath: Path) -> None:
