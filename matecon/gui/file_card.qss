@@ -7,7 +7,7 @@ FileCard {
     border: 1px solid #e0e0e0;
     border-radius: 8px;
     background-color: #fff;
-    padding: 12px;
+    padding: 4px;
 }
 
 FileCard:hover {
@@ -29,4 +29,9 @@ FileCard #pathLabel {
     font-weight: normal;
     font-size: 9pt;
     color: #666;
+}
+
+FileCard #removeButton {
+    border: none;
+    background: transparent;
 }
