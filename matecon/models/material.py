@@ -198,6 +198,12 @@ class MaterialNode(NodeMixin):
         """自ノードまでの階層名称をリストとして返す"""
         return [n.name for n in self.path if not n.is_root]
 
+    @property
+    @check_not_root
+    def each(self) -> int:
+        """自ノードの員数を返す"""
+        return int(self.values[6])
+
 
 class LevelNode(MaterialNode):
     """
@@ -218,11 +224,12 @@ class BlockNode(MaterialNode):
     """
     ブロック情報ノードクラス (BLOCK)
 
-    `MARK`(材片名) に空白("")、`S1`(形状寸法(S1)) にブロック名が存在する行に対して BlockNode が生成される
+    - `MARK`(材片名) に空白("")、`S1`(形状寸法(S1)) にブロック名が存在する行に対して BlockNode が生成される
     """
 
     def __init__(self, parent: LevelNode, row: list | tuple):
         super().__init__(parent, 6, row)
+        self._each = prod(n for n in self._row[6:9] if n)  # 員数 1~3 を集計
 
     @property
     def names(self) -> list[str]:
@@ -237,9 +244,8 @@ class BlockNode(MaterialNode):
         BLOCKの場合は員数 1〜3 を集計する
         - example: 員数列 `[6, 1, 2]` -> `[12, None, None]`
         """
-        block_num = prod(n for n in self._row[6:9] if n)
         row = self._row
-        row[6:9] = [block_num, None, None]
+        row[6:9] = [self._each, None, None]
 
         return templates.format_line(row)
 
@@ -252,6 +258,13 @@ class BlockNode(MaterialNode):
         """
 
         return super().format_lines + ["END"]
+
+    @property
+    def each(self) -> int:
+        """
+        自ノード (BLOCK) の員数 1~3 を集計した員数を返す
+        """
+        return self._each
 
 
 class DetailNode(MaterialNode):

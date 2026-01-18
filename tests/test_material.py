@@ -113,3 +113,12 @@ def test_material_node_level_names():
     assert node.parent.parent.name == "サンプル橋"
 
     assert node.level_names == ["サンプル橋", "上部構造", "主構造"]
+
+
+def test_material_node_each():
+    """まてりあるノードの員数"""
+    mate = Material(MATERIAL_XLSX_1)
+    assert mate.nodes[4].each == 1  # LEVEL5
+    assert mate.nodes[5].each == 6  # BLOCK (6*1)
+    assert mate.nodes[6].each == 2  # DETAIL
+    assert mate.nodes[12].each == 12  # BLOCK (6*2)
