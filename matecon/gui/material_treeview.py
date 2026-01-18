@@ -43,3 +43,17 @@ class MaterialTreeView(QTreeWidget):
         item = QTreeWidgetItem(parent_item, [node.name, str(node.each)])
         for child in node.children:
             self._add_node_recursive(child, item)
+
+    def expand_to_depth(self, depth: int):
+        """ツリーを指定した深さまで展開する"""
+
+        def _expand(item, current_depth):
+            if current_depth >= depth:
+                return
+            self.expandItem(item)
+            for i in range(item.childCount()):
+                _expand(item.child(i), current_depth + 1)
+
+        # ルート直下のアイテムから再帰的に展開
+        for i in range(self.topLevelItemCount()):
+            _expand(self.topLevelItem(i), 1)
