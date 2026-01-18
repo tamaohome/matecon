@@ -137,15 +137,7 @@ class MainWindow(QMainWindow):
 
     @override
     def closeEvent(self, event):
-        """ウィンドウを閉じる前に設定を保question(
-            self,
-            "ファイル一覧のクリア",
-            "Excelファイル一覧をクリアしますか？\n(ファイル自体は削除されません)",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel,
-        )
-        if not reply:
-            return
-        self.controller.clear_files()存"""
+        """ウィンドウを閉じる前に設定を保存"""
         geometry = WindowGeometry.from_qwidget(self)
         self.config_manager.set_window_geometry(geometry)
         self.config_manager.save()
