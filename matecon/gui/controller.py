@@ -97,11 +97,11 @@ class Controller(QObject):
 
         output_path = self._excel_files[0].with_suffix(".txt")
         if output_path.exists():
-            if overwrite_confirm is not None:
-                if not overwrite_confirm(output_path):
-                    return None  # 上書き拒否時は何もせず終了
-            else:
+            if overwrite_confirm is None:
                 return None
+            if not overwrite_confirm(output_path):
+                return None  # 上書き拒否時は何もせず終了
+
         try:
             output_lines = self._material.format_lines
             result = write_text_file(output_path, output_lines)

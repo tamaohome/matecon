@@ -25,10 +25,9 @@ def get_path_list(ext: str) -> list[Path]:
 
     try:
         paths = _get_paths_from_argv()
-        if len(paths):
-            return paths
-        else:
+        if not paths:
             raise ValueError()
+        return paths
     except Exception:
         while True:
             p = input("ファイルパスを入力(またはこの画面にファイルをドラッグ): ")
