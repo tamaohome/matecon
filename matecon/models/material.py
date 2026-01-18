@@ -128,20 +128,19 @@ class MaterialNode(NodeMixin):
         if parent is None:
             return MaterialNode(parent, level, row)
 
-        match level:
-            case 1 | 2 | 3 | 4 | 5:
-                return LevelNode(parent, level, row)
-            case 6:
-                assert isinstance(parent, LevelNode)
-                return BlockNode(parent, row)
-            case 7:
-                assert isinstance(parent, BlockNode)
-                return DetailNode(parent, row)
-            case 8:
-                assert isinstance(parent, DetailNode)
-                return PaintNode(parent, row)
+        if 1 <= level <= 5:
+            return LevelNode(parent, level, row)
+        if level == 6:
+            assert isinstance(parent, LevelNode)
+            return BlockNode(parent, row)
+        if level == 7:
+            assert isinstance(parent, BlockNode)
+            return DetailNode(parent, row)
+        if level == 8:
+            assert isinstance(parent, DetailNode)
+            return PaintNode(parent, row)
 
-        raise ValueError(f"MaterialNodeの生成に失敗しました (level={level})")
+        raise ValueError(f"不正なレベル値です: {level=}")
 
     @property
     @override
