@@ -23,8 +23,7 @@ class MaterialTreeView(QTreeWidget):
 
     def reload(self, material: Material | None = None):
         """ツリーを更新する"""
-        if material is not None:
-            self._material = material
+        self._material = material
         if self._material is None:
             self.clear()
             return

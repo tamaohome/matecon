@@ -113,11 +113,9 @@ class Controller(QObject):
 
     def clear_files(self) -> None:
         """追加されたExcelファイル一覧をクリア"""
-        if not self._excel_files:
-            return
         self._excel_files.clear()
-        self._update_material()
         self.excelFilesChanged.emit(self._excel_files.to_list)  # 変更通知
+        self._update_material()
 
     def _update_material(self) -> None:
         """現在のファイルパスリストを基に `Material` オブジェクトを更新する"""
