@@ -46,7 +46,9 @@ class Material:
             node = MaterialNode.create(parent, level, row)
 
             # 階層が重複するLEVELノードの場合は除外する
-            if isinstance(node, LevelNode) and node.level_names in [n.level_names for n in node.siblings]:
+            if isinstance(node, LevelNode) and node.hierarchy_names in [
+                n.hierarchy_names for n in node.siblings
+            ]:
                 node.remove()
                 continue
 
@@ -201,7 +203,7 @@ class MaterialNode(NodeMixin):
 
     @property
     @check_not_root
-    def level_names(self) -> list[str]:
+    def hierarchy_names(self) -> list[str]:
         """自ノードまでの階層名称をリストとして返す"""
         return [n.name for n in self.path if not n.is_root]
 

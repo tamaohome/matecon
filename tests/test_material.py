@@ -16,7 +16,15 @@ def test_material_node_detail():
 
     assert node.name == "PL"
     # assert node.node_type == MaterialNodeType.DETAIL
-    assert node.level_names == ["サンプル橋", "上部構造", "主構造", "横桁", "中間横桁", "中間横桁 仕口", "PL"]
+    assert node.hierarchy_names == [
+        "サンプル橋",
+        "上部構造",
+        "主構造",
+        "横桁",
+        "中間横桁",
+        "中間横桁 仕口",
+        "PL",
+    ]
     print(node)
 
     # TODO: 図面表記フォーマットを実装
@@ -102,7 +110,8 @@ def test_material_tree():
     assert node_paint.level == 8
 
 
-def test_material_node_level_names():
+def test_material_node_hirrarchy_names():
+    """材片情報ノードの階層名称リスト"""
     mate = Material(MATERIAL_XLSX_1)
 
     node = mate.nodes[2]
@@ -112,7 +121,7 @@ def test_material_node_level_names():
     assert node.parent.parent
     assert node.parent.parent.name == "サンプル橋"
 
-    assert node.level_names == ["サンプル橋", "上部構造", "主構造"]
+    assert node.hierarchy_names == ["サンプル橋", "上部構造", "主構造"]
 
 
 def test_material_node_each():
