@@ -217,6 +217,15 @@ class MaterialNode(NodeMixin):
 
     @property
     @check_not_root
+    def name_with_level(self) -> str:
+        """自ノードのレベル名と名称を返す"""
+        level = self.level
+        if 1 <= level <= 5:
+            return self.level_label + " " + self.name
+        return self.name
+
+    @property
+    @check_not_root
     def hierarchy_names(self) -> list[str]:
         """自ノードまでの階層名称をリストとして返す"""
         return [n.name for n in self.path if not n.is_root]

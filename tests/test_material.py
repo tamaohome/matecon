@@ -147,3 +147,11 @@ def test_material_level_label():
     assert mate.nodes[6].level_label == "DETAIL"
     assert mate.nodes[8].level_label == "PAINT"
 
+
+def test_material_name_with_level():
+    """材片情報ノードの名称＋レベル名を返す"""
+    mate = Material(MATERIAL_XLSX_1)
+    assert mate.nodes[4].name_with_level == "#5 中間横桁"  # LEVEL5
+    assert mate.nodes[5].name_with_level == "中間横桁 本体"  # BLOCK
+    assert mate.nodes[6].name_with_level == "PL"  # DETAIL
+    assert mate.nodes[8].name_with_level == "*="  # PAINT
