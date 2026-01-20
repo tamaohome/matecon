@@ -1,3 +1,4 @@
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QTreeWidget, QTreeWidgetItem
 
 from matecon.models.material import Material, MaterialNode
@@ -14,6 +15,8 @@ class MaterialTreeView(QTreeWidget):
         header_names = ["名称", "員数"]
         self.setColumnCount(len(header_names))
         self.setHeaderLabels(header_names)
+        right_vcenter = Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
+        self.headerItem().setTextAlignment(1, right_vcenter)
 
         # 列幅の設定
         self.setColumnWidth(0, 300)  # レベル・名称
@@ -41,6 +44,11 @@ class MaterialTreeView(QTreeWidget):
     def _add_node_recursive(self, node: MaterialNode, parent_item):
         """`MaterialNode` ツリーを再帰的に `QTreeWidgetItem` へ変換"""
         item = QTreeWidgetItem(parent_item, [node.name, str(node.each)])
+
+        # 員数列を右揃え
+        right_vcenter = Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
+        item.setTextAlignment(1, right_vcenter)
+
         for child in node.children:
             self._add_node_recursive(child, item)
 
