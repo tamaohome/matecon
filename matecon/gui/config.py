@@ -45,7 +45,8 @@ class WindowGeometry:
 class ConfigManager:
     """GUI 設定を管理するクラス"""
 
-    def __init__(self, ini_file: Path = INI_FILE):
+    def __init__(self, widget: QWidget, ini_file: Path = INI_FILE):
+        self._widget = widget
         self.ini_file = ini_file
         self.config = configparser.ConfigParser()
         self._load()
@@ -57,6 +58,8 @@ class ConfigManager:
 
     def save(self):
         """設定ファイルに保存"""
+        geometry = WindowGeometry.from_qwidget(self._widget)
+        self._set_window_geometry(geometry)
         self.ini_file.parent.mkdir(parents=True, exist_ok=True)
         with self.ini_file.open("w", encoding=INI_FILE_ENCODING) as f:
             self.config.write(f)
@@ -71,7 +74,7 @@ class ConfigManager:
         height = self.config.getint("window", "height", fallback=WindowGeometry.default().height)
         return WindowGeometry(x, y, width, height)
 
-    def set_window_geometry(self, geometry: WindowGeometry):
+    def _set_window_geometry(self, geometry: WindowGeometry):
         """ウィンドウのジオメトリ (x, y, width, height) を保存"""
         if not self.config.has_section("window"):
             self.config.add_section("window")

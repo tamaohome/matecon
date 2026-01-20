@@ -3,9 +3,9 @@
 ## 🏗️ アーキテクチャ・リファクタリング
 
 - [ ] 肥大化した `Controller` への対処（責務の分散）
-- [ ] `Controller.is_valid_excel_file()` を `spreadsheet_reader` に移動するか検討
-- [ ] `MainWindow.closeEvent()` を整理: `view.py` で `WindowGeometry` のimportを不要にする
-- [ ] `MainToolBar.action_open` を private メソッドに変更
+- [x] `Controller.is_valid_excel_file()` を `spreadsheet_reader` に移動する
+- [x] `MainWindow.closeEvent()` を整理: `view.py` で `WindowGeometry` のimportを不要にする
+- [x] `MainToolBar.action_open` を private メソッドに変更
 
 ## 🏗️ アーキテクチャ・リファクタリング / モデル改善
 

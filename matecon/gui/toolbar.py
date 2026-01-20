@@ -26,12 +26,12 @@ class MainToolBar(QToolBar):
         default_icon_size = QSize(16, 16)
         self.setIconSize(default_icon_size)
 
-        self.action_open = QAction("ファイルを開く", self)
-        self.action_open.setShortcut("Ctrl+O")
-        self.action_open.triggered.connect(self.fileAddRequested.emit)
+        self._action_open = QAction("ファイルを開く", self)
+        self._action_open.setShortcut("Ctrl+O")
+        self._action_open.triggered.connect(self.fileAddRequested.emit)
         icon_open = self.style().standardIcon(QStyle.StandardPixmap.SP_DialogOpenButton)
-        self.action_open.setIcon(icon_open)
-        self.addAction(self.action_open)
+        self._action_open.setIcon(icon_open)
+        self.addAction(self._action_open)
 
         self._action_convert = QAction("テキストに変換", self)
         self._action_convert.setShortcut("Ctrl+E")

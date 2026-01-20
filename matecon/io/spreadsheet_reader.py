@@ -7,6 +7,15 @@ from openpyxl.worksheet.worksheet import Worksheet
 READABLE_EXTS = [".xlsx", ".xlsm"]
 
 
+def is_valid_excel_file(excel_filepath: str | Path) -> bool:
+    """有効なExcelファイルの場合 `True` を返す"""
+    try:
+        validate_excel_filepath(excel_filepath)
+        return True
+    except (FileNotFoundError, ValueError, OSError):
+        return False
+
+
 def validate_excel_filepath(filepath: str | Path) -> Path:
     """バリデーション済みのExcelファイルパスを返す"""
     filepath = Path(filepath)
