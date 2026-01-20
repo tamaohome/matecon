@@ -22,6 +22,9 @@ class MaterialTreeView(QTreeWidget):
         self.setColumnWidth(0, 300)  # レベル・名称
         self.setColumnWidth(1, 30)  # 員数
 
+        # インデント幅の設定
+        self.setIndentation(16)
+
         self.reload()
 
     def reload(self, material: Material | None = None):
