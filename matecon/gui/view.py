@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from matecon.gui.config import ConfigManager, WindowGeometry
+from matecon.gui.config import ConfigManager
 from matecon.gui.controller import Controller, OperationType
 from matecon.gui.file_card import FileCardContainer
 from matecon.gui.material_treeview import MaterialTreeView
@@ -26,7 +26,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.config_manager = ConfigManager()
+        self.config_manager = ConfigManager(self)
         self.controller = Controller(
             parent=self,
             on_success=self._on_success,
@@ -165,7 +165,5 @@ class MainWindow(QMainWindow):
     @override
     def closeEvent(self, event):
         """ウィンドウを閉じる前に設定を保存"""
-        geometry = WindowGeometry.from_qwidget(self)
-        self.config_manager.set_window_geometry(geometry)
         self.config_manager.save()
         event.accept()
