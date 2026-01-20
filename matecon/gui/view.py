@@ -49,8 +49,6 @@ class MainWindow(QMainWindow):
         # メインレイアウト
         central_widget = QWidget()
         self.h_layout = QHBoxLayout()
-        self.h_layout.setSpacing(12)
-        self.h_layout.setContentsMargins(16, 16, 16, 16)
         central_widget.setLayout(self.h_layout)
         self.setCentralWidget(central_widget)
         self.splitter = QSplitter()
