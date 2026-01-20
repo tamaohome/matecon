@@ -68,7 +68,6 @@ class MainWindow(QMainWindow):
         # シグナルとスロットを接続
         self.controller.excelFilesChanged.connect(self._on_excel_files_changed)
         self.controller.materialChanged.connect(self._on_material_changed)
-        self.controller.treeExpandDepthChanged.connect(self._on_tree_expand_depth_changed)
 
     @override
     def dragEnterEvent(self, event):
@@ -99,12 +98,6 @@ class MainWindow(QMainWindow):
     def _on_material_changed(self, material: Material):
         """`Material` インスタンス変更時のスロット"""
         self.material_tree.reload(material)  # ツリーを更新
-        depth = self.controller.tree_expand_depth
-        self.material_tree.expand_to_depth(depth)  # ツリーを展開
-
-    def _on_tree_expand_depth_changed(self, depth: int):
-        """ツリー展開深さ変更時のスロット"""
-        self.material_tree.expand_to_depth(depth)
 
     def _on_card_remove_requested(self, filepath):
         """
