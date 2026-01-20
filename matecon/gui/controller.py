@@ -7,7 +7,7 @@ from pathlib import Path
 from PySide6.QtCore import QObject, Signal
 
 from matecon.io.io import write_text_file
-from matecon.io.spreadsheet_reader import validate_excel_filepath
+from matecon.io.spreadsheet_reader import is_valid_excel_file
 from matecon.models.material import Material
 from matecon.utils.collections import PathSet
 
@@ -36,18 +36,10 @@ class Controller(QObject):
         self._excel_files = PathSet()  # Excelファイルリスト
         self._tree_expand_depth = 6  # ツリー展開深さ
 
-    def is_valid_excel_file(self, excel_filepath: str | Path) -> bool:
-        """有効なExcelファイルの場合 `True` を返す"""
-        try:
-            validate_excel_filepath(excel_filepath)
-            return True
-        except (FileNotFoundError, ValueError, OSError):
-            return False
-
     def add_excel_file(self, filepath: Path) -> Path:
         """Excelファイルを追加する"""
         try:
-            if not self.is_valid_excel_file(filepath):
+            if not is_valid_excel_file(filepath):
                 raise ValueError(f"無効なExcelファイルです:\n{filepath}")
             if filepath in self._excel_files:
                 raise ValueError(f"すでに追加済みのファイルです:\n{filepath}")
