@@ -94,3 +94,22 @@ class ConfigManager:
         if not self.config.has_section("paths"):
             self.config.add_section("paths")
         self.config.set("paths", "last_directory", directory)
+
+    def get_splitter_sizes(self) -> list[int] | None:
+        """スプリッターのサイズを取得"""
+        if not self.config.has_section("splitter"):
+            return None
+        sizes_str = self.config.get("splitter", "sizes", fallback="")
+        if not sizes_str:
+            return None
+        try:
+            return [int(s.strip()) for s in sizes_str.split(",") if s.strip()]
+        except ValueError:
+            return None
+
+    def set_splitter_sizes(self, sizes: list[int]):
+        """スプリッターのサイズを保存"""
+        if not self.config.has_section("splitter"):
+            self.config.add_section("splitter")
+        sizes_str = ",".join(str(s) for s in sizes)
+        self.config.set("splitter", "sizes", sizes_str)
