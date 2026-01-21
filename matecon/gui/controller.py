@@ -17,7 +17,6 @@ class Controller(QObject):
 
     excelFilesChanged = Signal(list)
     materialChanged = Signal(Material)
-    treeExpandDepthChanged = Signal(int)
 
     def __init__(
         self,
@@ -34,7 +33,6 @@ class Controller(QObject):
         # 状態管理変数
         self._material: Material | None = None  # 材片情報
         self._excel_files = PathSet()  # Excelファイルリスト
-        self._tree_expand_depth = 6  # ツリー展開深さ
 
     def add_excel_file(self, filepath: Path) -> Path:
         """Excelファイルを追加する"""
@@ -134,11 +132,6 @@ class Controller(QObject):
     def material(self) -> Material | None:
         """材片情報"""
         return self._material
-
-    @property
-    def tree_expand_depth(self) -> int:
-        """ツリー展開深さ"""
-        return self._tree_expand_depth
 
 
 class OperationType(Enum):
