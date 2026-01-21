@@ -31,6 +31,9 @@ class MaterialTreeView(QTreeWidget):
         # インデント幅の設定
         self.setIndentation(16)
 
+        # スクロールバーを常に表示
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+
         self.reload()
 
     def reload(self, material: Material | None = None):
