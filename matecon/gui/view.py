@@ -35,10 +35,6 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("まてコン")
 
-        # 保存されたウィンドウ設定を復元
-        geometry = self.config_manager.get_window_geometry()
-        self.setGeometry(geometry.to_qrect())
-
         # ツールバー
         self.toolbar = MainToolBar(self)
         self.toolbar.fileAddRequested.connect(self.dialog_open_file)
@@ -63,11 +59,20 @@ class MainWindow(QMainWindow):
         self.material_tree = MaterialTreeView()
         self.splitter.addWidget(self.material_tree)
 
-        self.setAcceptDrops(True)  # ドロップ受付を有効化
-
         # シグナルとスロットを接続
         self.controller.excelFilesChanged.connect(self._on_excel_files_changed)
         self.controller.materialChanged.connect(self._on_material_changed)
+
+        # 保存されたウィンドウ設定を復元
+        window_geometry = self.config_manager.get_window_geometry()
+        self.setGeometry(window_geometry.to_qrect())
+
+        # 保存されたsplitter位置を復元
+        splitter_sizes = self.config_manager.get_splitter_sizes()
+        if splitter_sizes and len(splitter_sizes) == self.splitter.count():
+            self.splitter.setSizes(splitter_sizes)
+
+        self.setAcceptDrops(True)  # ドロップ受付を有効化
 
     @override
     def dragEnterEvent(self, event):
@@ -156,5 +161,7 @@ class MainWindow(QMainWindow):
     @override
     def closeEvent(self, event):
         """ウィンドウを閉じる前に設定を保存"""
+        # splitter位置を保存
+        self.config_manager.set_splitter_sizes(self.splitter.sizes())
         self.config_manager.save()
         event.accept()
