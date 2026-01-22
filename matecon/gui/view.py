@@ -54,10 +54,12 @@ class MainWindow(QMainWindow):
         self.card_container = FileCardContainer()
         self.card_container.fileCardRemoveRequested.connect(self._on_card_remove_requested)
         self.splitter.addWidget(self.card_container)
+        self.splitter.setStretchFactor(0, 0)  # ファイルカードの幅を固定
 
         # ツリービュー
         self.material_tree = MaterialTreeView()
         self.splitter.addWidget(self.material_tree)
+        self.splitter.setStretchFactor(1, 1)  # ツリービューの幅をストレッチ
 
         # シグナルとスロットを接続
         self.controller.excelFilesChanged.connect(self._on_excel_files_changed)

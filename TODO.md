@@ -6,7 +6,7 @@
 - [ ] ファイルパスをコマンドライン引数としてアプリに渡す処理
 - [ ] ファイル未選択状態で「ここにファイルをドラッグ」というヒントを表示 (`FileCardContainer`)
 - [x] ウインドウ幅変化時のツリー列幅の挙動を調整 (`MaterialTreeView`)
-- [ ] ウインドウ幅変化時のファイルカードリスト幅の挙動を調整 (`FileCardContainer`)
+- [x] ウインドウ幅変化時のファイルカードリスト幅の挙動を調整 (`FileCardContainer`)
 
 ## ✨ feat/gui/preferences
 
