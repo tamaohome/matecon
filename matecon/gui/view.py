@@ -22,14 +22,10 @@ from matecon.models.material import Material
 class MainWindow(QMainWindow):
     """メインウィンドウクラス"""
 
-    def __init__(self):
+    def __init__(self, initial_filepaths: Sequence[Path] | None = None):
         super().__init__()
         self.settings = WindowSettings()  # ウィンドウ設定
-        self.controller = Controller(
-            parent=self,
-            on_success=self._on_success,
-            on_error=self._on_error,
-        )
+        self.controller = Controller(parent=self, on_success=self._on_success, on_error=self._on_error)
 
         self.setWindowTitle("まてコン")
 
@@ -63,6 +59,10 @@ class MainWindow(QMainWindow):
         self.restore_window_settings()
 
         self.setAcceptDrops(True)  # ドロップ受付を有効化
+
+        # コマンドライン引数からファイルパスを取得
+        if initial_filepaths:
+            self.controller.add_excel_files(initial_filepaths)
 
     def save_window_settings(self) -> None:
         """ウィンドウ設定を保存"""
