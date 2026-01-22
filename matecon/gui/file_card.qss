@@ -35,3 +35,11 @@ FileCard #removeButton {
     border: none;
     background: transparent;
 }
+
+FileCardContainer #hintLabel {
+    font-weight: normal;
+    color: #666;
+    margin: 8px;
+    border: 1px dashed #666;
+    border-radius: 8px;
+}

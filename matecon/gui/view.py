@@ -6,11 +6,9 @@ from typing import override
 
 from PySide6.QtWidgets import (
     QFileDialog,
-    QHBoxLayout,
     QMainWindow,
     QMessageBox,
     QSplitter,
-    QWidget,
 )
 
 from matecon.gui.controller import Controller, OperationType
@@ -24,14 +22,10 @@ from matecon.models.material import Material
 class MainWindow(QMainWindow):
     """メインウィンドウクラス"""
 
-    def __init__(self):
+    def __init__(self, initial_filepaths: Sequence[Path] | None = None):
         super().__init__()
         self.settings = WindowSettings()  # ウィンドウ設定
-        self.controller = Controller(
-            parent=self,
-            on_success=self._on_success,
-            on_error=self._on_error,
-        )
+        self.controller = Controller(parent=self, on_success=self._on_success, on_error=self._on_error)
 
         self.setWindowTitle("まてコン")
 
@@ -43,21 +37,19 @@ class MainWindow(QMainWindow):
         self.addToolBar(self.toolbar)
 
         # メインレイアウト
-        central_widget = QWidget()
-        self.h_layout = QHBoxLayout()
-        central_widget.setLayout(self.h_layout)
-        self.setCentralWidget(central_widget)
         self.splitter = QSplitter()
-        self.h_layout.addWidget(self.splitter)
+        self.setCentralWidget(self.splitter)
 
         # ファイルカードコンテナ
         self.card_container = FileCardContainer()
         self.card_container.fileCardRemoveRequested.connect(self._on_card_remove_requested)
         self.splitter.addWidget(self.card_container)
+        self.splitter.setStretchFactor(0, 0)  # ファイルカードの幅を固定
 
         # ツリービュー
         self.material_tree = MaterialTreeView()
         self.splitter.addWidget(self.material_tree)
+        self.splitter.setStretchFactor(1, 1)  # ツリービューの幅をストレッチ
 
         # シグナルとスロットを接続
         self.controller.excelFilesChanged.connect(self._on_excel_files_changed)
@@ -67,6 +59,10 @@ class MainWindow(QMainWindow):
         self.restore_window_settings()
 
         self.setAcceptDrops(True)  # ドロップ受付を有効化
+
+        # コマンドライン引数からファイルパスを取得
+        if initial_filepaths:
+            self.controller.add_excel_files(initial_filepaths)
 
     def save_window_settings(self) -> None:
         """ウィンドウ設定を保存"""

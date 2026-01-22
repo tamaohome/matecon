@@ -5,7 +5,17 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from PySide6.QtCore import QSize, Qt, Signal
-from PySide6.QtWidgets import QFrame, QHBoxLayout, QPushButton, QScrollArea, QStyle, QVBoxLayout, QWidget
+from PySide6.QtWidgets import (
+    QFrame,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QScrollArea,
+    QSizePolicy,
+    QStyle,
+    QVBoxLayout,
+    QWidget,
+)
 
 from matecon.gui.utils import load_stylesheet
 from matecon.gui.widgets.elided_label import ElidedLabel
@@ -71,28 +81,41 @@ class FileCardContainer(QScrollArea):
         self._layout = QVBoxLayout()
         self._layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.setLayout(self._layout)
+
+        # ドラッグヒントラベル
+        self._hint_label = QLabel("ここに Excel ファイルをドラッグ")
+        self._hint_label.setObjectName("hintLabel")
+        self._hint_label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self._hint_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._layout.addWidget(self._hint_label)
+
         self._apply_styles()
 
     def reload(self, filepaths: Sequence[Path]) -> None:
         """ファイルカードを更新する"""
-        self.clear_cards()  # 表示済みのカードをクリア
+        self._clear_cards()  # 表示済みのカードをクリア
+        self._add_cards(filepaths)
+
+        # ファイルが存在しない場合のみヒントラベルを表示
+        self._hint_label.setVisible(self.is_empty())
+
+    def _add_cards(self, filepaths: Sequence[Path]) -> None:
+        """ファイルカードウィジェットを追加する"""
         for filepath in filepaths:
             card = FileCard(filepath, self)
             card.fileRemoveRequested.connect(self.fileCardRemoveRequested.emit)
             self._cards.append(card)
             self._layout.addWidget(card)
 
-    def clear_cards(self):
+    def _clear_cards(self):
         """ファイルカードリストを消去"""
-        while self._layout.count():
-            item = self._layout.takeAt(0)
-            if w := item.widget():
-                w.deleteLater()
-        self._cards.clear()
+        while self.count():
+            card = self._cards.pop(0)
+            card.deleteLater()
 
     def is_empty(self) -> bool:
         """ファイルカードが存在しない場合は True を返す"""
-        return len(self.cards) == 0
+        return self.count() == 0
 
     def count(self) -> int:
         """ファイルカード数を取得"""
