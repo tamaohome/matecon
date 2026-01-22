@@ -8,6 +8,10 @@
 - [x] ウインドウ幅変化時のツリー列幅の挙動を調整 (`MaterialTreeView`)
 - [x] ウインドウ幅変化時のファイルカードリスト幅の挙動を調整 (`FileCardContainer`)
 
+## ✨ feat/gui/material_treeview
+
+- [ ] END行はツリー表示から除外する
+
 ## ✨ feat/gui/preferences
 
 - [ ] 環境設定クラス `PreferencesDialog` の実装
@@ -66,6 +70,7 @@
 
 - [ ] pyinstaller でビルド済みのバイナリファイルを追加
 - [ ] インストーラの検討 (Inno Setup)
+- [ ] アプリアイコンの追加
 
 ## 📖 docs
 
