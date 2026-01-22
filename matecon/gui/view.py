@@ -6,11 +6,9 @@ from typing import override
 
 from PySide6.QtWidgets import (
     QFileDialog,
-    QHBoxLayout,
     QMainWindow,
     QMessageBox,
     QSplitter,
-    QWidget,
 )
 
 from matecon.gui.controller import Controller, OperationType
@@ -43,12 +41,8 @@ class MainWindow(QMainWindow):
         self.addToolBar(self.toolbar)
 
         # メインレイアウト
-        central_widget = QWidget()
-        self.h_layout = QHBoxLayout()
-        central_widget.setLayout(self.h_layout)
-        self.setCentralWidget(central_widget)
         self.splitter = QSplitter()
-        self.h_layout.addWidget(self.splitter)
+        self.setCentralWidget(self.splitter)
 
         # ファイルカードコンテナ
         self.card_container = FileCardContainer()
