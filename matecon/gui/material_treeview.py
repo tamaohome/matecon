@@ -4,7 +4,7 @@ from typing import override
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QAction, QActionGroup, QContextMenuEvent
-from PySide6.QtWidgets import QMenu, QTreeWidget, QTreeWidgetItem
+from PySide6.QtWidgets import QHeaderView, QMenu, QTreeWidget, QTreeWidgetItem
 
 from matecon.models.material import Material, MaterialNode
 
@@ -25,8 +25,11 @@ class MaterialTreeView(QTreeWidget):
         self.headerItem().setTextAlignment(1, right_vcenter)
 
         # 列幅の設定
-        self.setColumnWidth(0, 300)  # レベル・名称
-        self.setColumnWidth(1, 30)  # 員数
+        header = self.header()
+        header.setStretchLastSection(False)  # デフォルト挙動を無効化
+        header.setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)  # 名称列を自動伸縮
+        header.setSectionResizeMode(1, QHeaderView.ResizeMode.Fixed)  # 員数列の幅を固定
+        self.setColumnWidth(1, 30)  # 員数列の幅を固定
 
         # インデント幅の設定
         self.setIndentation(16)
