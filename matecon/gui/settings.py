@@ -3,10 +3,11 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-from PySide6.QtCore import QSettings
+from PySide6.QtCore import QSettings, QSize
 from PySide6.QtWidgets import QMainWindow, QSplitter
 
 INI_FILENAME = "matecon.ini"
+DEFAULT_WINDOW_SIZE = QSize(680, 420)
 
 
 class WindowSettings(QSettings):
@@ -37,6 +38,9 @@ class WindowSettings(QSettings):
         geometry = self.value("window/geometry")
         if geometry:
             window.restoreGeometry(geometry)
+        else:
+            # デフォルトサイズを使用
+            window.resize(DEFAULT_WINDOW_SIZE)
 
         window_state = self.value("window/windowState")
         if window_state:
