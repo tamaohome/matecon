@@ -1,4 +1,5 @@
 import sys
+from collections.abc import Sequence
 from pathlib import Path
 
 
@@ -33,6 +34,45 @@ def get_path_list(ext: str) -> list[Path]:
             p = input("ファイルパスを入力(またはこの画面にファイルをドラッグ): ")
             if p:
                 return [Path(p.replace('"', ""))]
+
+
+def get_filepaths_from_args(allow_exts: list[str], args: Sequence[str]) -> list[Path]:
+    """
+    コマンドライン引数からファイルパスのリストを取得する
+
+    無効なパス（ファイルが存在しない、対応形式でない）はスキップされ、警告メッセージが出力される
+    """
+    filepaths = []
+
+    for arg in args:
+        if not arg:
+            continue
+
+        # クォート・空白削除
+        clean_path = arg.strip('"').strip("'").strip()
+        if not clean_path:
+            continue
+
+        path = Path(clean_path)
+
+        # ファイル存在確認
+        if not path.exists():
+            print(f"警告: ファイルが存在しません: {path}")
+            continue
+
+        # ファイルであるか確認
+        if not path.is_file():
+            print(f"警告: ファイルではありません: {path}")
+            continue
+
+        # ファイル形式確認
+        if path.suffix.lower() not in allow_exts:
+            print(f"警告: サポートされていないファイル形式です: {path}")
+            continue
+
+        filepaths.append(path)
+
+    return filepaths
 
 
 def write_text_file(filepath: Path | str, lines: list[str]) -> Path:
