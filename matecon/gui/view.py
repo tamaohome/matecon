@@ -13,10 +13,10 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from matecon.gui.config import ConfigManager
 from matecon.gui.controller import Controller, OperationType
 from matecon.gui.file_card import FileCardContainer
 from matecon.gui.material_treeview import MaterialTreeView
+from matecon.gui.settings import WindowSettings
 from matecon.gui.toolbar import MainToolBar
 from matecon.models.material import Material
 
@@ -26,7 +26,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.config_manager = ConfigManager(self)
+        self.settings = WindowSettings()  # ウィンドウ設定
         self.controller = Controller(
             parent=self,
             on_success=self._on_success,
@@ -64,15 +64,19 @@ class MainWindow(QMainWindow):
         self.controller.materialChanged.connect(self._on_material_changed)
 
         # 保存されたウィンドウ設定を復元
-        window_geometry = self.config_manager.get_window_geometry()
-        self.setGeometry(window_geometry.to_qrect())
-
-        # 保存されたsplitter位置を復元
-        splitter_sizes = self.config_manager.get_splitter_sizes()
-        if splitter_sizes and len(splitter_sizes) == self.splitter.count():
-            self.splitter.setSizes(splitter_sizes)
+        self.restore_window_settings()
 
         self.setAcceptDrops(True)  # ドロップ受付を有効化
+
+    def save_window_settings(self) -> None:
+        """ウィンドウ設定を保存"""
+        self.settings.save_window_state(self)
+        self.settings.save_splitter_state(self.splitter)
+
+    def restore_window_settings(self) -> None:
+        """保存されたウィンドウ設定を復元"""
+        self.settings.restore_window_state(self)
+        self.settings.restore_splitter_state(self.splitter)
 
     @override
     def dragEnterEvent(self, event):
@@ -119,15 +123,14 @@ class MainWindow(QMainWindow):
     def dialog_open_file(self) -> None:
         """ファイル追加ダイアログを表示"""
         filter_str = "Excel Files (*.xlsx *.xlsm)"
-        last_dir = self.config_manager.get_last_directory()
+        last_dir = self.settings.get_last_dir()
         filepaths, _ = QFileDialog.getOpenFileNames(self, "Excelファイルを選択", last_dir, filter_str)
         if not filepaths:
             return
 
         # ディレクトリを保存
         parent_dir = str(Path(filepaths[0]).parent)
-        self.config_manager.set_last_directory(parent_dir)
-        self.config_manager.save()
+        self.settings.save_last_dir(parent_dir)
 
         # ファイルを追加
         self.controller.add_excel_files([Path(fp) for fp in filepaths])
@@ -161,7 +164,5 @@ class MainWindow(QMainWindow):
     @override
     def closeEvent(self, event):
         """ウィンドウを閉じる前に設定を保存"""
-        # splitter位置を保存
-        self.config_manager.set_splitter_sizes(self.splitter.sizes())
-        self.config_manager.save()
+        self.save_window_settings()
         event.accept()
