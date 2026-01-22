@@ -1,12 +1,16 @@
 # TODO
 
-## ✨ feat/gui
+## ✨ feat/gui/improvements
 
-- [ ] `Fusion` テーマの適用
+- [x] `Fusion` テーマの適用
 - [ ] ファイルパスをコマンドライン引数としてアプリに渡す処理
 - [ ] ファイル未選択状態で「ここにファイルをドラッグ」というヒントを表示 (`FileCardContainer`)
 - [ ] ウインドウ幅変化時のツリー列幅の挙動を調整 (`MaterialTreeView`)
-- [ ] 環境設定の実装
+- [ ] ウインドウ幅変化時のファイルカードリスト幅の挙動を調整 (`FileCardContainer`)
+
+## ✨ feat/gui/preferences
+
+- [ ] 環境設定クラス `PreferencesDialog` の実装
 
 ## ✨ feat/gui/controller
 
@@ -52,11 +56,6 @@
 ## 💎 refactor/gui/controller
 
 - [ ] `Controller` のクラス分割を検討
-
-## 💎 refactor/gui/config
-
-- [x] ウィンドウ設定管理クラスに `QSettings` を利用
-- [x] ウインドウ設定管理クラスの整理
 
 ## 💎 refactor/models
 

@@ -11,6 +11,7 @@ warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
 
 def app():
     app = QApplication(sys.argv)
+    app.setStyle("Fusion")
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
