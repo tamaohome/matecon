@@ -57,7 +57,7 @@
 
 - [ ] ウィンドウ設定管理クラスに `QSettings` を利用
 - [ ] ウインドウ設定管理クラスの整理
-- [ ] デフォルトウインドウサイズを調整 (`WindowGeometry`)
+- [x] デフォルトウインドウサイズを調整 (`WindowGeometry`)
 
 ## 💎 refactor/models
 

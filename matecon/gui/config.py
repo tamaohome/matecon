@@ -29,7 +29,7 @@ class WindowGeometry:
     @staticmethod
     def default() -> WindowGeometry:
         """デフォルト値を返す"""
-        return WindowGeometry(100, 100, 360, 180)
+        return WindowGeometry(100, 100, 680, 420)
 
     @staticmethod
     def from_qwidget(qwidget: QWidget) -> WindowGeometry:
