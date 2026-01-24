@@ -5,6 +5,7 @@ from matecon.models.material import DetailNode, Material, MaterialNode
 MATERIAL_XLSX_1 = "sample_data/MATERIAL_SAMPLE_1.xlsx"
 MATERIAL_XLSX_2 = "sample_data/MATERIAL_SAMPLE_2.xlsx"
 PHANTOM_XLSX = "sample_data/PHANTOM_FILE.xlsx"
+INVALID_XLSX = "sample_data/INVALID_MATERIAL_SHEETS.xlsx"
 
 
 def test_material():
@@ -12,6 +13,12 @@ def test_material():
     mate = Material(MATERIAL_XLSX_1, MATERIAL_XLSX_2)
     assert isinstance(mate.root, MaterialNode)
     assert len(mate.nodes) == 43
+
+
+def test_invalid_sheets():
+    """無効なシートを含むExcelファイルを読み込み"""
+    mate = Material(INVALID_XLSX)
+    assert len(mate.nodes) == 9
 
 
 def test_phantom_file():
