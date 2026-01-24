@@ -1,5 +1,5 @@
-from matecon.models.spreadsheet import BookNode
-from matecon.models.templates import TABLE_HEADER, format_line
+from matecon.io.excel_reader import ExcelReader
+from matecon.models.templates import MATERIAL_HEADER, format_line
 
 MATERIAL_XLSX = "sample_data/MATERIAL_SAMPLE_1.xlsx"
 
@@ -12,13 +12,14 @@ def test_templates():
         "WRT", "WRB", "WRL", "WRR"
         ]  # fmt: skip
 
-    assert set(TABLE_HEADER).issubset(set(sample_row))
-    assert not set(sample_row).issubset(set(TABLE_HEADER))
+    assert set(MATERIAL_HEADER).issubset(set(sample_row))
+    assert not set(sample_row).issubset(set(MATERIAL_HEADER))
 
 
 def test_template_from_spreadsheet():
-    book = BookNode(MATERIAL_XLSX, TABLE_HEADER)
-    assert isinstance(book, BookNode)
+    reader = ExcelReader(MATERIAL_XLSX, MATERIAL_HEADER)
+    book = reader.load_booknode()
+    assert book
 
 
 def test_template_format_line():
