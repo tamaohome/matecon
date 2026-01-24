@@ -1,13 +1,29 @@
+import pytest
+
 from matecon.models.material import DetailNode, Material, MaterialNode
 
 MATERIAL_XLSX_1 = "sample_data/MATERIAL_SAMPLE_1.xlsx"
 MATERIAL_XLSX_2 = "sample_data/MATERIAL_SAMPLE_2.xlsx"
+PHANTOM_XLSX = "sample_data/PHANTOM_FILE.xlsx"
 
 
 def test_material():
-    mate = Material(MATERIAL_XLSX_1)
+    """正常なExcelファイルの読み込み"""
+    mate = Material(MATERIAL_XLSX_1, MATERIAL_XLSX_2)
     assert isinstance(mate.root, MaterialNode)
-    assert len(mate.nodes) == 27
+    assert len(mate.nodes) == 43
+
+
+def test_phantom_file():
+    """存在しないExcelファイルの読み込み"""
+    with pytest.raises(FileNotFoundError):
+        Material(MATERIAL_XLSX_1, PHANTOM_XLSX)
+
+
+def test_no_material_sheets():
+    """有効なシートが存在しないExcelファイルの読み込み"""
+    with pytest.raises(ValueError, match="有効なシートが存在しません"):
+        Material(MATERIAL_XLSX_1, "sample_data/NO_MATERIAL_SHEETS.xlsx")
 
 
 def test_material_node_detail():
