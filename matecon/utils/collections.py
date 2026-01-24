@@ -1,4 +1,4 @@
-from collections.abc import Iterable, MutableSet
+from collections.abc import Iterable, Iterator, MutableSet
 from contextlib import suppress
 from pathlib import Path
 
@@ -41,7 +41,7 @@ class PathSet(MutableSet[Path]):
     def __getitem__(self, index: int) -> Path:
         return self._inner[index]
 
-    def __iter__(self) -> Iterable[Path]:
+    def __iter__(self) -> Iterator[Path]:
         return iter(self._inner)
 
     def __contains__(self, item: str | Path) -> bool:
