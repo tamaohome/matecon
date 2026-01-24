@@ -159,7 +159,6 @@ TEMPLATES = {
         Template("JV",     String, ( 37, 39), Align.L, False, "JVコード"),
         Template("ALIAS",  String, ( 40, 43), Align.L, False, "計上ブロック別名"),
     ],
-    # TODO: GROUP のテンプレートを追加
     MaterialNodeType.DETAIL: [
         #        name      type    pos        align    is_req dd
         Template("MARK",   String, (  0,  4), Align.L, True,  "形状記号"),

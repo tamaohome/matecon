@@ -1,17 +1,5 @@
 # TODO
 
-## ✨ feat/gui/improvements
-
-- [x] `Fusion` テーマの適用
-- [x] ファイルパスをコマンドライン引数としてアプリに渡す処理
-- [x] ファイル未選択状態で「ここにファイルをドラッグ」というヒントを表示 (`FileCardContainer`)
-- [x] ウインドウ幅変化時のツリー列幅の挙動を調整 (`MaterialTreeView`)
-- [x] ウインドウ幅変化時のファイルカードリスト幅の挙動を調整 (`FileCardContainer`)
-
-## ✨ feat/gui/material-treeview
-
-- [ ] END行はツリー表示から除外する
-
 ## ✨ feat/gui/preferences
 
 - [ ] 環境設定クラス `PreferencesDialog` の実装
@@ -51,9 +39,9 @@
   - 再読み込み時にファイルパスが存在しない場合、リストから除外
 - [ ] 追加済みの Excel ファイルが上書き保存 (タイムスタンプを更新) された場合、画面に通知する機能
 
-## ✨ feat/models/material
+## ✨ feat/models/material-line-for-drawing
 
-- [ ] `DetailNode` にツリー表示用文字列を返すプロパティ `tree_label` を実装
+- [x] `DetailNode` にツリー表示用文字列を返すプロパティ `line_for_drawing` を実装
   - 返り値の例: "PL 160 x 9 x 640 (SM400A)"
 
 ## 💎 refactor/gui

@@ -313,8 +313,25 @@ class DetailNode(MaterialNode):
     def __init__(self, parent: BlockNode, row: list | tuple):
         super().__init__(parent, 7, row)
 
-    def __repr__(self):
-        return "DetailNode()"
+    def line_for_drawing(self, *, compact=False) -> str:
+        """図面用フォーマットを返す"""
+        mark, s1, s2, s3, s4, l_, each, _, _, quality, *_ = self._row
+        line = f"{each} - {mark}"
+
+        if mark == "PL":
+            line += f" {s1} x {s2} x {l_} ({quality})"
+
+        if mark in ["TCB", "HTB", "BN", "BN2", "BOLT"]:
+            line += f" M{s1} x {l_} ({quality})"
+
+        if compact:
+            return line.replace(" ", "")
+        return line
+
+    @property
+    @override
+    def name(self) -> str:
+        return self.line_for_drawing()
 
 
 class PaintNode(MaterialNode):

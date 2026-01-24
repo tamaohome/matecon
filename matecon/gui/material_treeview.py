@@ -117,6 +117,7 @@ class MaterialTreeViewContextMenu(QMenu):
             ExpandAction("#4 まで展開", self, depth=4),
             ExpandAction("#5 まで展開", self, depth=5),
             ExpandAction("BLOCK まで展開", self, depth=6),
+            ExpandAction("DETAIL まで展開", self, depth=7),
         ]
         self._set_expand_actions(actions)
 
@@ -137,7 +138,7 @@ class ExpandAction(QAction):
     """
     `MaterialTreeView` を展開するアクション
 
-    - `level` には 1~6 を指定する
+    - `level` には 1~7 を指定する
     """
 
     def __init__(self, text: str, parent: MaterialTreeViewContextMenu, depth: int):
