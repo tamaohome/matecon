@@ -1,12 +1,12 @@
 from collections.abc import Sequence
 from pathlib import Path
 
-from matecon.models.spreadsheet import BookNode, SheetNode
+from matecon.io.excel_reader import BookNode, ExcelReader, SheetNode
 
 type FileListType = Sequence[Path | str]
 
 
-class Table:
+class BookContainer:
     """まてりある材片情報テーブルを管理するクラス"""
 
     def __init__(self, header: tuple[str, ...], filepaths: FileListType):
@@ -15,10 +15,12 @@ class Table:
 
     def _create_books(self, *filepaths: str | Path) -> list[BookNode]:
         """Excelファイルから `BookNode` のリストを生成する"""
-        book_node: list[BookNode] = []
+        booknodes: list[BookNode] = []
         for filepath in filepaths:
-            book_node.append(BookNode(filepath, self.header))
-        return book_node
+            reader = ExcelReader(filepath, self.header)
+            booknode = reader.load_booknode()
+            booknodes.append(booknode)
+        return booknodes
 
     @property
     def header(self) -> tuple[str, ...]:

@@ -6,8 +6,8 @@ from pathlib import Path
 
 from PySide6.QtCore import QObject, Signal
 
+from matecon.io.excel_reader import is_valid_excel_file
 from matecon.io.io import write_text_file
-from matecon.io.spreadsheet_reader import is_valid_excel_file
 from matecon.models.material import Material
 from matecon.utils.collections import PathSet
 

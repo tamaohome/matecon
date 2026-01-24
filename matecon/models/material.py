@@ -7,14 +7,14 @@ from typing import Final, override
 from anytree import NodeMixin, RenderTree
 
 from matecon.models import templates
-from matecon.models.table import Table
+from matecon.models.book_container import BookContainer
 
 
 class Material:
     """材片情報ノードの管理クラス"""
 
     def __init__(self, *filepaths: Path | str):
-        self._table = Table(templates.TABLE_HEADER, [Path(p) for p in filepaths])
+        self._table = BookContainer(templates.MATERIAL_HEADER, [Path(p) for p in filepaths])
         self._root = self._build_tree(self.table)
 
     def print_tree(self) -> None:
@@ -25,7 +25,7 @@ class Material:
                 continue
             print(f"{pre}{node.level} {node.name}")
 
-    def _build_tree(self, table: Table) -> MaterialNode:
+    def _build_tree(self, table: BookContainer) -> MaterialNode:
         # ルートノード
         root = MaterialNode(parent=None, level=0, row=[])
 
@@ -65,7 +65,7 @@ class Material:
         return self._root
 
     @property
-    def table(self) -> Table:
+    def table(self) -> BookContainer:
         return self._table
 
     @property

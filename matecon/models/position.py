@@ -8,6 +8,9 @@ class Position:
     def __str__(self) -> str:
         return f"({self.row}, {self.col})"
 
+    def __repr__(self) -> str:
+        return f"Position({self.row}, {self.col})"
+
     def __eq__(self, other):
         if isinstance(other, Position):
             return self.row == other.row and self.col == other.col
@@ -22,3 +25,7 @@ class Position:
         if isinstance(other, Position):
             return Position(self.row - other.row, self.col - other.col)
         return NotImplemented
+
+    @property
+    def to_tuple(self) -> tuple[int, int]:
+        return self.row, self.col

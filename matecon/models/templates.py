@@ -230,8 +230,8 @@ TEMPLATES = {
     ],
 }  # fmt: skip
 
-TABLE_HEADER = MaterialNodeType.DETAIL.table_header
-TABLE_HEADER_LEVEL = MaterialNodeType.LEVEL.table_header
-TABLE_HEADER_BLOCK = MaterialNodeType.BLOCK.table_header
-TABLE_HEADER_DETAIL = MaterialNodeType.DETAIL.table_header
-TABLE_HEADER_PAINT = MaterialNodeType.PAINT.table_header
+MATERIAL_HEADER = MaterialNodeType.DETAIL.table_header
+MATERIAL_HEADER_LEVEL = MaterialNodeType.LEVEL.table_header
+MATERIAL_HEADER_BLOCK = MaterialNodeType.BLOCK.table_header
+MATERIAL_HEADER_DETAIL = MaterialNodeType.DETAIL.table_header
+MATERIAL_HEADER_PAINT = MaterialNodeType.PAINT.table_header
