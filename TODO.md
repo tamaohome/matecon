@@ -49,9 +49,9 @@
 ## 💎 refactor/gui
 
 - [ ] `@Slot` の明示
-- [ ] ウィジェットの初期化処理メソッド名を整理 (`_setup_ui()`)
 - [ ] ウィジェットの初期化を `_setup_ui()` としてメソッド化
 - [ ] シグナル接続を `_connect_signals()` としてメソッド化
+- [x] スタイルシートをPythonコードに埋め込み
 
 ## 💎 refactor/gui/controller
 
