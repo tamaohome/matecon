@@ -34,22 +34,27 @@ class Controller(QObject):
         self._material: Material | None = None  # 材片情報
         self._excel_files = PathSet()  # Excelファイルリスト
 
-    def add_excel_file(self, filepath: Path) -> Path:
-        """Excelファイルを追加する"""
+    def add_excel_file(self, filepath: Path) -> Path | None:
+        """Excelファイルを追加"""
         try:
             if not is_valid_excel_file(filepath):
                 raise ValueError(f"無効なExcelファイルです:\n{filepath}")
             if filepath in self._excel_files:
                 raise ValueError(f"すでに追加済みのファイルです:\n{filepath}")
 
+            # 追加の Excel ファイルを加えて、新しい Material を生成
+            new_material = self._create_material(*self._excel_files, filepath)
+
+            # Material の生成が成功したら、Excel リストと Material を更新
             self._excel_files.add(filepath)
-            self._update_material()
             self.excelFilesChanged.emit(self._excel_files.to_list)  # 変更通知
+            self._material = new_material
+            self.materialChanged.emit(self._material)  # 変更通知
+
             print("ファイルを追加:", filepath)
             return filepath
         except Exception as e:
             self.on_error(OperationType.ADD_FILE, filepath, e)
-            raise
 
     def add_excel_files(self, filepaths: Sequence[Path]) -> list[Path]:
         """複数のExcelファイルを追加し、正常に追加したファイルパスのリストを返す"""
@@ -64,16 +69,14 @@ class Controller(QObject):
 
     def remove_excel_file(self, filepath: Path) -> None:
         """リストからExcelファイルを取り除く"""
-        try:
-            if filepath not in self._excel_files:
-                raise ValueError(f"ファイルがリストに存在しません:\n{filepath}")
-            self._excel_files.remove(filepath)
-            self._update_material()
-            self.excelFilesChanged.emit(self._excel_files.to_list)  # 変更通知
-            print("ファイルを除去:", filepath)
-        except Exception as e:
-            self.on_error(OperationType.REMOVE_FILE, filepath, e)
-            raise
+        if filepath not in self._excel_files:
+            return
+
+        self._excel_files.remove(filepath)
+        self.excelFilesChanged.emit(self._excel_files.to_list)  # 変更通知
+
+        self._material = self._create_material(*self._excel_files)
+        self.materialChanged.emit(self._material)  # 変更通知
 
     def convert_to_text_file(self, overwrite_confirm: Callable[[Path], bool] | None = None) -> Path | None:
         """
@@ -110,18 +113,14 @@ class Controller(QObject):
         """追加されたExcelファイル一覧をクリア"""
         self._excel_files.clear()
         self.excelFilesChanged.emit(self._excel_files.to_list)  # 変更通知
-        self._update_material()
-
-    def _update_material(self) -> None:
-        """現在のファイルパスリストを基に `Material` オブジェクトを更新する"""
-        self._material = self._create_material()
+        self._material = None
         self.materialChanged.emit(self._material)  # 変更通知
 
-    def _create_material(self) -> Material | None:
-        """`Material` オブジェクトを生成"""
+    def _create_material(self, *filepaths: Path) -> Material | None:
+        """ファイルパスを基に `Material` オブジェクトを生成"""
         if not self._excel_files:
             return None
-        return Material(*list(self._excel_files))
+        return Material(*list(filepaths))
 
     @property
     def excel_files(self) -> list[Path]:
