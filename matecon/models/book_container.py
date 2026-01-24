@@ -6,7 +6,7 @@ from matecon.io.excel_reader import BookNode, ExcelReader, SheetNode
 type FileListType = Sequence[Path | str]
 
 
-class Table:
+class BookContainer:
     """まてりある材片情報テーブルを管理するクラス"""
 
     def __init__(self, header: tuple[str, ...], filepaths: FileListType):
