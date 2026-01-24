@@ -17,7 +17,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from matecon.gui.utils import load_stylesheet
 from matecon.gui.widgets.elided_label import ElidedLabel
 
 
@@ -123,9 +122,57 @@ class FileCardContainer(QScrollArea):
 
     def _apply_styles(self):
         """スタイルシートを適用"""
-        qss = load_stylesheet("file_card.qss")
-        self.setStyleSheet(qss)
+        self.setStyleSheet(_FILE_CARD_STYLESHEET)
 
     @property
     def cards(self) -> tuple[FileCard, ...]:
         return tuple(self._cards)
+
+
+_FILE_CARD_STYLESHEET = """
+QWidget {
+    spacing: 8px;
+}
+
+FileCard {
+    max-height: 60px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #fff;
+    padding: 4px;
+}
+
+FileCard:hover {
+    border: 1px solid #bbb;
+    background-color: #f5f5f5;
+}
+
+FileCard QLabel {
+    color: #333;
+}
+
+FileCard #nameLabel {
+    font-weight: bold;
+    font-size: 11pt;
+    color: #1a1a1a;
+}
+
+FileCard #pathLabel {
+    font-weight: normal;
+    font-size: 9pt;
+    color: #666;
+}
+
+FileCard #removeButton {
+    border: none;
+    background: transparent;
+}
+
+FileCardContainer #hintLabel {
+    font-weight: normal;
+    color: #666;
+    margin: 8px;
+    border: 1px dashed #666;
+    border-radius: 8px;
+}
+"""
