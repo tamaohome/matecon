@@ -14,7 +14,7 @@ class Material:
     """材片情報ノードの管理クラス"""
 
     def __init__(self, *filepaths: Path | str):
-        self._table = Table(templates.TABLE_HEADER, [Path(p) for p in filepaths])
+        self._table = Table(templates.MATERIAL_HEADER, [Path(p) for p in filepaths])
         self._root = self._build_tree(self.table)
 
     def print_tree(self) -> None:
