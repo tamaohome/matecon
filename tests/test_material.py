@@ -14,8 +14,7 @@ def test_material_node_detail():
     mate = Material(MATERIAL_XLSX_1)
     node = mate.nodes[13]
 
-    assert node.name == "PL"
-    # assert node.node_type == MaterialNodeType.DETAIL
+    assert node.name == "1 - PL 160 x 9 x 640 (SS400)"
     assert node.hierarchy_names == [
         "サンプル橋",
         "上部構造",
@@ -23,9 +22,8 @@ def test_material_node_detail():
         "横桁",
         "中間横桁",
         "中間横桁 仕口",
-        "PL",
+        "1 - PL 160 x 9 x 640 (SS400)",
     ]
-    print(node)
 
 
 def test_material_line_for_drawing():
@@ -44,7 +42,8 @@ def test_material_line_for_drawing():
 
 def test_material_node_values():
     mate = Material(MATERIAL_XLSX_1)
-    node = mate.nodes[20]  # DETAIL
+    node = mate.nodes[20]
+    assert isinstance(node, DetailNode)
     assert node.values[0] == "PL"
     assert node.values[1] == 220
     assert node.values[2] == 4.5
@@ -57,7 +56,8 @@ def test_material_node_values():
 
 def test_material_node_slice():
     mate = Material(MATERIAL_XLSX_1)
-    node = mate.nodes[20]  # DETAIL
+    node = mate.nodes[20]
+    assert isinstance(node, DetailNode)
     assert node.values[:6] == ["PL", 220, 4.5, None, None, 800]
     assert node.values[29:31] == ["M", "M"]
 
@@ -106,7 +106,7 @@ def test_material_tree():
     # DETAIL (1) PL
     node_detail_1 = node_block.children[0]
     assert node_detail_1.is_leaf  # PaintNode がが存在しないため、末端ノード
-    assert node_detail_1.name == "PL"
+    assert node_detail_1.name == "2 - PL 220 x 16 x 2200 (SM490YA)"
     assert node_detail_1.level == 7
 
     # DETAIL (2) PL
@@ -163,5 +163,5 @@ def test_material_name_with_level():
     mate = Material(MATERIAL_XLSX_1)
     assert mate.nodes[4].name_with_level == "#5 中間横桁"  # LEVEL5
     assert mate.nodes[5].name_with_level == "中間横桁 本体"  # BLOCK
-    assert mate.nodes[6].name_with_level == "PL"  # DETAIL
+    assert mate.nodes[6].name_with_level == "2 - PL 220 x 16 x 2200 (SM490YA)"  # DETAIL
     assert mate.nodes[8].name_with_level == "*="  # PAINT
