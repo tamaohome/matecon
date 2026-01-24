@@ -1,4 +1,4 @@
-from matecon.models.material import Material, MaterialNode
+from matecon.models.material import DetailNode, Material, MaterialNode
 
 MATERIAL_XLSX_1 = "sample_data/MATERIAL_SAMPLE_1.xlsx"
 MATERIAL_XLSX_2 = "sample_data/MATERIAL_SAMPLE_2.xlsx"
@@ -27,9 +27,19 @@ def test_material_node_detail():
     ]
     print(node)
 
-    # TODO: DETAIL文字列フォーマットを実装
-    # node.line_for_drawing = "1 - CONN PL 160 x 9 x 640 (SM400A)"
-    # node.line_for_tree = "PL 160 x 9 x 640 (SM400A)"
+
+def test_material_line_for_drawing():
+    """図面用フォーマット"""
+    mate = Material(MATERIAL_XLSX_1)
+
+    node_1 = mate.nodes[13]
+    assert isinstance(node_1, DetailNode)
+    assert node_1.line_for_drawing() == "1 - PL 160 x 9 x 640 (SS400)"
+    assert node_1.line_for_drawing(compact=True) == "1-PL160x9x640(SS400)"
+
+    node_2 = mate.nodes[22]
+    assert isinstance(node_2, DetailNode)
+    assert node_2.line_for_drawing() == "16 - BN2 M12 x 45 (4.6)"
 
 
 def test_material_node_values():
