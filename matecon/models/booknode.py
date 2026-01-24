@@ -10,6 +10,7 @@ from openpyxl.cell.cell import Cell, MergedCell
 from openpyxl.cell.read_only import EmptyCell, ReadOnlyCell
 
 from matecon.models.position import Position
+from matecon.models.templates import level_detector
 from matecon.utils.strings import zen2han
 
 type ExcelCell = Cell | ReadOnlyCell | MergedCell | EmptyCell
@@ -126,6 +127,11 @@ class SheetNode(NodeMixin):
         except ValueError:
             # ヘッダー行が存在しない場合、自ノードを破棄する
             self.parent = None
+            return
+
+        # 無効な階層の場合、自ノードを破棄する
+        if not self._is_valid_hierarchy():
+            self.parent = None
 
     def __str__(self):
         return pformat(self.table)[1:-1]
@@ -178,6 +184,26 @@ class SheetNode(NodeMixin):
     def _get_table(self) -> SheetType:
         row_n, col_n = self.table_origin.to_tuple
         return tuple(row[col_n:] for row in self._rows[row_n:])
+
+    def _is_valid_hierarchy(self) -> bool:
+        """シートが正しい階層構造の場合は `True` を返す"""
+        last_level = 0
+        for row in self.table:
+            level = level_detector(row)
+            # その他の行の場合はスキップ
+            if level is None:
+                continue
+            # 最初の階層が #1 ではない場合 False
+            if last_level == 0 and level != 1:
+                return False
+            # 現在の階層が前回の階層より2以上深い場合 False
+            if level - last_level >= 2:
+                return False
+            # DETAIL, PAINT行以外で前回と同じ階層の場合 False
+            if not 7 <= level <= 8 and level == last_level:
+                return False
+            last_level = level
+        return True
 
     @property
     def header_position(self) -> Position:
