@@ -11,7 +11,7 @@ class BookContainer:
 
     def __init__(self, header: tuple[str, ...], filepaths: FileListType):
         self._header = header
-        self._books: list[BookNode] = self._create_books(*filepaths)
+        self._books = self._create_books(*filepaths)
 
     def _create_books(self, *filepaths: str | Path) -> list[BookNode]:
         """Excelファイルから `BookNode` のリストを生成する"""

@@ -14,18 +14,18 @@ class Material:
     """材片情報ノードの管理クラス"""
 
     def __init__(self, *filepaths: Path | str):
-        self._table = BookContainer(templates.MATERIAL_HEADER, [Path(p) for p in filepaths])
-        self._root = self._build_tree(self.table)
+        self._container = BookContainer(templates.MATERIAL_HEADER, [Path(p) for p in filepaths])
+        self._root = self._build_tree(self.container)
 
     def print_tree(self) -> None:
         """ツリーを表示"""
-        print(self.table.filepaths)
+        print(self.container.filepaths)
         for pre, _, node in RenderTree(self.root):
             if node.parent is None:
                 continue
             print(f"{pre}{node.level} {node.name}")
 
-    def _build_tree(self, table: BookContainer) -> MaterialNode:
+    def _build_tree(self, container: BookContainer) -> MaterialNode:
         # ルートノード
         root = MaterialNode(parent=None, level=0, row=[])
 
@@ -33,7 +33,7 @@ class Material:
         level_nodes = {0: [root]}
 
         # ノードツリーの構築
-        for row in table.rows:
+        for row in container.rows:
             level = templates.level_detector(row)
 
             if level is None:
@@ -65,8 +65,8 @@ class Material:
         return self._root
 
     @property
-    def table(self) -> BookContainer:
-        return self._table
+    def container(self) -> BookContainer:
+        return self._container
 
     @property
     def nodes(self) -> tuple[MaterialNode, ...]:
@@ -92,7 +92,7 @@ class Material:
 
     @property
     def filepaths(self) -> list[Path]:
-        return self.table.filepaths
+        return self.container.filepaths
 
 
 def check_not_root(func):
