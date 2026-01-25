@@ -1,5 +1,6 @@
 from helpers import read_txt_file
 
+from matecon.models.excel_file import ExcelFile
 from matecon.models.material import Material
 
 MATERIAL_XLSX_1 = "sample_data/MATERIAL_SAMPLE_1.xlsx"
@@ -12,7 +13,8 @@ TXT_SAMPLE_12 = read_txt_file(MATERIAL_TXT_12)
 
 def test_material_format_block_line():
     """BLOCKノードの員数"""
-    mate = Material(MATERIAL_XLSX_1)
+    excel_files = [ExcelFile(MATERIAL_XLSX_1)]
+    mate = Material(excel_files)
     node1 = mate.nodes[5]
     node2 = mate.nodes[12]
     assert node1.format_line == "     中間横桁本体                 6"
@@ -21,13 +23,16 @@ def test_material_format_block_line():
 
 def test_material_format_lines_single_file():
     """単一ファイルで生成した `Material` の出力形式チェック"""
-    mate = Material(MATERIAL_XLSX_1)
+    excel_files = [ExcelFile(MATERIAL_XLSX_1)]
+    mate = Material(excel_files)
     lines = mate.format_lines
     assert lines == TXT_SAMPLE_1
 
 
 def test_material_format_lines_multi_files():
     """複数ファイルで生成した `Material` の出力形式チェック"""
-    mate = Material(MATERIAL_XLSX_1, MATERIAL_XLSX_2)
+    filepaths = [MATERIAL_XLSX_1, MATERIAL_XLSX_2]
+    excel_files = [ExcelFile(f) for f in filepaths]
+    mate = Material(excel_files)
     lines = mate.format_lines
     assert lines == TXT_SAMPLE_12

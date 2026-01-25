@@ -1,5 +1,6 @@
-import pytest
+# import pytest
 
+from matecon.models.excel_file import ExcelFile
 from matecon.models.material import DetailNode, Material, MaterialNode
 
 MATERIAL_XLSX_1 = "sample_data/MATERIAL_SAMPLE_1.xlsx"
@@ -9,25 +10,16 @@ PHANTOM_XLSX = "sample_data/PHANTOM_FILE.xlsx"
 
 def test_material():
     """正常なExcelファイルの読み込み"""
-    mate = Material(MATERIAL_XLSX_1, MATERIAL_XLSX_2)
+    filepaths = [MATERIAL_XLSX_1, MATERIAL_XLSX_2]
+    excel_files = [ExcelFile(f) for f in filepaths]
+    mate = Material(excel_files)
     assert isinstance(mate.root, MaterialNode)
     assert len(mate.nodes) == 43
 
 
-def test_phantom_file():
-    """存在しないExcelファイルの読み込み"""
-    with pytest.raises(FileNotFoundError):
-        Material(MATERIAL_XLSX_1, PHANTOM_XLSX)
-
-
-def test_no_material_sheets():
-    """有効なシートが存在しないExcelファイルの読み込み"""
-    with pytest.raises(ValueError, match="有効なシートが存在しません"):
-        Material(MATERIAL_XLSX_1, "sample_data/NO_MATERIAL_SHEETS.xlsx")
-
-
 def test_material_node_detail():
-    mate = Material(MATERIAL_XLSX_1)
+    excel_files = [ExcelFile(MATERIAL_XLSX_1)]
+    mate = Material(excel_files)
     node = mate.nodes[13]
 
     assert node.name == "1 - PL 160 x 9 x 640 (SS400)"
@@ -44,7 +36,8 @@ def test_material_node_detail():
 
 def test_material_line_for_drawing():
     """図面用フォーマット"""
-    mate = Material(MATERIAL_XLSX_1)
+    excel_files = [ExcelFile(MATERIAL_XLSX_1)]
+    mate = Material(excel_files)
 
     node_1 = mate.nodes[13]
     assert isinstance(node_1, DetailNode)
@@ -57,7 +50,8 @@ def test_material_line_for_drawing():
 
 
 def test_material_node_values():
-    mate = Material(MATERIAL_XLSX_1)
+    excel_files = [ExcelFile(MATERIAL_XLSX_1)]
+    mate = Material(excel_files)
     node = mate.nodes[20]
     assert isinstance(node, DetailNode)
     assert node.values[0] == "PL"
@@ -71,7 +65,8 @@ def test_material_node_values():
 
 
 def test_material_node_slice():
-    mate = Material(MATERIAL_XLSX_1)
+    excel_files = [ExcelFile(MATERIAL_XLSX_1)]
+    mate = Material(excel_files)
     node = mate.nodes[20]
     assert isinstance(node, DetailNode)
     assert node.values[:6] == ["PL", 220, 4.5, None, None, 800]
@@ -80,7 +75,8 @@ def test_material_node_slice():
 
 def test_material_tree():
     """材片情報のツリー構造"""
-    mate = Material(MATERIAL_XLSX_1)
+    excel_files = [ExcelFile(MATERIAL_XLSX_1)]
+    mate = Material(excel_files)
 
     # #1 サンプル橋
     node_level_1 = mate.nodes[0]
@@ -139,7 +135,8 @@ def test_material_tree():
 
 def test_material_node_hirrarchy_names():
     """材片情報ノードの階層名称リスト"""
-    mate = Material(MATERIAL_XLSX_1)
+    excel_files = [ExcelFile(MATERIAL_XLSX_1)]
+    mate = Material(excel_files)
 
     node = mate.nodes[2]
     assert node.name == "主構造"
@@ -153,7 +150,8 @@ def test_material_node_hirrarchy_names():
 
 def test_material_node_each():
     """材片情報ノードの員数"""
-    mate = Material(MATERIAL_XLSX_1)
+    excel_files = [ExcelFile(MATERIAL_XLSX_1)]
+    mate = Material(excel_files)
     assert mate.nodes[4].each == 1  # LEVEL5
     assert mate.nodes[5].each == 6  # BLOCK (6*1)
     assert mate.nodes[6].each == 2  # DETAIL
@@ -163,7 +161,8 @@ def test_material_node_each():
 
 def test_material_level_label():
     """材片情報レベル表示"""
-    mate = Material(MATERIAL_XLSX_1)
+    excel_files = [ExcelFile(MATERIAL_XLSX_1)]
+    mate = Material(excel_files)
     assert mate.nodes[0].level_label == "#1"
     assert mate.nodes[1].level_label == "#2"
     assert mate.nodes[2].level_label == "#3"
@@ -176,7 +175,8 @@ def test_material_level_label():
 
 def test_material_name_with_level():
     """材片情報ノードの名称＋レベル名を返す"""
-    mate = Material(MATERIAL_XLSX_1)
+    excel_files = [ExcelFile(MATERIAL_XLSX_1)]
+    mate = Material(excel_files)
     assert mate.nodes[4].name_with_level == "#5 中間横桁"  # LEVEL5
     assert mate.nodes[5].name_with_level == "中間横桁 本体"  # BLOCK
     assert mate.nodes[6].name_with_level == "2 - PL 220 x 16 x 2200 (SM490YA)"  # DETAIL

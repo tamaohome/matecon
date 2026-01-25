@@ -1,6 +1,7 @@
 import pytest
 
 from matecon.io.excel_reader import BookNode, ExcelReader
+from matecon.models.excel_file import ExcelFile
 from matecon.models.templates import MATERIAL_HEADER
 
 MATERIAL_XLSX_1 = "sample_data/MATERIAL_SAMPLE_1.xlsx"
@@ -11,12 +12,14 @@ MATERIAL_TXT_1 = "sample_data/MATERIAL_SAMPLE_1.txt"
 def test_incorrect_node_creation():
     """`BookNode` を直接生成した場合のエラー"""
     with pytest.raises(TypeError, match="BookNode は直接生成できません"):
-        BookNode(MATERIAL_XLSX_1, MATERIAL_HEADER)
+        excel_file = ExcelFile(MATERIAL_XLSX_1)
+        BookNode(excel_file, MATERIAL_HEADER)
 
 
 def test_load_booknode():
     """`BookNode` の読み込み"""
-    reader = ExcelReader(MATERIAL_XLSX_1, MATERIAL_HEADER)
+    excel_file = ExcelFile(MATERIAL_XLSX_1)
+    reader = ExcelReader(excel_file, MATERIAL_HEADER)
     book = reader.load_booknode()
     assert book.name == "MATERIAL_SAMPLE_1"
     assert book.header == MATERIAL_HEADER
