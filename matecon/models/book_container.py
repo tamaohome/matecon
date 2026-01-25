@@ -1,31 +1,29 @@
 from collections.abc import Sequence
 from pathlib import Path
+from typing import Final
 
-from matecon.io.excel_reader import BookNode, ExcelReader, SheetNode
+from matecon.io.excel_reader import BookNode, ExcelReader, RowType, SheetNode
+from matecon.models.excel_file import ExcelFile
 
 type FileListType = Sequence[Path | str]
 
 
 class BookContainer:
-    """まてりある材片情報テーブルを管理するクラス"""
+    """まてりある用Excelファイルを管理するクラス"""
 
-    def __init__(self, header: tuple[str, ...], filepaths: FileListType):
-        self._header = header
-        self._books = self._create_books(*filepaths)
+    def __init__(self, excel_files: Sequence[ExcelFile], header: tuple[str, ...]):
+        self._excel_files = excel_files
+        self.header: Final = header
+        self._books = self._create_books()
 
-    def _create_books(self, *filepaths: str | Path) -> list[BookNode]:
+    def _create_books(self) -> list[BookNode]:
         """Excelファイルから `BookNode` のリストを生成する"""
         booknodes: list[BookNode] = []
-        for filepath in filepaths:
-            reader = ExcelReader(filepath, self.header)
+        for excel_file in self._excel_files:
+            reader = ExcelReader(excel_file, self.header)
             booknode = reader.load_booknode()
             booknodes.append(booknode)
         return booknodes
-
-    @property
-    def header(self) -> tuple[str, ...]:
-        """テーブルヘッダーを返す"""
-        return self._header
 
     @property
     def books(self) -> tuple[BookNode, ...]:
@@ -38,8 +36,12 @@ class BookContainer:
         return tuple(sheet for book in self.books for sheet in book)
 
     @property
-    def rows(self) -> tuple[tuple, ...]:
+    def rows(self) -> tuple[RowType, ...]:
         return tuple(row for book in self.books for row in book.table)
+
+    @property
+    def excel_files(self) -> tuple[ExcelFile, ...]:
+        return tuple(self._excel_files)
 
     @property
     def filepaths(self) -> list[Path]:

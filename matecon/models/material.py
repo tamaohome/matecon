@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from math import prod
 from pathlib import Path
 from typing import Final, override
@@ -8,13 +9,14 @@ from anytree import NodeMixin, RenderTree
 
 from matecon.models import templates
 from matecon.models.book_container import BookContainer
+from matecon.models.excel_file import ExcelFile
 
 
 class Material:
     """材片情報ノードの管理クラス"""
 
-    def __init__(self, *filepaths: Path | str):
-        self._container = BookContainer(templates.MATERIAL_HEADER, [Path(p) for p in filepaths])
+    def __init__(self, excel_files: Sequence[ExcelFile]):
+        self._container = BookContainer(excel_files, templates.MATERIAL_HEADER)
         self._root = self._build_tree(self.container)
 
     def print_tree(self) -> None:

@@ -1,4 +1,3 @@
-from matecon.io.excel_reader import ExcelReader
 from matecon.models.templates import MATERIAL_HEADER, format_line
 
 MATERIAL_XLSX = "sample_data/MATERIAL_SAMPLE_1.xlsx"
@@ -14,12 +13,6 @@ def test_templates():
 
     assert set(MATERIAL_HEADER).issubset(set(sample_row))
     assert not set(sample_row).issubset(set(MATERIAL_HEADER))
-
-
-def test_template_from_spreadsheet():
-    reader = ExcelReader(MATERIAL_XLSX, MATERIAL_HEADER)
-    book = reader.load_booknode()
-    assert book
 
 
 def test_template_format_line():

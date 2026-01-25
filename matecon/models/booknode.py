@@ -3,12 +3,13 @@ from __future__ import annotations
 from collections.abc import Iterator
 from pathlib import Path
 from pprint import pformat
-from typing import overload
+from typing import Final, overload
 
 from anytree import NodeMixin
 from openpyxl.cell.cell import Cell, MergedCell
 from openpyxl.cell.read_only import EmptyCell, ReadOnlyCell
 
+from matecon.models.excel_file import ExcelFile
 from matecon.models.position import Position
 from matecon.utils.strings import zen2han
 
@@ -29,14 +30,14 @@ class BookNode(NodeMixin):
     `ExcelReader` インスタンスの `load_booknode()` より生成する
     """
 
-    def __init__(self, filepath: str | Path, header: tuple[str, ...], _sentinel: object = None):
+    def __init__(self, excel_file: ExcelFile, header: tuple[str, ...], _sentinel: object = None):
         super().__init__()
         # プライベートコンストラクタ処理
         if _sentinel is not _SENTINEL:
             raise TypeError("BookNode は直接生成できません")
 
-        self._filepath = Path(filepath)
-        self._header = header
+        self.excel_file: Final = excel_file
+        self.header: Final = header
 
     @overload
     def __getitem__(self, key: int) -> SheetNode: ...
@@ -77,17 +78,17 @@ class BookNode(NodeMixin):
     @property
     def name(self) -> str:
         """ファイル名（拡張子を含まない）"""
-        return self.filepath.stem
+        return self.excel_file.filepath.stem
 
     @property
     def filename(self) -> str:
         """ファイル名（拡張子を含む）"""
-        return self.filepath.name
+        return self.excel_file.filepath.name
 
     @property
     def filepath(self) -> Path:
         """ファイルパス"""
-        return self._filepath
+        return Path(self.excel_file.filepath)
 
     @property
     def sheets(self) -> tuple[SheetNode]:
@@ -98,11 +99,6 @@ class BookNode(NodeMixin):
     def table(self) -> tuple[RowType, ...]:
         """全シートのテーブルを結合したテーブル（ヘッダーを除く）"""
         return tuple(row for sheet in self.sheets for row in sheet.table)
-
-    @property
-    def header(self) -> tuple:
-        """ヘッダーを返す"""
-        return self._header
 
 
 class SheetNode(NodeMixin):

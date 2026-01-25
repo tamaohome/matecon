@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pathlib import Path
+from typing import Final
 
 from openpyxl import load_workbook
 from openpyxl.cell.cell import Cell, MergedCell
@@ -8,6 +8,7 @@ from openpyxl.cell.read_only import EmptyCell, ReadOnlyCell
 from openpyxl.worksheet.worksheet import Worksheet
 
 from matecon.models.booknode import _SENTINEL, BookNode, SheetNode
+from matecon.models.excel_file import ExcelFile
 from matecon.models.templates import MATERIAL_HEADER
 
 type ExcelCell = Cell | ReadOnlyCell | MergedCell | EmptyCell
@@ -16,52 +17,19 @@ type CellType = str | int | float
 type RowType = tuple[CellType | None, ...]
 type SheetType = tuple[RowType, ...]
 
-ALLOW_EXTS = [".xlsx", ".xlsm"]
-
-
-def is_valid_excel_file(excel_filepath: str | Path) -> bool:
-    """有効なExcelファイルの場合 `True` を返す"""
-    try:
-        validate_excel_filepath(excel_filepath)
-        return True
-    except (FileNotFoundError, ValueError, OSError):
-        return False
-
-
-def validate_excel_filepath(filepath: str | Path) -> Path:
-    """バリデーション済みのExcelファイルパスを返す"""
-    filepath = Path(filepath)
-
-    # ファイルの存在チェック
-    if not filepath.exists():
-        raise FileNotFoundError("ファイルが見つかりません", filepath)
-
-    # ファイル拡張子のチェック
-    if filepath.is_file() and filepath.suffix.lower() not in ALLOW_EXTS:
-        raise ValueError("Excelファイルではありません", filepath)
-
-    # ファイルオープンのチェック
-    try:
-        with open(filepath):
-            pass
-    except OSError as e:
-        raise OSError(f"ファイルをオープンできません: {e}") from e
-
-    return filepath
-
 
 class ExcelReader:
     """Excelファイルを読み込むクラス"""
 
-    def __init__(self, filepath: str | Path, header=MATERIAL_HEADER):
-        self._filepath = validate_excel_filepath(filepath)
-        self._header = header
+    def __init__(self, excel_file: ExcelFile, header=MATERIAL_HEADER):
+        self.excel_file: Final = excel_file
+        self.header: Final = header
 
     def load_booknode(self, ignore_hidden_sheet=True) -> BookNode:
         """Excelブックを取得する"""
-        booknode = BookNode(self.filepath, self._header, _SENTINEL)
+        booknode = BookNode(self.excel_file, self.header, _SENTINEL)
         try:
-            wb = load_workbook(self.filepath, read_only=True, data_only=True)
+            wb = load_workbook(self.excel_file.filepath, read_only=True, data_only=True)
             for worksheet in wb.worksheets:
                 # 非表示シートの場合はスキップ
                 if ignore_hidden_sheet and worksheet.sheet_state == "hidden":
@@ -72,7 +40,7 @@ class ExcelReader:
 
         # 有効なシートが取得できなかった場合エラー
         if len(booknode) == 0:
-            raise ValueError(f"{self.filepath}: 有効なシートが存在しません。")
+            raise ValueError(f"{self.excel_file}: 有効なシートが存在しません。")
 
         return booknode
 
@@ -97,8 +65,3 @@ class ExcelReader:
         if isinstance(cell, float):  # 小数を含む場合
             return cell
         return str(cell)  # それ以外は文字列型として返す
-
-    @property
-    def filepath(self) -> Path:
-        """ファイルパス"""
-        return self._filepath
