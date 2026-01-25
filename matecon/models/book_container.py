@@ -1,4 +1,4 @@
-from collections.abc import Iterator, Sequence
+from collections.abc import Sequence
 from pathlib import Path
 
 from matecon.io.excel_reader import BookNode, ExcelReader, SheetNode
@@ -12,9 +12,6 @@ class BookContainer:
     def __init__(self, header: tuple[str, ...], filepaths: FileListType):
         self._header = header
         self._books: list[BookNode] = self._create_books(*filepaths)
-
-    def __iter__(self) -> Iterator[SheetNode]:
-        return iter(self.sheets)
 
     def _create_books(self, *filepaths: str | Path) -> list[BookNode]:
         """Excelファイルから `BookNode` のリストを生成する"""
