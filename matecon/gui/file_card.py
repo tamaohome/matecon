@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import os
-from collections.abc import Sequence
 from pathlib import Path
 
 from PySide6.QtCore import QSize, Qt, Signal
@@ -18,16 +16,18 @@ from PySide6.QtWidgets import (
 )
 
 from matecon.gui.widgets.elided_label import ElidedLabel
+from matecon.models.excel_file import ExcelFile
+from matecon.models.excel_file_set import ExcelFileSet
 
 
 class FileCard(QFrame):
     """ファイル情報を表示するカードコンポーネント"""
 
-    fileRemoveRequested = Signal(Path)  # filepathを渡すシグナル
+    excelFileRemoveRequested = Signal(ExcelFile)  # filepathを渡すシグナル
 
-    def __init__(self, filepath: Path, parent: QWidget | None = None):
+    def __init__(self, excel_file: ExcelFile, parent: QWidget | None = None):
         super().__init__(parent)
-        self._filepath = filepath
+        self._excel_file = excel_file
         self._init_ui()
 
     def _init_ui(self):
@@ -40,13 +40,13 @@ class FileCard(QFrame):
         self.setLayout(h_layout)
 
         # ファイル名
-        txt_filename = Path(self._filepath).name
+        txt_filename = self.filepath.name
         label_filename = ElidedLabel(txt_filename)
         label_filename.setObjectName("nameLabel")
         label_container.addWidget(label_filename)
 
         # ファイルパス（省略記号対応）
-        txt_filepath = Path(self._filepath).parent.as_posix() + os.sep  # 末尾はパス区切り文字
+        txt_filepath = str(self.filepath.absolute())
         label_filepath = ElidedLabel(txt_filepath)
         label_filepath.setObjectName("pathLabel")
         label_container.addWidget(label_filepath)
@@ -61,7 +61,11 @@ class FileCard(QFrame):
         h_layout.addWidget(btn_remove)
 
     def _on_remove_clicked(self):
-        self.fileRemoveRequested.emit(self._filepath)
+        self.excelFileRemoveRequested.emit(self._excel_file)
+
+    @property
+    def filepath(self) -> Path:
+        return self._excel_file.filepath
 
 
 class FileCardContainer(QScrollArea):
@@ -90,19 +94,19 @@ class FileCardContainer(QScrollArea):
 
         self._apply_styles()
 
-    def reload(self, filepaths: Sequence[Path]) -> None:
+    def reload(self, excel_file_set: ExcelFileSet) -> None:
         """ファイルカードを更新する"""
         self._clear_cards()  # 表示済みのカードをクリア
-        self._add_cards(filepaths)
+        self._add_cards(excel_file_set)
 
         # ファイルが存在しない場合のみヒントラベルを表示
         self._hint_label.setVisible(self.is_empty())
 
-    def _add_cards(self, filepaths: Sequence[Path]) -> None:
+    def _add_cards(self, excel_file_set: ExcelFileSet) -> None:
         """ファイルカードウィジェットを追加する"""
-        for filepath in filepaths:
-            card = FileCard(filepath, self)
-            card.fileRemoveRequested.connect(self.fileCardRemoveRequested.emit)
+        for excel_file in excel_file_set:
+            card = FileCard(excel_file, self)
+            card.excelFileRemoveRequested.connect(self.fileCardRemoveRequested.emit)
             self._cards.append(card)
             self._layout.addWidget(card)
 

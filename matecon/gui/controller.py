@@ -6,16 +6,16 @@ from pathlib import Path
 
 from PySide6.QtCore import QObject, Signal
 
-from matecon.io.excel_reader import is_valid_excel_file
 from matecon.io.io import write_text_file
+from matecon.models.excel_file import ExcelFile
+from matecon.models.excel_file_set import ExcelFileSet
 from matecon.models.material import Material
-from matecon.utils.collections import PathSet
 
 
 class Controller(QObject):
     """コントローラクラス"""
 
-    excelFilesChanged = Signal(list)
+    excelFileSetChanged = Signal(list)
     materialChanged = Signal(Material)
 
     def __init__(
@@ -32,31 +32,28 @@ class Controller(QObject):
 
         # 状態管理変数
         self._material: Material | None = None  # 材片情報
-        self._excel_files = PathSet()  # Excelファイルリスト
+        self._excel_file_set = ExcelFileSet()  # Excelファイルセット
 
-    def add_excel_file(self, filepath: Path) -> Path | None:
+    def add_excel_file(self, filepath: Path | str) -> None:
         """Excelファイルを追加"""
         try:
-            if not is_valid_excel_file(filepath):
-                raise ValueError(f"無効なExcelファイルです:\n{filepath}")
-            if filepath in self._excel_files:
-                raise ValueError(f"すでに追加済みのファイルです:\n{filepath}")
-
             # 追加の Excel ファイルを加えて、新しい Material を生成
-            new_material = self._create_material(*self._excel_files, filepath)
+            new_excel_file = ExcelFile(filepath)
+            new_set = self._excel_file_set + new_excel_file
+            new_material = self._create_material(new_set)
 
             # Material の生成が成功したら、Excel リストと Material を更新
-            self._excel_files.add(filepath)
-            self.excelFilesChanged.emit(self._excel_files.to_list)  # 変更通知
+            self._excel_file_set.add(new_excel_file)
+            self.excelFileSetChanged.emit(self._excel_file_set)  # 変更通知
             self._material = new_material
             self.materialChanged.emit(self._material)  # 変更通知
 
             print("ファイルを追加:", filepath)
-            return filepath
+            return
         except Exception as e:
-            self.on_error(OperationType.ADD_FILE, filepath, e)
+            self.on_error(OperationType.ADD_FILE, Path(filepath), e)
 
-    def add_excel_files(self, filepaths: Sequence[Path]) -> list[Path]:
+    def add_excel_files(self, filepaths: Sequence[Path | str]) -> list[ExcelFile]:
         """複数のExcelファイルを追加し、正常に追加したファイルパスのリストを返す"""
         added_files = []
         for filepath in filepaths:
@@ -67,15 +64,15 @@ class Controller(QObject):
                 continue
         return added_files
 
-    def remove_excel_file(self, filepath: Path) -> None:
+    def remove_excel_file(self, excel_file: ExcelFile) -> None:
         """リストからExcelファイルを取り除く"""
-        if filepath not in self._excel_files:
+        if excel_file not in self._excel_file_set:
             return
 
-        self._excel_files.remove(filepath)
-        self.excelFilesChanged.emit(self._excel_files.to_list)  # 変更通知
+        self._excel_file_set.remove(excel_file)
+        self.excelFileSetChanged.emit(self._excel_file_set)  # 変更通知
 
-        self._material = self._create_material(*self._excel_files)
+        self._material = self._create_material(self._excel_file_set)
         self.materialChanged.emit(self._material)  # 変更通知
 
     def convert_to_text_file(self, overwrite_confirm: Callable[[Path], bool] | None = None) -> Path | None:
@@ -84,48 +81,49 @@ class Controller(QObject):
 
         変換後のテキストファイルのパスを返す
         """
-        if self._material is None:
-            message = "Excelファイルが存在しません"
-            self.on_error(OperationType.CONVERT_TO_TEXT, Path(), ValueError(message))
+        if self._material is None or not self._excel_file_set:
+            error_message = "Excelファイルが存在しません"
+            self.on_error(OperationType.CONVERT_TO_TEXT, Path(), ValueError(error_message))
             return
 
         # 最初のExcelファイルを基にテキストファイルのパスを取得
-        output_path = self._excel_files[0].with_suffix(".txt")
+        first_excel_filepath = self._excel_file_set[0].filepath
+        output_filepath = first_excel_filepath.with_suffix(".txt")
 
         # 上書き時の処理
-        if output_path.exists():
+        if output_filepath.exists():
             if overwrite_confirm is None:
                 return None
-            if not overwrite_confirm(output_path):
+            if not overwrite_confirm(output_filepath):
                 return None  # 上書きキャンセル時は処理を中止
 
         try:
             output_lines = self._material.format_lines
-            result = write_text_file(output_path, output_lines)
+            result = write_text_file(output_filepath, output_lines)
             message = "テキストファイルに変換しました:\n" + str(result)
-            self.on_success(OperationType.CONVERT_TO_TEXT, output_path, message)
+            self.on_success(OperationType.CONVERT_TO_TEXT, output_filepath, message)
             return result
         except Exception as e:
-            self.on_error(OperationType.CONVERT_TO_TEXT, output_path, e)
+            self.on_error(OperationType.CONVERT_TO_TEXT, output_filepath, e)
             raise
 
     def clear_files(self) -> None:
         """追加されたExcelファイル一覧をクリア"""
-        self._excel_files.clear()
-        self.excelFilesChanged.emit(self._excel_files.to_list)  # 変更通知
+        self._excel_file_set.clear()
+        self.excelFileSetChanged.emit(self._excel_file_set)  # 変更通知
         self._material = None
         self.materialChanged.emit(self._material)  # 変更通知
 
-    def _create_material(self, *filepaths: Path) -> Material | None:
-        """ファイルパスを基に `Material` オブジェクトを生成"""
-        if not self._excel_files:
+    def _create_material(self, excel_file_set: ExcelFileSet) -> Material | None:
+        """Excelファイルセットを基に `Material` オブジェクトを生成"""
+        if not self._excel_file_set:
             return None
-        return Material(*list(filepaths))
+        return Material(excel_file_set)
 
     @property
-    def excel_files(self) -> list[Path]:
+    def excel_files(self) -> list[ExcelFile]:
         """Excelファイルリスト"""
-        return list(self._excel_files)
+        return list(self._excel_file_set)
 
     @property
     def material(self) -> Material | None:
