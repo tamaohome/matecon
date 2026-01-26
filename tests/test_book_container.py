@@ -1,5 +1,6 @@
 from matecon.models.book_container import BookContainer
 from matecon.models.excel_file import ExcelFile
+from matecon.models.excel_file_set import ExcelFileSet
 from matecon.models.templates import MATERIAL_HEADER
 
 MATERIAL_XLSX_1 = "sample_data/MATERIAL_SAMPLE_1.xlsx"
@@ -9,7 +10,8 @@ MATERIAL_XLSX_2 = "sample_data/MATERIAL_SAMPLE_2.xlsx"
 def test_book_container():
     filepaths = [MATERIAL_XLSX_1, MATERIAL_XLSX_2]
     excel_files = [ExcelFile(f) for f in filepaths]
-    container = BookContainer(excel_files, MATERIAL_HEADER)
+    excel_file_set = ExcelFileSet(excel_files)
+    container = BookContainer(excel_file_set, MATERIAL_HEADER)
     assert container.header == MATERIAL_HEADER
 
     assert len(container.books) == 2  # 読み込んだExcelファイル数
