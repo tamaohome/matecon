@@ -16,6 +16,7 @@ from matecon.gui.file_card import FileCardContainer
 from matecon.gui.material_treeview import MaterialTreeView
 from matecon.gui.settings import WindowSettings
 from matecon.gui.toolbar import MainToolBar
+from matecon.models.excel_file_set import ExcelFileSet
 from matecon.models.material import Material
 
 
@@ -52,7 +53,7 @@ class MainWindow(QMainWindow):
         self.splitter.setStretchFactor(1, 1)  # ツリービューの幅をストレッチ
 
         # シグナルとスロットを接続
-        self.controller.excelFilesChanged.connect(self._on_excel_files_changed)
+        self.controller.excelFileSetChanged.connect(self._on_excel_file_set_changed)
         self.controller.materialChanged.connect(self._on_material_changed)
 
         # 保存されたウィンドウ設定を復元
@@ -92,13 +93,13 @@ class MainWindow(QMainWindow):
         """オペレーション失敗時の処理"""
         QMessageBox.critical(self, "エラー", str(exception))
 
-    def _on_excel_files_changed(self, filepaths: Sequence[Path]):
-        """Excelファイルリスト変更時のスロット"""
-        self.card_container.reload(filepaths)  # カードリストを更新
+    def _on_excel_file_set_changed(self, excel_file_set: ExcelFileSet):
+        """Excelファイルセット変更時のスロット"""
+        self.card_container.reload(excel_file_set)  # カードリストを更新
 
         # ツールバーのボタン状態を更新
-        self.toolbar.set_convert_enabled(len(filepaths) > 0)
-        self.toolbar.set_clear_enabled(len(filepaths) > 0)
+        self.toolbar.set_convert_enabled(len(excel_file_set) > 0)
+        self.toolbar.set_clear_enabled(len(excel_file_set) > 0)
 
     def _on_material_changed(self, material: Material):
         """`Material` インスタンス変更時のスロット"""
@@ -129,7 +130,11 @@ class MainWindow(QMainWindow):
         self.settings.save_last_dir(parent_dir)
 
         # ファイルを追加
-        self.controller.add_excel_files([Path(fp) for fp in filepaths])
+        try:
+            self.controller.add_excel_files(filepaths)
+        except Exception as e:
+            # ExcelFile 生成時のエラーを on_error に委譲
+            self.controller.on_error(OperationType.ADD_FILE, Path(filepaths[0] if filepaths else ""), e)
 
     def dialog_convert(self):
         """テキストファイル変換ダイアログを表示"""
