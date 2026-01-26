@@ -4,6 +4,7 @@ from typing import Final
 
 from matecon.io.excel_reader import BookNode, ExcelReader, RowType, SheetNode
 from matecon.models.excel_file import ExcelFile
+from matecon.models.excel_file_set import ExcelFileSet
 
 type FileListType = Sequence[Path | str]
 
@@ -11,15 +12,15 @@ type FileListType = Sequence[Path | str]
 class BookContainer:
     """まてりある用Excelファイルを管理するクラス"""
 
-    def __init__(self, excel_files: Sequence[ExcelFile], header: tuple[str, ...]):
-        self._excel_files = excel_files
+    def __init__(self, excel_file_set: ExcelFileSet, header: tuple[str, ...]):
+        self._excel_file_set = excel_file_set
         self.header: Final = header
         self._books = self._create_books()
 
     def _create_books(self) -> list[BookNode]:
         """Excelファイルから `BookNode` のリストを生成する"""
         booknodes: list[BookNode] = []
-        for excel_file in self._excel_files:
+        for excel_file in self._excel_file_set:
             reader = ExcelReader(excel_file, self.header)
             booknode = reader.load_booknode()
             booknodes.append(booknode)
@@ -41,7 +42,7 @@ class BookContainer:
 
     @property
     def excel_files(self) -> tuple[ExcelFile, ...]:
-        return tuple(self._excel_files)
+        return tuple(self._excel_file_set)
 
     @property
     def filepaths(self) -> list[Path]:
