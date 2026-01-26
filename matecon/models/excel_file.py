@@ -20,6 +20,9 @@ class ExcelFile:
     def __repr__(self) -> str:
         return f"ExcelFile({self.filepath!r})"
 
+    def __hash__(self) -> int:
+        return hash(self.filepath)
+
     def _validate(self) -> None:
         """ファイルの存在、拡張子、オープン可否をチェックする"""
         # ファイルの存在チェック
