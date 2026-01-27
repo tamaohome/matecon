@@ -1,3 +1,5 @@
+import pytest
+
 from matecon.models.excel_file import ExcelFile
 from matecon.models.excel_file_set import ExcelFileSet
 
@@ -24,10 +26,9 @@ def test_excel_file_set_add():
     assert len(excel_file_set) == 1
     assert excel_file_set[0] == ExcelFile(BOOK_SAMPLE)
 
-    # 同じファイルパスが追加された場合（変化無し）
-    excel_file_set.add(ExcelFile(BOOK_SAMPLE))
-    assert len(excel_file_set) == 1
-    assert excel_file_set[0] == ExcelFile(BOOK_SAMPLE)
+    # 同じファイルパスが追加された場合（エラー）
+    with pytest.raises(ValueError):
+        excel_file_set.add(ExcelFile(BOOK_SAMPLE))
 
     # ExcelFileリストを追加
     excel_files = [ExcelFile(MATERIAL_XLSX_1), ExcelFile(MATERIAL_XLSX_2)]
@@ -73,3 +74,7 @@ def test_excel_file_set_plus():
     excel_files = [ExcelFile(MATERIAL_XLSX_1), ExcelFile(MATERIAL_XLSX_2)]
     additional_set = result_set + ExcelFileSet(excel_files)
     assert len(additional_set) == 3
+
+    # 同じExcelファイルが加算された場合（エラー）
+    with pytest.raises(ValueError):
+        additional_set += ExcelFile(BOOK_SAMPLE)

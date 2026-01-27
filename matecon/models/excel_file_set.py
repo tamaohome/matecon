@@ -22,6 +22,8 @@ class ExcelFileSet(MutableSet[ExcelFile]):
     def add(self, *excel_files: ExcelFile) -> None:
         """`ExcelFile` オブジェクトを追加する"""
         for excel_file in excel_files:
+            if excel_file in self._inner:
+                raise ValueError(f"{excel_file}: 既に追加されているExcelファイルです")
             self._inner.add(excel_file)
 
     def discard(self, excel_file: ExcelFile) -> None:
@@ -54,7 +56,6 @@ class ExcelFileSet(MutableSet[ExcelFile]):
         if isinstance(other, ExcelFile):
             new_set.add(other)
         elif isinstance(other, ExcelFileSet):
-            [new_set.add(f) for f in other]
             for excel_file in other:
                 new_set.add(excel_file)
         return new_set
