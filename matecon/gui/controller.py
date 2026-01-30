@@ -15,7 +15,7 @@ from matecon.models.material import Material
 class Controller(QObject):
     """コントローラクラス"""
 
-    excelFileSetChanged = Signal(list)
+    excelFileSetChanged = Signal(ExcelFileSet)
     materialChanged = Signal(Material)
 
     def __init__(
