@@ -13,6 +13,7 @@ class MainToolBar(QToolBar):
 
     def __init__(self, parent=None):
         super().__init__("Main Toolbar", parent)
+        self.setObjectName("mainToolbar")
         self.setMovable(False)
         self.setIconSize(self.iconSize())
         self._setup_actions()
