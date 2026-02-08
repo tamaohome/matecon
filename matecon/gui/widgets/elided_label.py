@@ -2,13 +2,14 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QFontMetrics
 from PySide6.QtWidgets import (
     QLabel,
+    QWidget,
 )
 
 
 class ElidedLabel(QLabel):
     """省略記号を自動表示するラベルウィジェット"""
 
-    def __init__(self, text: str = "", parent=None):
+    def __init__(self, text: str, parent: QWidget):
         super().__init__(parent)
         self._full_text = text
         super().setText(text)

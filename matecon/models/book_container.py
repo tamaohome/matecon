@@ -24,6 +24,9 @@ class BookContainer:
             reader = ExcelReader(excel_file, self.header)
             booknode = reader.load_booknode()
             booknodes.append(booknode)
+
+            # 有効なシート一覧を更新 (ExcelFile)
+            excel_file.valid_sheet_names = [sheet.name for sheet in booknode.valid_sheets]
         return booknodes
 
     @property
