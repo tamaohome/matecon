@@ -33,23 +33,22 @@ class FileCard(QFrame):
     def _init_ui(self):
         """UIの初期化"""
         # レイアウト
-        h_layout = QHBoxLayout()
-        label_container = QVBoxLayout()
-        h_layout.addLayout(label_container)
-        label_container.addStretch()
-        self.setLayout(h_layout)
+        base_layout = QHBoxLayout(self)
+        label_layout = QVBoxLayout()
+        base_layout.addLayout(label_layout)
+        label_layout.addStretch()
 
         # ファイル名
         txt_filename = self.filepath.name
-        label_filename = ElidedLabel(txt_filename)
+        label_filename = ElidedLabel(txt_filename, self)
         label_filename.setObjectName("nameLabel")
-        label_container.addWidget(label_filename)
+        label_layout.addWidget(label_filename)
 
         # ファイルパス（省略記号対応）
         txt_filepath = str(self.filepath.absolute())
-        label_filepath = ElidedLabel(txt_filepath)
+        label_filepath = ElidedLabel(txt_filepath, self)
         label_filepath.setObjectName("pathLabel")
-        label_container.addWidget(label_filepath)
+        label_layout.addWidget(label_filepath)
 
         # 削除ボタン
         btn_remove = QPushButton()
@@ -58,7 +57,7 @@ class FileCard(QFrame):
         btn_remove.setObjectName("removeButton")
         btn_remove.clicked.connect(self._on_remove_clicked)
         btn_remove.setFixedSize(QSize(24, 24))
-        h_layout.addWidget(btn_remove)
+        base_layout.addWidget(btn_remove)
 
     def _on_remove_clicked(self):
         self.excelFileRemoveRequested.emit(self._excel_file)
