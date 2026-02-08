@@ -68,7 +68,7 @@ class WindowSettings(QSettings):
 
     def get_last_dir(self) -> str:
         """最後に開いたディレクトリを取得"""
-        last_dir: str = self.value("windows/last_dir")
+        last_dir: str = self.value("window/last_dir")
 
         if Path(last_dir).exists():
             return last_dir
