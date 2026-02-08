@@ -36,7 +36,6 @@ class FileCard(QFrame):
         base_layout = QHBoxLayout(self)
         label_layout = QVBoxLayout()
         base_layout.addLayout(label_layout)
-        label_layout.addStretch()
 
         # ファイル名
         txt_filename = self.filepath.name
@@ -133,12 +132,7 @@ class FileCardContainer(QScrollArea):
 
 
 _FILE_CARD_STYLESHEET = """
-QWidget {
-    spacing: 8px;
-}
-
 FileCard {
-    max-height: 60px;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
     background-color: #fff;
