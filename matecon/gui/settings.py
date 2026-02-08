@@ -67,9 +67,21 @@ class WindowSettings(QSettings):
         self.sync()  # INIファイルに保存
 
     def get_last_dir(self) -> str:
-        """最後に開いたディレクトリを取得"""
-        last_dir: str = self.value("window/last_dir")
+        """
+        最後に開いたディレクトリを取得
 
-        if Path(last_dir).exists():
-            return last_dir
+        未保存時や無効な値の場合はホームディレクトリを返す
+        """
+        last_dir = self.value("window/last_dir")
+        if not last_dir:
+            return str(Path.home())
+
+        last_dir_str = str(last_dir)
+        try:
+            candidate = Path(last_dir_str)
+        except TypeError:
+            return str(Path.home())
+
+        if candidate.exists():
+            return last_dir_str
         return str(Path.home())
