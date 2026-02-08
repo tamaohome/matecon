@@ -49,6 +49,11 @@ class FileCard(QFrame):
         label_filepath.setObjectName("pathLabel")
         label_layout.addWidget(label_filepath)
 
+        # シート名一覧
+        sheet_label_container = SheetLabelContainer(self)
+        sheet_label_container.setObjectName("sheetLabelContainer")
+        label_layout.addWidget(sheet_label_container)
+
         # 削除ボタン
         btn_remove = QPushButton()
         icon_close = self.style().standardIcon(QStyle.StandardPixmap.SP_TitleBarCloseButton)
@@ -64,6 +69,11 @@ class FileCard(QFrame):
     @property
     def filepath(self) -> Path:
         return self._excel_file.filepath
+
+    @property
+    def valid_sheet_names(self) -> list[str]:
+        """有効なExcelシート一覧"""
+        return self._excel_file.valid_sheet_names
 
 
 class FileCardContainer(QScrollArea):
@@ -131,11 +141,45 @@ class FileCardContainer(QScrollArea):
         return tuple(self._cards)
 
 
+class SheetLabelContainer(QWidget):
+    """Excelシート名一覧を表示するコンテナ"""
+
+    def __init__(self, parent: FileCard):
+        super().__init__(parent)
+        self._file_card = parent
+        self._sheet_names = self._file_card.valid_sheet_names
+        self._init_ui()
+
+    def _init_ui(self) -> None:
+        """レイアウトを初期化し、シート名バッジを作成する"""
+        self._label_layout = QHBoxLayout(self)
+        self._label_layout.setContentsMargins(0, 0, 0, 0)
+        self._label_layout.setSpacing(6)
+        self._add_sheet_labels()
+        self._label_layout.addStretch()
+        self._apply_styles()
+
+    def _add_sheet_labels(self) -> None:
+        """Excelシートラベルを全て追加"""
+        for sheet_name in self._sheet_names:
+            self._add_sheet_label(sheet_name)
+
+    def _apply_styles(self):
+        """スタイルシートを適用"""
+        self.setStyleSheet(_SHEET_LABEL_STYLESHEET)
+
+    def _add_sheet_label(self, sheet_name: str) -> None:
+        """Excelシートラベルを追加"""
+        sheet_label = ElidedLabel(sheet_name, self)
+        sheet_label.setObjectName("sheetName")
+        self._label_layout.addWidget(sheet_label)
+
+
 _FILE_CARD_STYLESHEET = """
 FileCard {
-    border: 1px solid #e0e0e0;
+    border: 1px solid rgba(0, 0, 0, 0.20);
     border-radius: 8px;
-    background-color: #fff;
+    background-color: rgba(255, 255, 255, 0.85);
     padding: 4px;
 }
 
@@ -171,5 +215,17 @@ FileCardContainer #hintLabel {
     margin: 8px;
     border: 1px dashed #666;
     border-radius: 8px;
+}
+"""
+
+
+_SHEET_LABEL_STYLESHEET = """
+#sheetName {
+    color: rgba(0, 0, 0, 0.65);
+    background-color: rgba(255, 255, 255, 0.50);
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    border-radius: 8px;
+    padding: 2px 8px;
+    margin: 0;
 }
 """
