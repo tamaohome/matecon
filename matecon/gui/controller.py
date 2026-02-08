@@ -116,7 +116,7 @@ class Controller(QObject):
 
     def _create_material(self, excel_file_set: ExcelFileSet) -> Material | None:
         """Excelファイルセットを基に `Material` オブジェクトを生成"""
-        if not self._excel_file_set:
+        if not excel_file_set:
             return None
         return Material(excel_file_set)
 
