@@ -75,7 +75,11 @@ class Controller(QObject):
         self._material = self._create_material(self._excel_file_set)
         self.materialChanged.emit(self._material)  # 変更通知
 
-    def convert_to_text_file(self, overwrite_confirm: Callable[[Path], bool] | None = None) -> Path | None:
+    def convert_to_text_file(
+        self,
+        overwrite_confirm: Callable[[Path], bool] | None = None,
+        output_filepath: Path | None = None,
+    ) -> Path | None:
         """
         Excelファイルを JIP-まてりある用テキストファイルに変換
 
@@ -86,9 +90,10 @@ class Controller(QObject):
             self.on_error(OperationType.CONVERT_TO_TEXT, Path(), ValueError(error_message))
             return
 
-        # 最初のExcelファイルを基にテキストファイルのパスを取得
-        first_excel_filepath = self._excel_file_set[0].filepath
-        output_filepath = first_excel_filepath.with_suffix(".txt")
+        # 出力ファイルパスが未指定の場合は先頭のExcelファイル名を基に生成
+        if output_filepath is None:
+            first_excel_filepath = self._excel_file_set[0].filepath
+            output_filepath = first_excel_filepath.with_suffix(".txt")
 
         # 上書き時の処理
         if output_filepath.exists():

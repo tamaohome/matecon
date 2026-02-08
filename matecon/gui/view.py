@@ -149,7 +149,22 @@ class MainWindow(QMainWindow):
             )
             return reply == QMessageBox.StandardButton.Yes
 
-        self.controller.convert_to_text_file(overwrite_confirm=overwrite_confirm)
+        # 保存先ファイル名をユーザに選ばせるダイアログを表示
+        default_filepath = ""
+        if self.controller.excel_files:
+            try:
+                default_filepath = str(self.controller.excel_files[0].filepath.with_suffix(".txt"))
+            except Exception:
+                default_filepath = ""
+
+        output_filepath_str, _ = QFileDialog.getSaveFileName(
+            self, "保存先を選択", default_filepath, "Text Files (*.txt)"
+        )
+        if not output_filepath_str:
+            return  # キャンセルされた場合は処理中止
+
+        output_path = Path(output_filepath_str)
+        self.controller.convert_to_text_file(overwrite_confirm=overwrite_confirm, output_filepath=output_path)
 
     def dialog_clear(self):
         """ファイル一覧クリアの確認ダイアログを表示"""
