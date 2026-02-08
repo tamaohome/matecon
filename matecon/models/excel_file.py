@@ -7,6 +7,7 @@ ALLOW_EXTS = [".xlsx", ".xlsm"]
 class ExcelFile:
     def __init__(self, filepath: str | Path) -> None:
         self.filepath: Final = Path(filepath)
+        self.valid_sheet_names: list[str] = []
         self._validate()
 
     def __eq__(self, other) -> bool:

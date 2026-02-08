@@ -96,6 +96,12 @@ class BookNode(NodeMixin):
         return self.children
 
     @property
+    def valid_sheets(self) -> tuple[SheetNode]:
+        """有効なExcelシートのリスト"""
+        # TODO: バリデーションを追加
+        return self.sheets
+
+    @property
     def table(self) -> tuple[RowType, ...]:
         """全シートのテーブルを結合したテーブル（ヘッダーを除く）"""
         return tuple(row for sheet in self.sheets for row in sheet.table)
