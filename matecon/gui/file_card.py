@@ -61,7 +61,7 @@ class FileCard(QFrame):
         btn_remove.setObjectName("removeButton")
         btn_remove.clicked.connect(self._on_remove_clicked)
         btn_remove.setFixedSize(QSize(24, 24))
-        base_layout.addWidget(btn_remove)
+        base_layout.addWidget(btn_remove, 0, Qt.AlignmentFlag.AlignTop)
 
     def _on_remove_clicked(self):
         self.excelFileRemoveRequested.emit(self._excel_file)
@@ -188,10 +188,6 @@ FileCard:hover {
     background-color: #f5f5f5;
 }
 
-FileCard QLabel {
-    color: #333;
-}
-
 FileCard #nameLabel {
     font-weight: bold;
     font-size: 11pt;
@@ -224,7 +220,7 @@ _SHEET_LABEL_STYLESHEET = """
     color: rgba(0, 0, 0, 0.65);
     background-color: rgba(255, 255, 255, 0.50);
     border: 1px solid rgba(0, 0, 0, 0.10);
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 2px 8px;
     margin: 0;
 }
