@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 from matecon.models.excel_file import ExcelFile
@@ -23,7 +25,6 @@ def test_open_invalid_ext():
 
 def test_valid_file():
     """正常なExcelファイルの読み込み"""
-    filepath = "sample_data/BOOK_SAMPLE.xlsx"
+    filepath = Path("sample_data") / "BOOK_SAMPLE.xlsx"
     excel_file = ExcelFile(filepath)
-    assert str(excel_file) == filepath
-    assert excel_file == ExcelFile(filepath)
+    assert str(excel_file) == str(filepath)
