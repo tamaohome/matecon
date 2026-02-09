@@ -49,6 +49,9 @@ class FileCard(QFrame):
         label_filepath.setObjectName("pathLabel")
         label_layout.addWidget(label_filepath)
 
+        # ツールチップにファイルパスを表示
+        self.setToolTip(txt_filepath)
+
         # シート名一覧
         sheet_label_container = SheetLabelContainer(self)
         sheet_label_container.setObjectName("sheetLabelContainer")
