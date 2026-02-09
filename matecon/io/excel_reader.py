@@ -4,15 +4,13 @@ from contextlib import closing
 from typing import Final
 
 from openpyxl import load_workbook
-from openpyxl.cell.cell import Cell, MergedCell
-from openpyxl.cell.read_only import EmptyCell, ReadOnlyCell
+from openpyxl.cell.cell import MergedCell
+from openpyxl.cell.read_only import EmptyCell
 from openpyxl.worksheet.worksheet import Worksheet
 
 from matecon.models.booknode import _SENTINEL, BookNode, SheetNode
 from matecon.models.excel_file import ExcelFile
 from matecon.models.templates import MATERIAL_HEADER
-
-type ExcelCell = Cell | ReadOnlyCell | MergedCell | EmptyCell
 
 type CellType = str | int | float
 type RowType = tuple[CellType | None, ...]

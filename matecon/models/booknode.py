@@ -6,14 +6,10 @@ from pprint import pformat
 from typing import Final, overload
 
 from anytree import NodeMixin
-from openpyxl.cell.cell import Cell, MergedCell
-from openpyxl.cell.read_only import EmptyCell, ReadOnlyCell
 
 from matecon.models.excel_file import ExcelFile
 from matecon.models.position import Position
 from matecon.utils.strings import zen2han
-
-type ExcelCell = Cell | ReadOnlyCell | MergedCell | EmptyCell
 
 type CellType = str | int | float
 type RowType = tuple[CellType | None, ...]
