@@ -191,3 +191,14 @@ def test_material_name_with_level():
     assert mate.nodes[5].name_with_level == "中間横桁 本体"  # BLOCK
     assert mate.nodes[6].name_with_level == "2 - PL 220 x 16 x 2200 (SM490YA)"  # DETAIL
     assert mate.nodes[8].name_with_level == "*="  # PAINT
+
+
+def test_material_add():
+    """`Material` を加算処理によりマージする"""
+    file_set_1 = ExcelFileSet([ExcelFile(MATERIAL_XLSX_1)])
+    mate_1 = Material(file_set_1)
+    file_set_2 = ExcelFileSet([ExcelFile(MATERIAL_XLSX_2)])
+    mate_2 = Material(file_set_2)
+
+    mate = mate_1 + mate_2
+    assert len(mate.nodes) == 43

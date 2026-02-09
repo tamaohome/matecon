@@ -95,6 +95,14 @@ class Material:
     def filepaths(self) -> list[Path]:
         return self.container.filepaths
 
+    def __add__(self, other):
+        """他の `Material` とマージして新しい `Material` を返す"""
+        if not isinstance(other, Material):
+            return NotImplemented
+
+        new_set = ExcelFileSet(self.container.excel_files) + ExcelFileSet(other.container.excel_files)
+        return Material(new_set)
+
 
 def check_not_root(func):
     def wrapper(self, *args, **kwargs):
