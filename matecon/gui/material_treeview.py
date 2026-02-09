@@ -32,7 +32,7 @@ class MaterialTreeView(QTreeWidget):
         self.setColumnWidth(1, 30)  # 員数列の幅を固定
 
         # インデント幅の設定
-        self.setIndentation(16)
+        self.setIndentation(12)
 
         # スクロールバーを常に表示
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)

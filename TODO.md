@@ -2,7 +2,7 @@
 
 ## ✨ feat/gui/appearance
 
-- [ ] ファイルカードおよびツリーの余白を調整
+- [x] ファイルカードおよびツリーの余白を調整
 
 ## ✨ feat/gui/preferences
 
