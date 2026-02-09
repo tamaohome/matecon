@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import closing
 from typing import Final
 
 from openpyxl import load_workbook
@@ -28,15 +29,12 @@ class ExcelReader:
     def load_booknode(self, ignore_hidden_sheet=True) -> BookNode:
         """Excelブックを取得する"""
         booknode = BookNode(self.excel_file, self.header, _SENTINEL)
-        try:
-            wb = load_workbook(self.excel_file.filepath, read_only=True, data_only=True)
+        with closing(load_workbook(self.excel_file.filepath, read_only=True, data_only=True)) as wb:
             for worksheet in wb.worksheets:
                 # 非表示シートの場合はスキップ
                 if ignore_hidden_sheet and worksheet.sheet_state == "hidden":
                     continue
                 self._set_sheetnode(booknode, worksheet)
-        finally:
-            wb.close()
 
         # 有効なシートが取得できなかった場合エラー
         if len(booknode) == 0:
