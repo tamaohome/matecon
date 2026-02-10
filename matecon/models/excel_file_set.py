@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Iterator, MutableSet
 from contextlib import suppress
+from typing import override
 
 from boltons.setutils import IndexedSet
 
@@ -19,6 +20,7 @@ class ExcelFileSet(MutableSet[ExcelFile]):
         self._inner: IndexedSet = IndexedSet()
         self.add(*excel_files)
 
+    @override
     def add(self, *excel_files: ExcelFile) -> None:
         """`ExcelFile` オブジェクトを追加する"""
         for excel_file in excel_files:
@@ -26,9 +28,10 @@ class ExcelFileSet(MutableSet[ExcelFile]):
                 raise ValueError(f"{excel_file}: 既に追加されているExcelファイルです")
             self._inner.add(excel_file)
 
+    @override
     def discard(self, excel_file: ExcelFile) -> None:
-        """`
-        ExcelFile` オブジェクトを削除する
+        """
+        `ExcelFile` オブジェクトを削除する
 
         Excelファイルが存在しない場合はエラーを発生せず処理を中止する
         """
