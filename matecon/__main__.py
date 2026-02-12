@@ -3,6 +3,7 @@ import warnings
 
 from PySide6.QtWidgets import QApplication
 
+from matecon import ALLOW_EXCEL_EXTS
 from matecon.gui.view import MainWindow
 from matecon.io.io import get_filepaths_from_args
 
@@ -13,9 +14,8 @@ warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
 def app():
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
-    allow_exts = [".xlsx", ".xlsm"]
     # コマンドライン引数からファイルパスを取得
-    initial_filepaths = get_filepaths_from_args(allow_exts, sys.argv[1:])
+    initial_filepaths = get_filepaths_from_args(ALLOW_EXCEL_EXTS, sys.argv[1:])
 
     window = MainWindow(initial_filepaths)
     window.show()

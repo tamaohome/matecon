@@ -14,7 +14,6 @@ type CellType = str | int | float
 type RowType = tuple[CellType | None, ...]
 type SheetType = tuple[RowType, ...]
 
-ALLOW_EXTS = [".xlsx", ".xlsm"]
 _SENTINEL = object()  # プライベートコンストラクタ用
 
 

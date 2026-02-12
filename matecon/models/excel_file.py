@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Final
 
-ALLOW_EXTS = [".xlsx", ".xlsm"]
+from matecon import ALLOW_EXCEL_EXTS
 
 
 class ExcelFile:
@@ -35,7 +35,7 @@ class ExcelFile:
             raise IsADirectoryError("ファイルではありません", self.filepath)
 
         # ファイル拡張子のチェック
-        if self.filepath.suffix.lower() not in ALLOW_EXTS:
+        if self.filepath.suffix.lower() not in ALLOW_EXCEL_EXTS:
             raise ValueError("Excelファイルではありません", self.filepath)
 
         # ファイルオープンのチェック
