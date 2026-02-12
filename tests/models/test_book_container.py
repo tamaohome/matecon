@@ -11,7 +11,7 @@ def test_book_container():
     filepaths = [MATERIAL_XLSX_1, MATERIAL_XLSX_2]
     excel_files = [ExcelFile(f) for f in filepaths]
     excel_file_set = ExcelFileSet(excel_files)
-    container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    container = BookContainer(excel_file_set)
     assert container.header == MATERIAL_HEADER
 
     assert len(container.books) == 2  # 読み込んだExcelファイル数

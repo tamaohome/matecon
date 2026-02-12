@@ -4,7 +4,6 @@ from matecon.models.book_container import BookContainer
 from matecon.models.excel_file import ExcelFile
 from matecon.models.excel_file_set import ExcelFileSet
 from matecon.models.material import DetailNode
-from matecon.models.templates import MATERIAL_HEADER
 
 MATERIAL_XLSX_1 = "sample_data/MATERIAL_SAMPLE_1.xlsx"
 MATERIAL_XLSX_2 = "sample_data/MATERIAL_SAMPLE_2.xlsx"
@@ -15,7 +14,7 @@ def test_material():
     excel_files = [ExcelFile(MATERIAL_XLSX_1), ExcelFile(MATERIAL_XLSX_2)]
     excel_file_set = ExcelFileSet(excel_files)
 
-    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    book_container = BookContainer(excel_file_set)
     book = book_container.books[0]
     sheet = book.sheets[0]
 
@@ -27,7 +26,7 @@ def test_material():
 def test_material_node_detail():
     excel_files = [ExcelFile(MATERIAL_XLSX_1)]
     excel_file_set = ExcelFileSet(excel_files)
-    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    book_container = BookContainer(excel_file_set)
     sheet = book_container.books[0].sheets[0]
     mate = sheet.material
 
@@ -49,7 +48,7 @@ def test_material_line_for_drawing():
     """図面用フォーマット"""
     excel_files = [ExcelFile(MATERIAL_XLSX_1)]
     excel_file_set = ExcelFileSet(excel_files)
-    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    book_container = BookContainer(excel_file_set)
     mate = book_container.material
 
     node_1 = mate.nodes[13]
@@ -65,7 +64,7 @@ def test_material_line_for_drawing():
 def test_material_node_values():
     excel_files = [ExcelFile(MATERIAL_XLSX_1)]
     excel_file_set = ExcelFileSet(excel_files)
-    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    book_container = BookContainer(excel_file_set)
     mate = book_container.material
 
     node = mate.nodes[20]
@@ -83,7 +82,7 @@ def test_material_node_values():
 def test_material_node_slice():
     excel_files = [ExcelFile(MATERIAL_XLSX_1)]
     excel_file_set = ExcelFileSet(excel_files)
-    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    book_container = BookContainer(excel_file_set)
     mate = book_container.material
 
     node = mate.nodes[20]
@@ -96,7 +95,7 @@ def test_material_tree():
     """材片情報のツリー構造"""
     excel_files = [ExcelFile(MATERIAL_XLSX_1)]
     excel_file_set = ExcelFileSet(excel_files)
-    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    book_container = BookContainer(excel_file_set)
     mate = book_container.material
 
     # #1 サンプル橋
@@ -158,7 +157,7 @@ def test_material_node_hirrarchy_names():
     """材片情報ノードの階層名称リスト"""
     excel_files = [ExcelFile(MATERIAL_XLSX_1)]
     excel_file_set = ExcelFileSet(excel_files)
-    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    book_container = BookContainer(excel_file_set)
     mate = book_container.material
 
     node = mate.nodes[2]
@@ -175,7 +174,7 @@ def test_material_node_each():
     """材片情報ノードの員数"""
     excel_files = [ExcelFile(MATERIAL_XLSX_1)]
     excel_file_set = ExcelFileSet(excel_files)
-    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    book_container = BookContainer(excel_file_set)
     mate = book_container.material
 
     assert mate.nodes[4].each == 1  # LEVEL5
@@ -189,7 +188,7 @@ def test_material_level_label():
     """材片情報レベル表示"""
     excel_files = [ExcelFile(MATERIAL_XLSX_1)]
     excel_file_set = ExcelFileSet(excel_files)
-    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    book_container = BookContainer(excel_file_set)
     mate = book_container.material
 
     assert mate.nodes[0].level_label == "#1"
@@ -206,7 +205,7 @@ def test_material_name_with_level():
     """材片情報ノードの名称＋レベル名を返す"""
     excel_files = [ExcelFile(MATERIAL_XLSX_1)]
     excel_file_set = ExcelFileSet(excel_files)
-    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    book_container = BookContainer(excel_file_set)
     mate = book_container.material
 
     assert mate.nodes[4].name_with_level == "#5 中間横桁"  # LEVEL5
@@ -218,11 +217,11 @@ def test_material_name_with_level():
 def test_material_add():
     """`Material` を加算処理によりマージする"""
     file_set_1 = ExcelFileSet([ExcelFile(MATERIAL_XLSX_1)])
-    book_container_1 = BookContainer(file_set_1, MATERIAL_HEADER)
+    book_container_1 = BookContainer(file_set_1)
     mate_1 = book_container_1.material
 
     file_set_2 = ExcelFileSet([ExcelFile(MATERIAL_XLSX_2)])
-    book_container_2 = BookContainer(file_set_2, MATERIAL_HEADER)
+    book_container_2 = BookContainer(file_set_2)
     mate_2 = book_container_2.material
 
     mate = mate_1 + mate_2

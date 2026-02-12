@@ -9,7 +9,6 @@ from boltons.setutils import IndexedSet
 from matecon.models.book_container import BookContainer
 from matecon.models.excel_file import ExcelFile
 from matecon.models.material import Material
-from matecon.models.templates import MATERIAL_HEADER
 
 
 class ExcelFileSet(MutableSet[ExcelFile]):
@@ -43,7 +42,7 @@ class ExcelFileSet(MutableSet[ExcelFile]):
 
     @property
     def material(self) -> Material:
-        return BookContainer(self, MATERIAL_HEADER).material
+        return BookContainer(self).material
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({list(self._inner)})"

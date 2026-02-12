@@ -3,7 +3,6 @@ from helpers import read_txt_file
 from matecon.models.book_container import BookContainer
 from matecon.models.excel_file import ExcelFile
 from matecon.models.excel_file_set import ExcelFileSet
-from matecon.models.templates import MATERIAL_HEADER
 
 MATERIAL_XLSX_1 = "sample_data/MATERIAL_SAMPLE_1.xlsx"
 MATERIAL_XLSX_2 = "sample_data/MATERIAL_SAMPLE_2.xlsx"
@@ -17,7 +16,7 @@ def test_material_format_block_line():
     """BLOCKノードの員数"""
     excel_files = [ExcelFile(MATERIAL_XLSX_1)]
     excel_file_set = ExcelFileSet(excel_files)
-    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    book_container = BookContainer(excel_file_set)
     mate = book_container.material
 
     node1 = mate.nodes[5]
@@ -30,7 +29,7 @@ def test_material_format_lines_single_file():
     """単一ファイルで生成した `Material` の出力形式チェック"""
     excel_files = [ExcelFile(MATERIAL_XLSX_1)]
     excel_file_set = ExcelFileSet(excel_files)
-    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    book_container = BookContainer(excel_file_set)
     mate = book_container.material
 
     lines = mate.format_lines
@@ -41,7 +40,7 @@ def test_material_format_lines_multi_files():
     """複数ファイルで生成した `Material` の出力形式チェック"""
     excel_files = [ExcelFile(MATERIAL_XLSX_1), ExcelFile(MATERIAL_XLSX_2)]
     excel_file_set = ExcelFileSet(excel_files)
-    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    book_container = BookContainer(excel_file_set)
     mate = book_container.material
 
     lines = mate.format_lines

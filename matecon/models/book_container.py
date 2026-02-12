@@ -6,14 +6,15 @@ from typing import Final
 from matecon.io.excel_reader import BookNode, ExcelReader, RowType, SheetNode
 from matecon.models.excel_file import ExcelFile
 from matecon.models.material import Material
+from matecon.models.templates import MATERIAL_HEADER
 
 
 class BookContainer:
     """まてりある用Excelファイルを管理するクラス"""
 
-    def __init__(self, excel_files: Collection[ExcelFile], header: tuple[str, ...]):
+    def __init__(self, excel_files: Collection[ExcelFile]):
         self._excel_file_set = excel_files
-        self.header: Final = header
+        self.header: Final = MATERIAL_HEADER
         self._books = self._create_books()
 
     def _create_books(self) -> list[BookNode]:
