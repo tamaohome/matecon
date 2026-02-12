@@ -11,10 +11,7 @@ from openpyxl.worksheet.worksheet import Worksheet
 from matecon.models.booknode import _SENTINEL, BookNode, SheetNode
 from matecon.models.excel_file import ExcelFile
 from matecon.models.templates import MATERIAL_HEADER
-
-type CellType = str | int | float
-type RowType = tuple[CellType | None, ...]
-type SheetType = tuple[RowType, ...]
+from matecon.models.types import CellType, RowType
 
 
 class ExcelReader:

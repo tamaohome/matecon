@@ -7,11 +7,8 @@ from anytree import NodeMixin
 
 from matecon.models.material import Material
 from matecon.models.position import Position
+from matecon.models.types import CellType, RowType, SheetType
 from matecon.utils.strings import zen2han
-
-type CellType = str | int | float
-type RowType = tuple[CellType | None, ...]
-type SheetType = tuple[RowType, ...]
 
 if TYPE_CHECKING:
     from matecon.models.booknode import BookNode

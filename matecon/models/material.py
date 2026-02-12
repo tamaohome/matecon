@@ -7,10 +7,7 @@ from typing import Final, override
 from anytree import NodeMixin
 
 from matecon.models import templates
-
-type CellType = str | int | float
-type RowType = tuple[CellType | None, ...]
-type SheetType = tuple[RowType, ...]
+from matecon.models.types import SheetType
 
 
 class Material:
