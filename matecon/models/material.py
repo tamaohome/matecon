@@ -1,32 +1,26 @@
 from __future__ import annotations
 
+from functools import cached_property
 from math import prod
-from pathlib import Path
 from typing import Final, override
 
-from anytree import NodeMixin, RenderTree
+from anytree import NodeMixin
 
 from matecon.models import templates
-from matecon.models.book_container import BookContainer
-from matecon.models.excel_file_set import ExcelFileSet
+
+type CellType = str | int | float
+type RowType = tuple[CellType | None, ...]
+type SheetType = tuple[RowType, ...]
 
 
 class Material:
     """材片情報ノードの管理クラス"""
 
-    def __init__(self, excel_file_set: ExcelFileSet):
-        self._container = BookContainer(excel_file_set, templates.MATERIAL_HEADER)
-        self._root = self._build_tree(self.container)
+    def __init__(self, table: SheetType):
+        self._table = table
+        # self._root = self._build_tree()
 
-    def print_tree(self) -> None:
-        """ツリーを表示"""
-        print(self.container.filepaths)
-        for pre, _, node in RenderTree(self.root):
-            if node.parent is None:
-                continue
-            print(f"{pre}{node.level} {node.name}")
-
-    def _build_tree(self, container: BookContainer) -> MaterialNode:
+    def _build_tree(self) -> MaterialNode:
         # ルートノード
         root = MaterialNode(parent=None, level=0, row=[])
 
@@ -34,7 +28,7 @@ class Material:
         level_nodes = {0: [root]}
 
         # ノードツリーの構築
-        for row in container.rows:
+        for row in self.table:
             level = templates.level_detector(row)
 
             if level is None:
@@ -61,13 +55,9 @@ class Material:
 
         return root
 
-    @property
+    @cached_property
     def root(self) -> MaterialNode:
-        return self._root
-
-    @property
-    def container(self) -> BookContainer:
-        return self._container
+        return self._build_tree()
 
     @property
     def nodes(self) -> tuple[MaterialNode, ...]:
@@ -92,16 +82,18 @@ class Material:
         return header + lines
 
     @property
-    def filepaths(self) -> list[Path]:
-        return self.container.filepaths
+    def table(self) -> SheetType:
+        return self._table
 
     def __add__(self, other):
         """他の `Material` とマージして新しい `Material` を返す"""
         if not isinstance(other, Material):
             return NotImplemented
 
-        new_set = ExcelFileSet(self.container.excel_files) + ExcelFileSet(other.container.excel_files)
-        return Material(new_set)
+        return Material(self.table + other.table)
+
+    def __len__(self):
+        return len(self.root.descendants)
 
 
 def check_not_root(func):

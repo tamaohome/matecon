@@ -123,7 +123,7 @@ class Controller(QObject):
         """Excelファイルセットを基に `Material` オブジェクトを生成"""
         if not excel_file_set:
             return None
-        return Material(excel_file_set)
+        return excel_file_set.material
 
     @property
     def excel_files(self) -> list[ExcelFile]:

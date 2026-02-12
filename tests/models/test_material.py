@@ -1,27 +1,36 @@
 # import pytest
 
+from matecon.models.book_container import BookContainer
 from matecon.models.excel_file import ExcelFile
 from matecon.models.excel_file_set import ExcelFileSet
-from matecon.models.material import DetailNode, Material, MaterialNode
+from matecon.models.material import DetailNode
+from matecon.models.templates import MATERIAL_HEADER
 
 MATERIAL_XLSX_1 = "sample_data/MATERIAL_SAMPLE_1.xlsx"
 MATERIAL_XLSX_2 = "sample_data/MATERIAL_SAMPLE_2.xlsx"
-PHANTOM_XLSX = "sample_data/PHANTOM_FILE.xlsx"
 
 
 def test_material():
     """正常なExcelファイルの読み込み"""
     excel_files = [ExcelFile(MATERIAL_XLSX_1), ExcelFile(MATERIAL_XLSX_2)]
     excel_file_set = ExcelFileSet(excel_files)
-    mate = Material(excel_file_set)
-    assert isinstance(mate.root, MaterialNode)
-    assert len(mate.nodes) == 43
+
+    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    book = book_container.books[0]
+    sheet = book.sheets[0]
+
+    assert len(book_container.material) == 43
+    assert len(book.material) == 27
+    assert len(sheet.material) == 16
 
 
 def test_material_node_detail():
     excel_files = [ExcelFile(MATERIAL_XLSX_1)]
     excel_file_set = ExcelFileSet(excel_files)
-    mate = Material(excel_file_set)
+    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    sheet = book_container.books[0].sheets[0]
+    mate = sheet.material
+
     node = mate.nodes[13]
 
     assert node.name == "1 - PL 160 x 9 x 640 (SS400)"
@@ -40,7 +49,8 @@ def test_material_line_for_drawing():
     """図面用フォーマット"""
     excel_files = [ExcelFile(MATERIAL_XLSX_1)]
     excel_file_set = ExcelFileSet(excel_files)
-    mate = Material(excel_file_set)
+    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    mate = book_container.material
 
     node_1 = mate.nodes[13]
     assert isinstance(node_1, DetailNode)
@@ -55,7 +65,9 @@ def test_material_line_for_drawing():
 def test_material_node_values():
     excel_files = [ExcelFile(MATERIAL_XLSX_1)]
     excel_file_set = ExcelFileSet(excel_files)
-    mate = Material(excel_file_set)
+    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    mate = book_container.material
+
     node = mate.nodes[20]
     assert isinstance(node, DetailNode)
     assert node.values[0] == "PL"
@@ -71,7 +83,9 @@ def test_material_node_values():
 def test_material_node_slice():
     excel_files = [ExcelFile(MATERIAL_XLSX_1)]
     excel_file_set = ExcelFileSet(excel_files)
-    mate = Material(excel_file_set)
+    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    mate = book_container.material
+
     node = mate.nodes[20]
     assert isinstance(node, DetailNode)
     assert node.values[:6] == ["PL", 220, 4.5, None, None, 800]
@@ -82,7 +96,8 @@ def test_material_tree():
     """材片情報のツリー構造"""
     excel_files = [ExcelFile(MATERIAL_XLSX_1)]
     excel_file_set = ExcelFileSet(excel_files)
-    mate = Material(excel_file_set)
+    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    mate = book_container.material
 
     # #1 サンプル橋
     node_level_1 = mate.nodes[0]
@@ -143,7 +158,8 @@ def test_material_node_hirrarchy_names():
     """材片情報ノードの階層名称リスト"""
     excel_files = [ExcelFile(MATERIAL_XLSX_1)]
     excel_file_set = ExcelFileSet(excel_files)
-    mate = Material(excel_file_set)
+    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    mate = book_container.material
 
     node = mate.nodes[2]
     assert node.name == "主構造"
@@ -159,7 +175,9 @@ def test_material_node_each():
     """材片情報ノードの員数"""
     excel_files = [ExcelFile(MATERIAL_XLSX_1)]
     excel_file_set = ExcelFileSet(excel_files)
-    mate = Material(excel_file_set)
+    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    mate = book_container.material
+
     assert mate.nodes[4].each == 1  # LEVEL5
     assert mate.nodes[5].each == 6  # BLOCK (6*1)
     assert mate.nodes[6].each == 2  # DETAIL
@@ -171,7 +189,9 @@ def test_material_level_label():
     """材片情報レベル表示"""
     excel_files = [ExcelFile(MATERIAL_XLSX_1)]
     excel_file_set = ExcelFileSet(excel_files)
-    mate = Material(excel_file_set)
+    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    mate = book_container.material
+
     assert mate.nodes[0].level_label == "#1"
     assert mate.nodes[1].level_label == "#2"
     assert mate.nodes[2].level_label == "#3"
@@ -186,7 +206,9 @@ def test_material_name_with_level():
     """材片情報ノードの名称＋レベル名を返す"""
     excel_files = [ExcelFile(MATERIAL_XLSX_1)]
     excel_file_set = ExcelFileSet(excel_files)
-    mate = Material(excel_file_set)
+    book_container = BookContainer(excel_file_set, MATERIAL_HEADER)
+    mate = book_container.material
+
     assert mate.nodes[4].name_with_level == "#5 中間横桁"  # LEVEL5
     assert mate.nodes[5].name_with_level == "中間横桁 本体"  # BLOCK
     assert mate.nodes[6].name_with_level == "2 - PL 220 x 16 x 2200 (SM490YA)"  # DETAIL
@@ -196,9 +218,12 @@ def test_material_name_with_level():
 def test_material_add():
     """`Material` を加算処理によりマージする"""
     file_set_1 = ExcelFileSet([ExcelFile(MATERIAL_XLSX_1)])
-    mate_1 = Material(file_set_1)
+    book_container_1 = BookContainer(file_set_1, MATERIAL_HEADER)
+    mate_1 = book_container_1.material
+
     file_set_2 = ExcelFileSet([ExcelFile(MATERIAL_XLSX_2)])
-    mate_2 = Material(file_set_2)
+    book_container_2 = BookContainer(file_set_2, MATERIAL_HEADER)
+    mate_2 = book_container_2.material
 
     mate = mate_1 + mate_2
     assert len(mate.nodes) == 43

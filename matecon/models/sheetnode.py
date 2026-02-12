@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, overload
 
 from anytree import NodeMixin
 
+from matecon.models.material import Material
 from matecon.models.position import Position
 from matecon.utils.strings import zen2han
 
@@ -119,3 +120,8 @@ class SheetNode(NodeMixin):
     @property
     def header(self) -> tuple:
         return self.booknode.header
+
+    @property
+    def material(self) -> Material:
+        """材片情報ノード"""
+        return Material(self.table)

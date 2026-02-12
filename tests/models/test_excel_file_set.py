@@ -78,3 +78,11 @@ def test_excel_file_set_plus():
     # 同じExcelファイルが加算された場合（エラー）
     with pytest.raises(ValueError):
         additional_set += ExcelFile(BOOK_SAMPLE)
+
+
+def test_excel_file_set_material():
+    """材片情報の取得"""
+    excel_files = [ExcelFile(MATERIAL_XLSX_1), ExcelFile(MATERIAL_XLSX_2)]
+    excel_file_set = ExcelFileSet(excel_files)
+
+    assert len(excel_file_set.material) == 43

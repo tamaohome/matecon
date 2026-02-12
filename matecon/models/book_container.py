@@ -1,19 +1,18 @@
-from collections.abc import Sequence
+from collections.abc import Collection
+from functools import cached_property
 from pathlib import Path
 from typing import Final
 
 from matecon.io.excel_reader import BookNode, ExcelReader, RowType, SheetNode
 from matecon.models.excel_file import ExcelFile
-from matecon.models.excel_file_set import ExcelFileSet
-
-type FileListType = Sequence[Path | str]
+from matecon.models.material import Material
 
 
 class BookContainer:
     """まてりある用Excelファイルを管理するクラス"""
 
-    def __init__(self, excel_file_set: ExcelFileSet, header: tuple[str, ...]):
-        self._excel_file_set = excel_file_set
+    def __init__(self, excel_files: Collection[ExcelFile], header: tuple[str, ...]):
+        self._excel_file_set = excel_files
         self.header: Final = header
         self._books = self._create_books()
 
@@ -54,3 +53,13 @@ class BookContainer:
     @property
     def filenames(self) -> list[str]:
         return [str(p.name) for p in self.filepaths]
+
+    @property
+    def table(self) -> tuple[RowType, ...]:
+        """全シートのテーブルを結合したテーブル（ヘッダーを除く）"""
+        return tuple(row for sheet in self.sheets for row in sheet.table)
+
+    @cached_property
+    def material(self) -> Material:
+        """材片情報ノード"""
+        return Material(self.table)

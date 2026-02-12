@@ -7,6 +7,7 @@ from typing import Final, overload
 from anytree import NodeMixin
 
 from matecon.models.excel_file import ExcelFile
+from matecon.models.material import Material
 from matecon.models.sheetnode import SheetNode
 
 type CellType = str | int | float
@@ -99,3 +100,8 @@ class BookNode(NodeMixin):
     def table(self) -> tuple[RowType, ...]:
         """全シートのテーブルを結合したテーブル（ヘッダーを除く）"""
         return tuple(row for sheet in self.sheets for row in sheet.table)
+
+    @property
+    def material(self) -> Material:
+        """材片情報ノード"""
+        return Material(self.table)

@@ -6,7 +6,10 @@ from typing import override
 
 from boltons.setutils import IndexedSet
 
+from matecon.models.book_container import BookContainer
 from matecon.models.excel_file import ExcelFile
+from matecon.models.material import Material
+from matecon.models.templates import MATERIAL_HEADER
 
 
 class ExcelFileSet(MutableSet[ExcelFile]):
@@ -37,6 +40,10 @@ class ExcelFileSet(MutableSet[ExcelFile]):
         """
         with suppress(KeyError):
             self._inner.remove(excel_file)
+
+    @property
+    def material(self) -> Material:
+        return BookContainer(self, MATERIAL_HEADER).material
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({list(self._inner)})"
