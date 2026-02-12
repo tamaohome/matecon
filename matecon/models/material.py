@@ -7,13 +7,13 @@ from typing import Final, override
 from anytree import NodeMixin
 
 from matecon.models import templates
-from matecon.models.types import SheetType
+from matecon.models.types import TableType
 
 
 class Material:
     """材片情報ノードの管理クラス"""
 
-    def __init__(self, table: SheetType):
+    def __init__(self, table: TableType):
         self._table = table
         # self._root = self._build_tree()
 
@@ -79,7 +79,7 @@ class Material:
         return header + lines
 
     @property
-    def table(self) -> SheetType:
+    def table(self) -> TableType:
         return self._table
 
     def __add__(self, other):

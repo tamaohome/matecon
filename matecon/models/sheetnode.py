@@ -7,7 +7,7 @@ from anytree import NodeMixin
 
 from matecon.models.material import Material
 from matecon.models.position import Position
-from matecon.models.types import CellType, RowType, SheetType
+from matecon.models.types import CellType, RowType, TableType
 from matecon.utils.strings import zen2han
 
 if TYPE_CHECKING:
@@ -21,7 +21,7 @@ class SheetNode(NodeMixin):
     `ExcelReader` インスタンスの `load_booknode()` より生成する
     """
 
-    def __init__(self, parent: BookNode, sheet_name: str, rows: SheetType, _sentinel: object = None):
+    def __init__(self, parent: BookNode, sheet_name: str, rows: TableType, _sentinel: object = None):
         super().__init__()
         # プライベートコンストラクタ処理
         from matecon.models.booknode import _SENTINEL as _BOOKNODE_SENTINEL
@@ -47,9 +47,9 @@ class SheetNode(NodeMixin):
     @overload
     def __getitem__(self, index: int) -> RowType: ...
     @overload
-    def __getitem__(self, index: slice) -> SheetType: ...
+    def __getitem__(self, index: slice) -> TableType: ...
 
-    def __getitem__(self, index: int | slice) -> RowType | SheetType:
+    def __getitem__(self, index: int | slice) -> RowType | TableType:
         # スライス指定
         if isinstance(index, slice):
             return self.table[index]
@@ -86,7 +86,7 @@ class SheetNode(NodeMixin):
         # ヘッダーが存在しない場合はエラー
         raise ValueError("ヘッダー行が存在しません:", self.booknode.filepath)
 
-    def _get_table(self) -> SheetType:
+    def _get_table(self) -> TableType:
         row_n, col_n = self.table_origin.to_tuple
         return tuple(row[col_n:] for row in self._rows[row_n:])
 
@@ -102,7 +102,7 @@ class SheetNode(NodeMixin):
         return self.header_position + Position(1, 0)
 
     @property
-    def table(self) -> SheetType:
+    def table(self) -> TableType:
         return self._table
 
     @property

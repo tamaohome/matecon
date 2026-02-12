@@ -9,7 +9,7 @@ from anytree import NodeMixin
 from matecon.models.excel_file import ExcelFile
 from matecon.models.material import Material
 from matecon.models.sheetnode import SheetNode
-from matecon.models.types import SheetType
+from matecon.models.types import TableType
 
 _SENTINEL = object()  # プライベートコンストラクタ用
 
@@ -93,7 +93,7 @@ class BookNode(NodeMixin):
         return self.sheets
 
     @property
-    def table(self) -> SheetType:
+    def table(self) -> TableType:
         """全シートのテーブルを結合したテーブル（ヘッダーを除く）"""
         return tuple(row for sheet in self.sheets for row in sheet.table)
 
