@@ -6,7 +6,8 @@ from matecon import ALLOW_EXCEL_EXTS
 
 class ExcelFile:
     def __init__(self, filepath: str | Path) -> None:
-        self.filepath: Final = Path(filepath)
+        # 正規化された絶対パスで保持する
+        self.filepath: Final = Path(filepath).expanduser().resolve()
         self.valid_sheet_names: list[str] = []
         self._validate()
 
