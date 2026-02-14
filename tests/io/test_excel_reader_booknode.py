@@ -1,6 +1,6 @@
 import pytest
 
-from matecon.io.excel_reader import BookNode, ExcelReader
+from matecon.io.excel_reader import BookNode, WorkbookReader
 from matecon.models.excel_file import ExcelFile
 from matecon.models.templates import MATERIAL_HEADER
 
@@ -19,7 +19,7 @@ def test_incorrect_node_creation():
 def test_load_booknode():
     """`BookNode` の読み込み"""
     excel_file = ExcelFile(MATERIAL_XLSX_1)
-    reader = ExcelReader(excel_file, MATERIAL_HEADER)
+    reader = WorkbookReader(excel_file, MATERIAL_HEADER)
     book = reader.load_booknode()
     assert book.name == "material_data_1"
     assert book.header == MATERIAL_HEADER

@@ -1,6 +1,6 @@
 import pytest
 
-from matecon.io.excel_reader import ExcelReader, SheetNode
+from matecon.io.excel_reader import SheetNode, WorkbookReader
 from matecon.models.excel_file import ExcelFile
 from matecon.models.position import Position
 from matecon.models.templates import MATERIAL_HEADER
@@ -18,7 +18,7 @@ def test_incorrect_node_creation():
     """`SheetNode` を直接生成した場合のエラー"""
     with pytest.raises(TypeError, match="SheetNode は直接生成できません"):
         excel_file = ExcelFile(BOOK_SAMPLE)
-        reader = ExcelReader(excel_file, TABLE_HEADER_1)
+        reader = WorkbookReader(excel_file, TABLE_HEADER_1)
         booknode = reader.load_booknode()
         SheetNode(booknode, "title", ())
 
@@ -26,7 +26,7 @@ def test_incorrect_node_creation():
 def test_sheetnode():
     """`SheetNode` の読み込み"""
     excel_file = ExcelFile(BOOK_SAMPLE)
-    reader = ExcelReader(excel_file, TABLE_HEADER_1)
+    reader = WorkbookReader(excel_file, TABLE_HEADER_1)
     book = reader.load_booknode()
     assert book[0].name == "TABLE_SAMPLE"
 
@@ -34,7 +34,7 @@ def test_sheetnode():
 def test_load_sheetnode():
     """Excelセルの読み込み"""
     excel_file = ExcelFile(MATERIAL_XLSX_1)
-    reader = ExcelReader(excel_file, MATERIAL_HEADER)
+    reader = WorkbookReader(excel_file, MATERIAL_HEADER)
     book = reader.load_booknode()
 
     sheet = book[0]
@@ -46,7 +46,7 @@ def test_load_sheetnode():
 def test_load_table():
     """Excelテーブル（ヘッダーを除く）の読み込み"""
     excel_file = ExcelFile(MATERIAL_XLSX_1)
-    reader = ExcelReader(excel_file, MATERIAL_HEADER)
+    reader = WorkbookReader(excel_file, MATERIAL_HEADER)
     book = reader.load_booknode()
 
     # テーブルの行数
@@ -58,7 +58,7 @@ def test_load_table():
 def test_header_template():
     """ヘッダーテンプレート"""
     excel_file = ExcelFile(BOOK_SAMPLE)
-    reader = ExcelReader(excel_file, TABLE_HEADER_1)
+    reader = WorkbookReader(excel_file, TABLE_HEADER_1)
     sheet = reader.load_booknode()["TABLE_SAMPLE"]
     assert sheet.header_position == Position(4, 1)  # ヘッダーの開始位置
     assert sheet.table_origin == Position(5, 1)  # テーブルの開始位置
@@ -67,7 +67,7 @@ def test_header_template():
 def test_cell_values():
     """セルの値"""
     excel_file = ExcelFile(BOOK_SAMPLE)
-    reader = ExcelReader(excel_file, TABLE_HEADER_1)
+    reader = WorkbookReader(excel_file, TABLE_HEADER_1)
     sheet = reader.load_booknode()["TABLE_SAMPLE"]
 
     # インデックス指定と cell() のいずれもセル参照可能
@@ -95,7 +95,7 @@ def test_cell_values():
 def test_cell_types():
     """セルの型"""
     excel_file = ExcelFile(BOOK_SAMPLE)
-    reader = ExcelReader(excel_file, TABLE_HEADER_2)
+    reader = WorkbookReader(excel_file, TABLE_HEADER_2)
     sheet = reader.load_booknode()["CELL_TYPE"]
 
     def assert_value_and_type(obj, value, value_type=None):
@@ -137,7 +137,7 @@ def test_cell_types():
 def test_merged_cell():
     """結合セル"""
     excel_file = ExcelFile(BOOK_SAMPLE)
-    reader = ExcelReader(excel_file, TABLE_HEADER_1)
+    reader = WorkbookReader(excel_file, TABLE_HEADER_1)
     sheet = reader.load_booknode()["MERGED_CELLS"]
 
     assert sheet[0][0:3] == ("横に3マス結合", None, None)
@@ -155,7 +155,7 @@ def test_merged_cell():
 def test_hidden_row():
     """非表示状態の行を取得"""
     excel_file = ExcelFile(BOOK_SAMPLE)
-    reader = ExcelReader(excel_file, TABLE_HEADER_1)
+    reader = WorkbookReader(excel_file, TABLE_HEADER_1)
     sheet = reader.load_booknode()["HIDDEN_ROW"]
 
     assert sheet[0][0] == "A"
