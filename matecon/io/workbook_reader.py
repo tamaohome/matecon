@@ -19,7 +19,7 @@ type RowType = tuple[CellType | None, ...]
 type SheetType = tuple[RowType, ...]
 
 
-class ExcelReader:
+class WorkbookReader:
     """Excelファイルを読み込むクラス"""
 
     def __init__(self, excel_file: ExcelFile, header=MATERIAL_HEADER):

@@ -2,7 +2,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Final
 
-from matecon.io.excel_reader import BookNode, ExcelReader, RowType, SheetNode
+from matecon.io.workbook_reader import BookNode, RowType, SheetNode, WorkbookReader
 from matecon.models.excel_file import ExcelFile
 from matecon.models.excel_file_set import ExcelFileSet
 
@@ -21,7 +21,7 @@ class BookContainer:
         """Excelファイルから `BookNode` のリストを生成する"""
         booknodes: list[BookNode] = []
         for excel_file in self._excel_file_set:
-            reader = ExcelReader(excel_file, self.header)
+            reader = WorkbookReader(excel_file, self.header)
             booknode = reader.load_booknode()
             booknodes.append(booknode)
 

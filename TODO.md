@@ -61,9 +61,7 @@
 
 ## 💎 refactor/models
 
-- [ ] 基底クラスを `NodeMixIn` に変更 (`spreadsheet`)
-- [ ] `Worksheet` を直接保持しない設計に変更 (`spreadsheet`)
-- [ ] openpyxl とクラス名が干渉している (`ExcelReader`)
+- [x] openpyxl とクラス名が干渉している (`ExcelReader`)
 
 ## 🏗️ build
 
