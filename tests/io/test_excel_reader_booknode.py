@@ -4,9 +4,9 @@ from matecon.io.excel_reader import BookNode, ExcelReader
 from matecon.models.excel_file import ExcelFile
 from matecon.models.templates import MATERIAL_HEADER
 
-MATERIAL_XLSX_1 = "sample_data/MATERIAL_SAMPLE_1.xlsx"
-MATERIAL_XLSX_2 = "sample_data/MATERIAL_SAMPLE_2.xlsx"
-MATERIAL_TXT_1 = "sample_data/MATERIAL_SAMPLE_1.txt"
+MATERIAL_XLSX_1 = "sample_data/material_data_1.xlsx"
+MATERIAL_XLSX_2 = "sample_data/material_data_2.xlsx"
+MATERIAL_TXT_1 = "sample_data/material_data_1.txt"
 
 
 def test_incorrect_node_creation():
@@ -21,7 +21,7 @@ def test_load_booknode():
     excel_file = ExcelFile(MATERIAL_XLSX_1)
     reader = ExcelReader(excel_file, MATERIAL_HEADER)
     book = reader.load_booknode()
-    assert book.name == "MATERIAL_SAMPLE_1"
+    assert book.name == "material_data_1"
     assert book.header == MATERIAL_HEADER
 
     assert len(book) == 2

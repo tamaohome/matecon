@@ -5,13 +5,13 @@ from matecon.models.excel_file import ExcelFile
 from matecon.models.position import Position
 from matecon.models.templates import MATERIAL_HEADER
 
-BOOK_SAMPLE = "sample_data/BOOK_SAMPLE.xlsx"
+BOOK_SAMPLE = "sample_data/book_sample.xlsx"
 TABLE_HEADER_1 = ("HEADER_1", "HEADER_2", "HEADER_3")
 TABLE_HEADER_2 = ("種類", "ゼロ値", "正数", "負数", "小数丸め", "関数", "表示形式1", "表示形式2")
 
-MATERIAL_XLSX_1 = "sample_data/MATERIAL_SAMPLE_1.xlsx"
-MATERIAL_XLSX_2 = "sample_data/MATERIAL_SAMPLE_2.xlsx"
-MATERIAL_TXT_1 = "sample_data/MATERIAL_SAMPLE_1.txt"
+MATERIAL_XLSX_1 = "sample_data/material_data_1.xlsx"
+MATERIAL_XLSX_2 = "sample_data/material_data_2.xlsx"
+MATERIAL_TXT_1 = "sample_data/material_data_1.txt"
 
 
 def test_incorrect_node_creation():
@@ -38,7 +38,7 @@ def test_load_sheetnode():
     book = reader.load_booknode()
 
     sheet = book[0]
-    assert sheet.table_origin == Position(3, 3)
+    assert sheet.table_origin == Position(3, 2)
     assert sheet.cell(0, 0) == "#1"
     assert sheet[0][0] == "#1"
 

@@ -4,9 +4,8 @@ from matecon.models.excel_file import ExcelFile
 from matecon.models.excel_file_set import ExcelFileSet
 from matecon.models.material import DetailNode, Material, MaterialNode
 
-MATERIAL_XLSX_1 = "sample_data/MATERIAL_SAMPLE_1.xlsx"
-MATERIAL_XLSX_2 = "sample_data/MATERIAL_SAMPLE_2.xlsx"
-PHANTOM_XLSX = "sample_data/PHANTOM_FILE.xlsx"
+MATERIAL_XLSX_1 = "sample_data/material_data_1.xlsx"
+MATERIAL_XLSX_2 = "sample_data/material_data_2.xlsx"
 
 
 def test_material():

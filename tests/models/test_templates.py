@@ -1,7 +1,5 @@
 from matecon.models.templates import MATERIAL_HEADER, format_line
 
-MATERIAL_XLSX = "sample_data/MATERIAL_SAMPLE_1.xlsx"
-
 
 def test_templates():
     sample_row = [

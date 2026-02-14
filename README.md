@@ -12,7 +12,7 @@
 
 材料計上用 Excel ファイルとして、以下のテンプレートを利用できます。
 
-- [MATERIAL_SAMPLE_1.xlsx](sample_data/MATERIAL_SAMPLE_1.xlsx)
+- [material_data_1.xlsx](sample_data/material_data_1.xlsx)
 
 Excel ファイルのシートには以下のヘッダー行が必要です。
 

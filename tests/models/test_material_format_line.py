@@ -1,15 +1,14 @@
-from helpers import read_txt_file
-
 from matecon.models.excel_file import ExcelFile
 from matecon.models.excel_file_set import ExcelFileSet
 from matecon.models.material import Material
+from tests.helpers import read_txt_file
 
-MATERIAL_XLSX_1 = "sample_data/MATERIAL_SAMPLE_1.xlsx"
-MATERIAL_XLSX_2 = "sample_data/MATERIAL_SAMPLE_2.xlsx"
-MATERIAL_TXT_1 = "sample_data/MATERIAL_SAMPLE_1.txt"
-MATERIAL_TXT_12 = "sample_data/MATERIAL_SAMPLE_1+2.txt"
+MATERIAL_XLSX_1 = "sample_data/material_data_1.xlsx"
+MATERIAL_XLSX_2 = "sample_data/material_data_2.xlsx"
+MATERIAL_TXT_1 = "sample_data/material_data_1.txt"
+MATERIAL_TXT_MERGED = "sample_data/material_data_merged.txt"
 TXT_SAMPLE_1 = read_txt_file(MATERIAL_TXT_1)
-TXT_SAMPLE_12 = read_txt_file(MATERIAL_TXT_12)
+TXT_SAMPLE_MERGED = read_txt_file(MATERIAL_TXT_MERGED)
 
 
 def test_material_format_block_line():
@@ -38,4 +37,4 @@ def test_material_format_lines_multi_files():
     excel_file_set = ExcelFileSet(excel_files)
     mate = Material(excel_file_set)
     lines = mate.format_lines
-    assert lines == TXT_SAMPLE_12
+    assert lines == TXT_SAMPLE_MERGED
