@@ -1,6 +1,6 @@
 import pytest
 
-from matecon.io.excel_reader import BookNode, WorkbookReader
+from matecon.io.workbook_reader import BookNode, WorkbookReader
 from matecon.models.excel_file import ExcelFile
 from matecon.models.templates import MATERIAL_HEADER
 

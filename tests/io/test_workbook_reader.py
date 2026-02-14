@@ -1,6 +1,6 @@
 import pytest
 
-from matecon.io.excel_reader import WorkbookReader
+from matecon.io.workbook_reader import WorkbookReader
 from matecon.models.excel_file import ExcelFile
 
 BOOK_SAMPLE = "sample_data/book_sample.xlsx"

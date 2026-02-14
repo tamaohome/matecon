@@ -2,7 +2,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Final
 
-from matecon.io.excel_reader import BookNode, RowType, SheetNode, WorkbookReader
+from matecon.io.workbook_reader import BookNode, RowType, SheetNode, WorkbookReader
 from matecon.models.excel_file import ExcelFile
 from matecon.models.excel_file_set import ExcelFileSet
 
