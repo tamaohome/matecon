@@ -47,8 +47,8 @@ class ExcelFileSet(MutableSet[ExcelFile]):
     def __iter__(self) -> Iterator[ExcelFile]:
         return iter(self._inner)
 
-    def __contains__(self, excel_file: ExcelFile) -> bool:
-        return excel_file in self._inner
+    def __contains__(self, excel_file: object) -> bool:
+        return isinstance(excel_file, ExcelFile) and excel_file in self._inner
 
     def __add__(self, other: ExcelFile | ExcelFileSet) -> ExcelFileSet:
         """加算演算子で `ExcelFile | ExcelFileSet` を追加した新しいセットを返す"""
