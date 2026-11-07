@@ -154,11 +154,6 @@ class MaterialNode(NodeMixin):
         return super().siblings
 
     @property
-    @override
-    def children(self) -> tuple[MaterialNode, ...]:
-        return super().children
-
-    @property
     def format_lines(self) -> list[str]:
         """自ノードおよび子ノードを固定長文字列のリストとして返す"""
         # 自ノード
