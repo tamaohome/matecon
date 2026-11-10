@@ -1,6 +1,6 @@
 [project]
 name = "matecon"
-version = "0.1.0"
+version = "0.1.1"
 description = "Excel to JIP-MATERIAL converter"
 authors = [
     { name = "tamaohome", email = "85826245+tamaohome@users.noreply.github.com" },
