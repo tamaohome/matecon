@@ -29,6 +29,7 @@ dev = [
     "pytest-watcher>=0.4.3",
     "pytest-mock>=3.15.1",
     "pytest-qt>=4.5.0",
+    "commitizen>=4.19.3",
 ]
 
 [tool.hatch.metadata]
@@ -62,6 +63,24 @@ ignore = [
 
 [tool.ruff.lint.isort]
 known-first-party = ["matecon"]
+
+[tool.commitizen]
+name = "cz_customize"
+version_provider = "pep621"
+tag_format = "v$version"
+update_changelog_on_bump = false
+bump_message = "🧹 chore: bump version to $new_version"
+
+[tool.commitizen.customize]
+# コミット件名: <絵文字> <type>(scope)?!?: 件名 (絵文字は任意)
+bump_pattern = "^(?:\\S+ )?((?:feat|fix|docs|chore|test|style|build|refactor|perf|ci)(?:\\(.+\\))?!?):"
+
+[tool.commitizen.customize.bump_map]
+"^.+!$" = "MAJOR"
+"^feat" = "MINOR"
+"^fix" = "PATCH"
+"^refactor" = "PATCH"
+"^perf" = "PATCH"
 
 [tool.pytest.ini_options]
 addopts = "-s"

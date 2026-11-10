@@ -26,6 +26,16 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked
 
+      - name: Verify tag matches pyproject version
+        if: github.ref_type == 'tag'
+        shell: bash
+        run: |
+          version=$(uv run python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          if [ "${{ github.ref_name }}" != "v${version}" ]; then
+            echo "::error::タグ ${{ github.ref_name }} と pyproject.toml の version (v${version}) が一致しません。cz bump でバージョンを上げてからタグを作成してください。"
+            exit 1
+          fi
+
       - name: Lint
         run: uv run ruff check .
 
