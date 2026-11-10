@@ -30,3 +30,17 @@ Excel ファイルのシートには以下のヘッダー行が必要です。
 - 以下のシートは材料データの変換対象から除外されます。
   - ヘッダー行が存在しないシート
   - 非表示のシート
+
+## リリース手順（開発者向け）
+
+1. `uv run cz commit` でコミットを作成する
+2. main にマージ後、ローカルで `uv run cz bump --dry-run` を実行し、バージョンアップを確認
+3. `uv run cz bump` を実行する。`pyproject.toml` のバージョン更新、コミット、タグ作成をまとめて行う
+4. `git push origin main --follow-tags` で push する。タグ push により Windows 向けビルドと GitHub Release が自動作成される
+
+- バージョンアップ規則:
+  - `feat` → マイナーバージョン
+  - `fix` / `refactor` / `perf` → パッチバージョン
+  - `!` 付き（破壊的変更）→ メジャーバージョン
+  - `build` / `chore` / `docs` → バージョンアップしない
+  - タグと `pyproject.toml` の バージョンが一致しない場合、CI が失敗する
