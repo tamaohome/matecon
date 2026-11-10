@@ -5,7 +5,7 @@ a = Analysis(
     ['matecon\\__main__.py'],
     pathex=[],
     binaries=[],
-    datas=[('matecon/gui/styles', 'matecon/gui/styles')],
+    datas=[],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
