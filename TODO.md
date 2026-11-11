@@ -6,13 +6,13 @@
 
 ## ✨ feat/gui/preferences
 
-- [ ] 環境設定クラス `PreferencesDialog` の実装
+- [x] 環境設定クラス `PreferencesDialog` の実装
 
 ## ✨ feat/gui/controller
 
 - [x] ファイル保存時にファイル名選択ダイアログを表示
   - デフォルト名は先頭の Excel ファイル名を基にする
-- [ ] 日時のサフィックスを付与するオプション
+- [x] 日時のサフィックスを付与するオプション
 
 ## ✨ feat/gui/menubar
 
