@@ -10,21 +10,23 @@ INI_FILENAME = "matecon.ini"
 DEFAULT_WINDOW_SIZE = QSize(680, 420)
 
 
+def get_ini_path(filename: str = INI_FILENAME) -> str:
+    """実行環境に合わせた設定ファイル (INI) のパスを返す"""
+    if getattr(sys, "frozen", False):
+        app_dir = Path(sys.executable).parent
+    else:
+        # app_dir = Path(__file__).parent.resolve()
+        app_dir = Path(__file__).parents[1].resolve()
+
+    return str(app_dir / filename)
+
+
 class WindowSettings(QSettings):
     """ウィンドウ設定クラス"""
 
     def __init__(self, filename=INI_FILENAME):
-        # 実行環境に合わせて保存パスを決定
-        if getattr(sys, "frozen", False):
-            app_dir = Path(sys.executable).parent
-        else:
-            # app_dir = Path(__file__).parent.resolve()
-            app_dir = Path(__file__).parents[1].resolve()
-
-        settings_path = str(app_dir / filename)
-
         # 親クラス QSettings の初期化（INI形式を指定）
-        super().__init__(settings_path, QSettings.Format.IniFormat)
+        super().__init__(get_ini_path(filename), QSettings.Format.IniFormat)
 
     def save_window_state(self, window: QMainWindow) -> None:
         """ウィンドウの配置と状態を保存する"""
