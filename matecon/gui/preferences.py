@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from datetime import datetime
+from pathlib import Path
+
 from PySide6.QtCore import QSettings, Signal
 from PySide6.QtWidgets import QCheckBox, QDialog, QDialogButtonBox, QVBoxLayout, QWidget
 
@@ -7,6 +10,13 @@ from matecon.gui.settings import INI_FILENAME, get_ini_path
 
 KEY_TIMESTAMP_SUFFIX = "preferences/timestamp_suffix"
 DEFAULT_TIMESTAMP_SUFFIX = False
+TIMESTAMP_FORMAT = "%Y%m%d_%H%M%S"
+
+
+def with_timestamp_suffix(path: Path, now: datetime | None = None) -> Path:
+    """ファイル名の末尾（拡張子の直前）に日時のサフィックスを付与したパスを返す"""
+    now = now or datetime.now()
+    return path.with_name(f"{path.stem}_{now.strftime(TIMESTAMP_FORMAT)}{path.suffix}")
 
 
 class PreferencesSettings(QSettings):

@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
 from matecon.gui.controller import Controller, OperationType
 from matecon.gui.file_card import FileCardContainer
 from matecon.gui.material_treeview import MaterialTreeView
+from matecon.gui.preferences import PreferencesSettings, with_timestamp_suffix
 from matecon.gui.settings import WindowSettings
 from matecon.gui.toolbar import MainToolBar
 from matecon.models.excel_file_set import ExcelFileSet
@@ -26,6 +27,7 @@ class MainWindow(QMainWindow):
     def __init__(self, initial_filepaths: Sequence[Path] | None = None):
         super().__init__()
         self.settings = WindowSettings()  # ウィンドウ設定
+        self.preferences = PreferencesSettings()  # 環境設定
         self.controller = Controller(parent=self, on_success=self._on_success, on_error=self._on_error)
 
         self.setWindowTitle("まてコン")
@@ -153,7 +155,10 @@ class MainWindow(QMainWindow):
         default_filepath = ""
         if self.controller.excel_files:
             try:
-                default_filepath = str(self.controller.excel_files[0].filepath.with_suffix(".txt"))
+                default_path = self.controller.excel_files[0].filepath.with_suffix(".txt")
+                if self.preferences.is_timestamp_suffix_enabled():
+                    default_path = with_timestamp_suffix(default_path)
+                default_filepath = str(default_path)
             except Exception:
                 default_filepath = ""
 
