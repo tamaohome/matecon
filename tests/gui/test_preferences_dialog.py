@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import pytest
 from PySide6.QtWidgets import QDialogButtonBox
 
@@ -7,8 +5,8 @@ from matecon.gui.preferences import PreferencesDialog, PreferencesSettings
 
 
 @pytest.fixture
-def settings(tmp_path: Path) -> PreferencesSettings:
-    return PreferencesSettings(settings_path=str(tmp_path / "prefs.ini"))
+def settings() -> PreferencesSettings:
+    return PreferencesSettings()
 
 
 def _button(dialog: PreferencesDialog, which: QDialogButtonBox.StandardButton):

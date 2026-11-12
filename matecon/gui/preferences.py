@@ -22,10 +22,8 @@ def with_timestamp_suffix(path: Path, now: datetime | None = None) -> Path:
 class PreferencesSettings(QSettings):
     """環境設定クラス（ウィンドウ設定と同じ INI ファイルに保存する）"""
 
-    def __init__(self, filename: str = INI_FILENAME, settings_path: str | None = None):
-        # settings_path を指定した場合はそのパスを使う（テスト用）
-        path = settings_path if settings_path is not None else get_ini_path(filename)
-        super().__init__(path, QSettings.Format.IniFormat)
+    def __init__(self, filename: str = INI_FILENAME):
+        super().__init__(get_ini_path(filename), QSettings.Format.IniFormat)
 
     def is_timestamp_suffix_enabled(self) -> bool:
         """日時のサフィックスを付与するかどうかを取得する"""
