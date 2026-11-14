@@ -27,7 +27,7 @@ class PreferencesSettings(QSettings):
 
     def is_timestamp_suffix_enabled(self) -> bool:
         """日時のサフィックスを付与するかどうかを取得する"""
-        return self.value(KEY_TIMESTAMP_SUFFIX, DEFAULT_TIMESTAMP_SUFFIX, type=bool)
+        return bool(self.value(KEY_TIMESTAMP_SUFFIX, DEFAULT_TIMESTAMP_SUFFIX, type=bool))
 
     def set_timestamp_suffix_enabled(self, enabled: bool) -> None:
         """日時のサフィックスを付与するかどうかを保存する"""
